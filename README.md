@@ -14,7 +14,7 @@ macOS:
 * Xcode 10.3 or higher.
 
 # Before compiling:
-* Make sure the Working Directory of the SCPCB project is set to `$(TargetDir)` (Configuration Properties -> Debugging).
+* Make sure the Working Directory of the SCP087B project is set to `$(TargetDir)` (Configuration Properties -> Debugging).
 
 [vs2019]: https://visualstudio.microsoft.com/vs/
 [scp-wiki]: http://www.scp-wiki.net/
