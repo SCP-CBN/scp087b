@@ -14,7 +14,7 @@ class World {
         bool shouldEnd() const;
 
     private:
-        PGE::Graphics& graphics;
+        PGE::Graphics* graphics;
         GraphicsResources* gfxRes;
 };
 
