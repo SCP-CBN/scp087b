@@ -3,6 +3,8 @@
 
 #include <PGE/Graphics/Graphics.h>
 
+#include "../Graphics/GraphicsResources.h"
+
 class World {
     public:
         World();
@@ -12,7 +14,8 @@ class World {
         bool shouldEnd() const;
 
     private:
-        PGE::Graphics* graphics;
+        PGE::Graphics& graphics;
+        GraphicsResources* gfxRes;
 };
 
 #endif // B_WORLD_H_INCLUDED

@@ -5,15 +5,45 @@
     <ClCompile Include="..\Src\World\World.cpp">
       <Filter>World</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Graphics\GraphicsResources.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\libspng\miniz.c">
+      <Filter>Libraries\libspng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Libraries\libspng\spng.c">
+      <Filter>Libraries\libspng</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
       <UniqueIdentifier>{de444df5-4263-4c20-8ec5-5e49933b9e9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{777d5515-7db7-48c5-9b1e-0016bb50da5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{4a905e1e-834e-4721-99fd-8d3fc43baefd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries\libspng">
+      <UniqueIdentifier>{2f10b07f-4a74-450e-ba9b-1d9e4a4be126}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\World\World.h">
       <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Cache.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\GraphicsResources.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\libspng\miniz.h">
+      <Filter>Libraries\libspng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Libraries\libspng\spng.h">
+      <Filter>Libraries\libspng</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,10 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Libraries\libspng\miniz.c" />
+    <ClCompile Include="..\Libraries\libspng\spng.c" />
+    <ClCompile Include="..\Src\Graphics\GraphicsResources.cpp" />
     <ClCompile Include="..\Src\Main.cpp" />
     <ClCompile Include="..\Src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Libraries\libspng\miniz.h" />
+    <ClInclude Include="..\Libraries\libspng\spng.h" />
+    <ClInclude Include="..\Src\Graphics\Cache.h" />
+    <ClInclude Include="..\Src\Graphics\GraphicsResources.h" />
     <ClInclude Include="..\Src\World\World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -81,31 +88,31 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
     <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPNG_USE_MINIZ;DEBUG;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -126,7 +133,7 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPNG_USE_MINIZ;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -147,7 +154,7 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPNG_USE_MINIZ;DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -168,7 +175,7 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPNG_USE_MINIZ;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
