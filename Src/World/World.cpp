@@ -29,6 +29,7 @@ World::World() {
     inputManager = InputManager::create(*graphics);
 
     //
+    // Do we *need* to untrack these?
     inputManager->trackInput(forward.get());
     inputManager->trackInput(right.get());
     inputManager->trackInput(left.get());
@@ -38,6 +39,8 @@ World::World() {
     room = new Room(*resources, FilePath::fromStr("GFX/sdf.b"));
     inst = new RoomInstance(*room);
     //
+
+    togglePaused();
 }
 
 World::~World() {
@@ -55,30 +58,28 @@ void World::run() {
     inputManager->update();
 
     if (escape->isHit()) {
-        paused = !paused;
-        inputManager->setMouseVisibility(paused);
-        if (!paused) {
-            inputManager->setMousePosition(screenMiddle);
-        }
+        togglePaused();
     }
+
+    constexpr float SPEED = 10.f;
 
     if (!paused) {
         if (forward->isDown()) {
-            camera->setPosition(camera->getPosition() + camera->getForward());
+            camera->setPosition(camera->getPosition() + camera->getForward() * SPEED);
         }
         if (back->isDown()) {
-            camera->setPosition(camera->getPosition() - camera->getForward());
+            camera->setPosition(camera->getPosition() - camera->getForward() * SPEED);
         }
         if (right->isDown()) {
-            camera->setPosition(camera->getPosition() - camera->getForward().crossProduct(camera->getUpward()));
+            camera->setPosition(camera->getPosition() - camera->getForward().crossProduct(camera->getUpward()) * SPEED);
         }
         if (left->isDown()) {
-            camera->setPosition(camera->getPosition() + camera->getForward().crossProduct(camera->getUpward()));
+            camera->setPosition(camera->getPosition() + camera->getForward().crossProduct(camera->getUpward()) * SPEED);
         }
 
         if (inputManager->getMousePosition() != screenMiddle) {
             Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
-            camera->setRotation(camera->getRotation() + Vector3f(-diff.y, diff.x, 0.f));
+            camera->setRotation(camera->getRotation() + Vector3f(diff.y, diff.x, 0.f));
             inputManager->setMousePosition(screenMiddle);
         }
     }
@@ -91,4 +92,10 @@ void World::run() {
 
 bool World::shouldEnd() const {
     return !graphics->isWindowOpen();
+}
+
+void World::togglePaused() {
+    paused = !paused;
+    inputManager->setMouseVisibility(paused);
+    inputManager->setMousePosition(screenMiddle);
 }

@@ -24,8 +24,8 @@ class Camera {
 		void applyTransforms() const;
 
 	private:
-		static constexpr PGE::Vector3f STANDARD_UP = PGE::Vector3f(0.f, 0.f, 1.f);
-		static constexpr PGE::Vector3f STANDARD_FORWARD = PGE::Vector3f(0.f, 1.f, 0.f);
+		static constexpr PGE::Vector3f STANDARD_UP = PGE::Vector3f(0.f, 1.f, 0.f);
+		static constexpr PGE::Vector3f STANDARD_FORWARD = PGE::Vector3f(0.f, 0.f, 1.f);
 
 		mutable bool invalidView = true;
 		mutable bool invalidProj = true;

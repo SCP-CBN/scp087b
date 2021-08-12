@@ -33,7 +33,7 @@ Room::Room(Resources& res, const FilePath& path) {
 			data.setValue(j, "uv", reader.read<Vector2f>());
 		}
 
-		i32 primCount = reader.read<i32>() * 3;
+		i32 primCount = reader.read<i32>();
 		std::vector<u32> primitives(primCount);
 		int oldCIndicesSize = cIndices.size();
 		cIndices.resize(cIndices.size() + primCount);
