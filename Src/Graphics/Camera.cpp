@@ -1,0 +1,57 @@
+#include "Camera.h"
+
+using namespace PGE;
+
+Camera::Camera(float width, float height, float fov) : aspectRatio(width / height) {
+	fieldOfView = fov;
+}
+
+void Camera::addShader(Shader& sh) {
+	projConstants.emplace_back(sh.getVertexShaderConstant("projectionMatrix"));
+	viewConstants.emplace_back(sh.getVertexShaderConstant("viewMatrix"));
+}
+
+const Vector3f& Camera::getPosition() const {
+	return position;
+}
+
+void Camera::setPosition(const Vector3f& pos) {
+	position = pos;
+	invalidView = true;
+}
+
+void Camera::setRotation(const Vector3f& rot) {
+	Matrix4x4f mat = Matrix4x4f::rotate(rot);
+	up = mat.transform(STANDARD_UP);
+	forward = mat.transform(STANDARD_FORWARD);
+	invalidView = true;
+}
+
+float Camera::getFOV() const {
+	return fieldOfView;
+}
+
+void Camera::setFOV(float fov) {
+	fieldOfView = fov;
+	invalidProj = true;
+}
+
+void Camera::applyTransforms() const {
+	Matrix4x4f mat;
+
+	if (invalidProj) {
+		mat = Matrix4x4f::constructPerspectiveMat(fieldOfView, aspectRatio, 0.01f, 200.f);
+		for (Shader::Constant& c : projConstants) {
+			c.setValue(mat);
+		}
+		invalidProj = false;
+	}
+
+	if (invalidView) {
+		mat = Matrix4x4f::constructViewMat(position, up, forward);
+		for (Shader::Constant& c : viewConstants) {
+			c.setValue(mat);
+		}
+		invalidView = false;
+	}
+}

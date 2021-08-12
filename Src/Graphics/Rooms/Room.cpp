@@ -7,7 +7,7 @@ using namespace PGE;
 static const inline FilePath TEX_DIR = FilePath::fromStr("GFX/Map/");
 
 Room::Room(Resources& res, const FilePath& path) {
-	roomShader = res.getShader(FilePath::fromStr("GFX/Shaders/Room/"));
+	roomShader = res.getShader(FilePath::fromStr("GFX/Shaders/Room/"), true);
 	matrixConstant = &roomShader->getVertexShaderConstant("worldMatrix");
 
 	BinaryReader reader(path);

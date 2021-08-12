@@ -24,16 +24,18 @@ class Resources {
 				Cache<T>* cache;
 		};
 
-		Resources(PGE::Graphics& gfx);
+		Resources(PGE::Graphics& gfx, class Camera& cam);
 
 		Handle<PGE::Texture> getTexture(const PGE::FilePath& path, bool mipmaps = true);
-		Handle<PGE::Shader> getShader(const PGE::FilePath& path);
+		Handle<PGE::Shader> getShader(const PGE::FilePath& path, bool requiresCamera = false);
 
 		PGE::Graphics& getGraphics() const;
 
 	private:
 		Cache<PGE::Texture> textureCache;
 		Cache<PGE::Shader> shaderCache;
+
+		class Camera& camera;
 
 		PGE::Graphics& graphics;
 };
