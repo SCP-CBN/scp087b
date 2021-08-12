@@ -3,7 +3,7 @@
 
 #include <PGE/Graphics/Graphics.h>
 
-#include "../Graphics/GraphicsResources.h"
+#include "../Graphics/Resources.h"
 
 class World {
     public:
@@ -15,7 +15,7 @@ class World {
 
     private:
         PGE::Graphics* graphics;
-        GraphicsResources* gfxRes;
+        Resources* resources;
 };
 
 #endif // B_WORLD_H_INCLUDED

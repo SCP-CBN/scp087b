@@ -1,12 +1,14 @@
-#include "GraphicsResources.h"
+#include "Resources.h"
 
 #include <spng.h>
 
 using namespace PGE;
 
-GraphicsResources::GraphicsResources(Graphics& gfx) : graphics(gfx) { }
+Resources::Resources(Graphics& gfx) : graphics(gfx) { }
 
-GraphicsResources::Handle<Texture> GraphicsResources::getTexture(const FilePath& path, bool mipmaps) {
+Resources::Handle<Texture> Resources::getTexture(const FilePath& path, bool mipmaps) {
+	// This does not support the same texture being loaded with and without mipmaps.
+	// Can be easily added if needed.
 	const String& name = path.str();
 
 	Texture* tex = textureCache.tryGet(name);
@@ -34,7 +36,7 @@ GraphicsResources::Handle<Texture> GraphicsResources::getTexture(const FilePath&
 	return Handle<Texture>(tex, path.str(), &textureCache);
 }
 
-GraphicsResources::Handle<Shader> GraphicsResources::getShader(const FilePath& path) {
+Resources::Handle<Shader> Resources::getShader(const FilePath& path) {
 	const String& name = path.str();
 
 	Shader* sh = shaderCache.tryGet(name);
@@ -46,4 +48,8 @@ GraphicsResources::Handle<Shader> GraphicsResources::getShader(const FilePath& p
 	}
 
 	return Handle<Shader>(sh, name, &shaderCache);
+}
+
+Graphics& Resources::getGraphics() const {
+	return graphics;
 }

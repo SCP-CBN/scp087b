@@ -5,7 +5,7 @@
     <ClCompile Include="..\Src\World\World.cpp">
       <Filter>World</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Graphics\GraphicsResources.cpp">
+    <ClCompile Include="..\Src\Graphics\Resources.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Libraries\libspng\miniz.c">
@@ -13,6 +13,18 @@
     </ClCompile>
     <ClCompile Include="..\Libraries\libspng\spng.c">
       <Filter>Libraries\libspng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp">
+      <Filter>Graphics\Rooms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp">
+      <Filter>Graphics\Rooms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Transform.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Camera.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +40,9 @@
     <Filter Include="Libraries\libspng">
       <UniqueIdentifier>{2f10b07f-4a74-450e-ba9b-1d9e4a4be126}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\Rooms">
+      <UniqueIdentifier>{fceae75c-63dd-4c13-8bf1-914dcf5d5f33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\World\World.h">
@@ -36,7 +51,7 @@
     <ClInclude Include="..\Src\Graphics\Cache.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Graphics\GraphicsResources.h">
+    <ClInclude Include="..\Src\Graphics\Resources.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Libraries\libspng\miniz.h">
@@ -44,6 +59,18 @@
     </ClInclude>
     <ClInclude Include="..\Libraries\libspng\spng.h">
       <Filter>Libraries\libspng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Rooms\Room.h">
+      <Filter>Graphics\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomInstance.h">
+      <Filter>Graphics\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Transform.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Camera.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

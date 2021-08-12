@@ -21,7 +21,11 @@
   <ItemGroup>
     <ClCompile Include="..\Libraries\libspng\miniz.c" />
     <ClCompile Include="..\Libraries\libspng\spng.c" />
-    <ClCompile Include="..\Src\Graphics\GraphicsResources.cpp" />
+    <ClCompile Include="..\Src\Graphics\Camera.cpp" />
+    <ClCompile Include="..\Src\Graphics\Resources.cpp" />
+    <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp" />
+    <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp" />
+    <ClCompile Include="..\Src\Graphics\Transform.cpp" />
     <ClCompile Include="..\Src\Main.cpp" />
     <ClCompile Include="..\Src\World\World.cpp" />
   </ItemGroup>
@@ -29,7 +33,11 @@
     <ClInclude Include="..\Libraries\libspng\miniz.h" />
     <ClInclude Include="..\Libraries\libspng\spng.h" />
     <ClInclude Include="..\Src\Graphics\Cache.h" />
-    <ClInclude Include="..\Src\Graphics\GraphicsResources.h" />
+    <ClInclude Include="..\Src\Graphics\Camera.h" />
+    <ClInclude Include="..\Src\Graphics\Resources.h" />
+    <ClInclude Include="..\Src\Graphics\Rooms\Room.h" />
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomInstance.h" />
+    <ClInclude Include="..\Src\Graphics\Transform.h" />
     <ClInclude Include="..\Src\World\World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -124,7 +132,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"</Command>
+xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,7 +156,8 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"</Command>
+xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,7 +176,8 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"</Command>
+xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -189,7 +200,8 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"</Command>
+xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
