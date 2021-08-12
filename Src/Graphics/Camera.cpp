@@ -20,11 +20,24 @@ void Camera::setPosition(const Vector3f& pos) {
 	invalidView = true;
 }
 
+const Vector3f& Camera::getRotation() const {
+	return rotation;
+}
+
 void Camera::setRotation(const Vector3f& rot) {
+	rotation = rot;
 	Matrix4x4f mat = Matrix4x4f::rotate(rot);
 	up = mat.transform(STANDARD_UP);
 	forward = mat.transform(STANDARD_FORWARD);
 	invalidView = true;
+}
+
+const Vector3f& Camera::getForward() const {
+	return forward;
+}
+
+const Vector3f& Camera::getUpward() const {
+	return up;
 }
 
 float Camera::getFOV() const {
@@ -48,7 +61,7 @@ void Camera::applyTransforms() const {
 	}
 
 	if (invalidView) {
-		mat = Matrix4x4f::constructViewMat(position, up, forward);
+		mat = Matrix4x4f::constructViewMat(position, forward, up);
 		for (Shader::Constant& c : viewConstants) {
 			c.setValue(mat);
 		}

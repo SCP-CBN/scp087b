@@ -12,7 +12,11 @@ class Camera {
 		const PGE::Vector3f& getPosition() const;
 		void setPosition(const PGE::Vector3f& pos);
 
+		const PGE::Vector3f& getRotation() const;
 		void setRotation(const PGE::Vector3f& rot);
+
+		const PGE::Vector3f& getForward() const;
+		const PGE::Vector3f& getUpward() const;
 
 		float getFOV() const;
 		void setFOV(float fov);
@@ -33,6 +37,7 @@ class Camera {
 		PGE::ReferenceVector<PGE::Shader::Constant> viewConstants;
 
 		PGE::Vector3f position;
+		PGE::Vector3f rotation;
 
 		PGE::Vector3f up = STANDARD_UP;
 		PGE::Vector3f forward = STANDARD_FORWARD;
