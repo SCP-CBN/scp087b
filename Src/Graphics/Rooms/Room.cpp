@@ -13,7 +13,7 @@ Room::Room(Resources& res, const FilePath& path) {
 	BinaryReader reader(path);
 
 	std::vector<Vector3f> cVertices;
-	std::vector<int> cIndices;
+	std::vector<u32> cIndices;
 	byte texCount = reader.read<byte>();
 	meshes.resize(texCount);
 	textures.resize(texCount);
@@ -43,9 +43,12 @@ Room::Room(Resources& res, const FilePath& path) {
 
 		meshes[i]->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
 	}
+
+	collisionMesh = new CollisionMesh(std::move(cVertices), std::move(cIndices));
 }
 
 Room::~Room() {
+	delete collisionMesh;
 	for (Mesh* m : meshes) { delete m; }
 	for (Resources::Handle<Texture> tex : textures) { tex.drop(); }
 	roomShader.drop();

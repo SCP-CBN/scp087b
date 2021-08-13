@@ -61,9 +61,8 @@ void World::run() {
         togglePaused();
     }
 
-    constexpr float SPEED = 10.f;
-
     if (!paused) {
+        constexpr float SPEED = 10.f;
         if (forward->isDown()) {
             camera->setPosition(camera->getPosition() + camera->getForward() * SPEED);
         }

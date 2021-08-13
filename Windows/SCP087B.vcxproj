@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="..\Libraries\libspng\miniz.c" />
     <ClCompile Include="..\Libraries\libspng\spng.c" />
+    <ClCompile Include="..\Src\Collision\Collision.cpp" />
+    <ClCompile Include="..\Src\Collision\CollisionMesh.cpp" />
     <ClCompile Include="..\Src\Graphics\Camera.cpp" />
     <ClCompile Include="..\Src\Graphics\Resources.cpp" />
     <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp" />
@@ -32,6 +34,8 @@
   <ItemGroup>
     <ClInclude Include="..\Libraries\libspng\miniz.h" />
     <ClInclude Include="..\Libraries\libspng\spng.h" />
+    <ClInclude Include="..\Src\Collision\Collision.h" />
+    <ClInclude Include="..\Src\Collision\CollisionMesh.h" />
     <ClInclude Include="..\Src\Graphics\Cache.h" />
     <ClInclude Include="..\Src\Graphics\Camera.h" />
     <ClInclude Include="..\Src\Graphics\Resources.h" />

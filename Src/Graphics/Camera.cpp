@@ -54,17 +54,13 @@ void Camera::applyTransforms() const {
 
 	if (invalidProj) {
 		mat = Matrix4x4f::constructPerspectiveMat(fieldOfView, aspectRatio, 0.01f, 200.f);
-		for (Shader::Constant& c : projConstants) {
-			c.setValue(mat);
-		}
+		for (Shader::Constant& c : projConstants) { c.setValue(mat); }
 		invalidProj = false;
 	}
 
 	if (invalidView) {
 		mat = Matrix4x4f::constructViewMat(position, forward, up);
-		for (Shader::Constant& c : viewConstants) {
-			c.setValue(mat);
-		}
+		for (Shader::Constant& c : viewConstants) { c.setValue(mat); }
 		invalidView = false;
 	}
 }

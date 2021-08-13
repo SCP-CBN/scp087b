@@ -8,6 +8,7 @@
 #include <PGE/File/FilePath.h>
 
 #include "../Resources.h"
+#include "../../Collision/CollisionMesh.h"
 
 class Room {
 	public:
@@ -23,6 +24,7 @@ class Room {
 		std::vector<Resources::Handle<PGE::Texture>> textures;
 		Resources::Handle<PGE::Shader> roomShader;
 		PGE::Shader::Constant* matrixConstant;
+		CollisionMesh* collisionMesh;
 };
 
 #endif // B_ROOM_H_INCLUDED

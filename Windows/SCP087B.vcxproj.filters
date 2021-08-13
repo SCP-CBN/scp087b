@@ -26,6 +26,12 @@
     <ClCompile Include="..\Src\Graphics\Camera.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Collision\CollisionMesh.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Collision\Collision.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -42,6 +48,9 @@
     </Filter>
     <Filter Include="Graphics\Rooms">
       <UniqueIdentifier>{fceae75c-63dd-4c13-8bf1-914dcf5d5f33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{68684e29-f378-40e6-8b2e-a5ad00dc4f30}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +80,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Graphics\Camera.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Collision\CollisionMesh.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Collision\Collision.h">
+      <Filter>Collision</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
