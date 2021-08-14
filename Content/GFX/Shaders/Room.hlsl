@@ -23,9 +23,9 @@ struct PS_OUTPUT {
 
 PS_INPUT VS(VS_INPUT input) {
     PS_INPUT output = (PS_INPUT)0;
-    output.position = mul(float4(input.position, 1),worldMatrix);
-    output.position = mul(output.position,viewMatrix);
-    output.position = mul(output.position,projectionMatrix);
+    output.position = mul(worldMatrix, float4(input.position, 1));
+    output.position = mul(viewMatrix, output.position);
+    output.position = mul(projectionMatrix, output.position);
     output.uv = input.uv;
     return output;
 }
