@@ -8,7 +8,13 @@ template <typename T>
 class Cache {
 	public:
 		// Fuck this.
-		~Cache() noexcept(!DEBUG) {
+		~Cache() noexcept(
+#ifdef DEBUG
+			false
+#else
+			true
+#endif
+		) {
 			if (!entries.empty()) {
 #ifdef DEBUG
 				PGE::String names;

@@ -10,6 +10,8 @@ class RoomInstance {
 
 		void render() const;
 
+		void setPosition(const PGE::Vector3f& pos);
+
 	private:
 		const Room& room;
 		Transform transform;

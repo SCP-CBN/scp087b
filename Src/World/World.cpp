@@ -1,5 +1,9 @@
 #include "World.h"
 
+#include <iostream>
+
+#include <PGE/Timing/TimeMaster.h>
+
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
 
@@ -8,6 +12,7 @@ using namespace PGE;
 // Shit that needs a proper place.
 static Room* room;
 static RoomInstance* inst;
+static RoomInstance* inst2;
 
 static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
 static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
@@ -16,6 +21,8 @@ static std::unique_ptr<Input> back = std::make_unique<KeyboardInput>(KeyboardInp
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
 
 static Vector2f screenMiddle;
+
+TimeMaster master;
 //
 
 World::World() {
@@ -38,12 +45,15 @@ World::World() {
 
     room = new Room(*resources, FilePath::fromStr("GFX/sdf.b"));
     inst = new RoomInstance(*room);
+    inst2 = new RoomInstance(*room);
+    inst2->setPosition(Vector3f(0.f, 0.f, 2048.f));
     //
 
     togglePaused();
 }
 
 World::~World() {
+    delete inst2;
     delete inst;
     delete room;
     delete inputManager;
@@ -53,40 +63,53 @@ World::~World() {
 }
 
 void World::run() {
-    SysEvents::update();
-    graphics->update();
-    inputManager->update();
+    {
+        Timing asd(master, "update");
 
-    if (escape->isHit()) {
-        togglePaused();
+        SysEvents::update();
+        graphics->update();
+        inputManager->update();
+
+        if (escape->isHit()) {
+            std::cout << master.print() << std::endl;;
+            togglePaused();
+        }
+
+        if (!paused) {
+            constexpr float SPEED = 10.f;
+            if (forward->isDown()) {
+                camera->setPosition(camera->getPosition() + camera->getForward() * SPEED);
+            }
+            if (back->isDown()) {
+                camera->setPosition(camera->getPosition() - camera->getForward() * SPEED);
+            }
+            if (right->isDown()) {
+                camera->setPosition(camera->getPosition() - camera->getForward().crossProduct(camera->getUpward()) * SPEED);
+            }
+            if (left->isDown()) {
+                camera->setPosition(camera->getPosition() + camera->getForward().crossProduct(camera->getUpward()) * SPEED);
+            }
+
+            if (inputManager->getMousePosition() != screenMiddle) {
+                Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
+                camera->setRotation(camera->getRotation() + Vector3f(diff.y, diff.x, 0.f));
+                inputManager->setMousePosition(screenMiddle);
+            }
+        }
     }
 
-    if (!paused) {
-        constexpr float SPEED = 10.f;
-        if (forward->isDown()) {
-            camera->setPosition(camera->getPosition() + camera->getForward() * SPEED);
-        }
-        if (back->isDown()) {
-            camera->setPosition(camera->getPosition() - camera->getForward() * SPEED);
-        }
-        if (right->isDown()) {
-            camera->setPosition(camera->getPosition() - camera->getForward().crossProduct(camera->getUpward()) * SPEED);
-        }
-        if (left->isDown()) {
-            camera->setPosition(camera->getPosition() + camera->getForward().crossProduct(camera->getUpward()) * SPEED);
-        }
+    {
+        Timing render(master, "render");
 
-        if (inputManager->getMousePosition() != screenMiddle) {
-            Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
-            camera->setRotation(camera->getRotation() + Vector3f(diff.y, diff.x, 0.f));
-            inputManager->setMousePosition(screenMiddle);
+        graphics->clear(Colors::BLUE);
+        camera->applyTransforms();
+        {
+            Timing asd(master, "inst");
+            inst->render();
+            inst2->render();
         }
+        graphics->swap();
     }
-
-    graphics->clear(Colors::BLUE);
-    camera->applyTransforms();
-    inst->render();
-    graphics->swap();
 }
 
 bool World::shouldEnd() const {

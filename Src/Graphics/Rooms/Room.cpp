@@ -21,7 +21,7 @@ Room::Room(Resources& res, const FilePath& path) {
 		meshes[i] = Mesh::create(res.getGraphics());
 
 		textures[i] = res.getTexture(TEX_DIR + reader.read<String>() + ".png");
-		meshes[i]->setMaterial(Mesh::Material(*roomShader, *textures[i]));
+		meshes[i]->setMaterial(Mesh::Material(*roomShader, *textures[i], Mesh::Material::Opaque::YES));
 
 		i32 vertCount = reader.read<i32>();
 		StructuredData data(roomShader->getVertexLayout(), vertCount);
