@@ -5,7 +5,7 @@
 using namespace PGE;
 
 Camera::Camera(float width, float height, float fov) : aspectRatio(width / height) {
-	fieldOfView = Math::degToRad(fov);
+	fieldOfView = fov;
 }
 
 void Camera::addShader(Shader& sh) {
@@ -55,7 +55,7 @@ void Camera::applyTransforms() const {
 	Matrix4x4f mat;
 
 	if (invalidProj) {
-		mat = Matrix4x4f::constructPerspectiveMat(fieldOfView, aspectRatio, 0.01f, 2000.f);
+		mat = Matrix4x4f::constructPerspectiveMat(Math::degToRad(fieldOfView), aspectRatio, 0.01f, 2000.f);
 		for (Shader::Constant& c : projConstants) { c.setValue(mat); }
 		invalidProj = false;
 	}
