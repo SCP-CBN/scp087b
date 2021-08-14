@@ -64,7 +64,7 @@ World::~World() {
 
 void World::run() {
     {
-        Timing asd(master, "update");
+        Timing _(master, "update");
 
         SysEvents::update();
         graphics->update();
@@ -99,16 +99,28 @@ void World::run() {
     }
 
     {
-        Timing render(master, "render");
-
-        graphics->clear(Colors::BLUE);
-        camera->applyTransforms();
+        Timing _(master, "render");
+        
         {
-            Timing asd(master, "inst");
+            Timing _(master, "clear");
+            graphics->clear(Colors::BLUE);
+        }
+
+        {
+            Timing _(master, "cam");
+            camera->applyTransforms();
+        }
+
+        {
+            Timing _(master, "inst");
             inst->render();
             inst2->render();
         }
-        graphics->swap();
+
+        {
+            Timing _(master, "swap");
+            graphics->swap();
+        }
     }
 }
 

@@ -18,14 +18,14 @@ class Cache {
 			if (!entries.empty()) {
 #ifdef DEBUG
 				PGE::String names;
-				for (const auto& it : entries) {
-					names += it.second.name;
+				for (const auto& [_, entry] : entries) {
+					names += entry.name;
 					names += '\n';
 				}
 				throw PGE_CREATE_EX(names);
 #else
-				for (const auto& it : entries) {
-					delete it.second.element;
+				for (const auto& [_, entry] : entries) {
+					delete entry.element;
 				}
 #endif
 			}
