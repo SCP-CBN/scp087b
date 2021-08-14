@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <PGE/Timing/TimeMaster.h>
+#include "../Timing/TimeMaster.h"
 
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
@@ -64,7 +64,7 @@ World::~World() {
 
 void World::run() {
     {
-        Timing _(master, "update");
+        Timer _(master, "update");
 
         SysEvents::update();
         graphics->update();
@@ -99,26 +99,26 @@ void World::run() {
     }
 
     {
-        Timing _(master, "render");
+        Timer _(master, "render");
         
         {
-            Timing _(master, "clear");
+            Timer _(master, "clear");
             graphics->clear(Colors::BLUE);
         }
 
         {
-            Timing _(master, "cam");
+            Timer _(master, "cam");
             camera->applyTransforms();
         }
 
         {
-            Timing _(master, "inst");
+            Timer _(master, "inst");
             inst->render();
             inst2->render();
         }
 
         {
-            Timing _(master, "swap");
+            Timer _(master, "swap");
             graphics->swap();
         }
     }

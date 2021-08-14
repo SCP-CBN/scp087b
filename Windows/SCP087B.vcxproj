@@ -29,6 +29,9 @@
     <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp" />
     <ClCompile Include="..\Src\Graphics\Transform.cpp" />
     <ClCompile Include="..\Src\Main.cpp" />
+    <ClCompile Include="..\Src\Timing\Time.cpp" />
+    <ClCompile Include="..\Src\Timing\TimeMaster.cpp" />
+    <ClCompile Include="..\Src\Timing\Timer.cpp" />
     <ClCompile Include="..\Src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +45,9 @@
     <ClInclude Include="..\Src\Graphics\Rooms\Room.h" />
     <ClInclude Include="..\Src\Graphics\Rooms\RoomInstance.h" />
     <ClInclude Include="..\Src\Graphics\Transform.h" />
+    <ClInclude Include="..\Src\Timing\Time.h" />
+    <ClInclude Include="..\Src\Timing\TimeMaster.h" />
+    <ClInclude Include="..\Src\Timing\Timer.h" />
     <ClInclude Include="..\Src\World\World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
