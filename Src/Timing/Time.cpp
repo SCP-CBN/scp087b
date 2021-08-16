@@ -3,7 +3,7 @@
 using namespace PGE;
 
 static String percentString(u64 divident, u64 divisor) {
-    return String::fromFloat((float)((double)divident / divisor * 100.)) + '%';
+    return String::from((float)((double)divident / divisor * 100.)) + '%';
 }
 
 void Time::print(String& ret, u64 parentTime, int depth, const String& name) const {
