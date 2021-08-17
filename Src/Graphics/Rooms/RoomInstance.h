@@ -12,7 +12,10 @@ class RoomInstance {
 
 		void render() const;
 
+		void updateCollision();
+
 		void setPosition(const PGE::Vector3f& pos);
+		void setRotation(const PGE::Vector3f& rot);
 
 	private:
 		const Room& room;

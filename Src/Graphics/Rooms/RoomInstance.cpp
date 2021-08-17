@@ -17,9 +17,18 @@ void RoomInstance::render() const {
 	room.render(transform.getModelMatrix());
 }
 
-void RoomInstance::setPosition(const Vector3f& pos) {
-	transform.setPosition(pos);
+void RoomInstance::updateCollision() {
 	if (cHandle.valid()) {
 		cHandle.update(transform.getModelMatrix());
 	}
+}
+
+void RoomInstance::setPosition(const Vector3f& pos) {
+	transform.setPosition(pos);
+	updateCollision();
+}
+
+void RoomInstance::setRotation(const Vector3f& rot) {
+	transform.setRotation(rot);
+	updateCollision();
 }

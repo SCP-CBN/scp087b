@@ -47,10 +47,11 @@ World::World() {
     inputManager->trackInput(back.get());
     inputManager->trackInput(escape.get());
 
-    room = new Room(*resources, FilePath::fromStr("GFX/sdf.b"));
+    room = new Room(*resources, FilePath::fromStr("GFX/Rooms/default.b"));
     inst = new RoomInstance(*room, cmc);
     inst2 = new RoomInstance(*room, cmc);
-    inst2->setPosition(Vector3f(0.f, 0.f, 2048.f));
+    inst2->setPosition(Vector3f(800.f, -200.f, -700.f));
+    inst2->setRotation(Vector3f(0.f, Math::degToRad(180.f), 0.f));
 
     coll.setCollisionMeshCollection(&cmc);
     //
