@@ -6,7 +6,12 @@
 
 using namespace PGE;
 
-Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) { }
+static const FilePath SHADER_PATH = FilePath::fromStr("GFX/Shaders/");
+
+Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
+	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, SHADER_PATH + "Room"));
+	cam.addShader(*roomShader);
+}
 
 Resources::Handle<Texture> Resources::getTexture(const FilePath& path, bool mipmaps) {
 	// This does not support the same texture being loaded with and without mipmaps.
@@ -38,23 +43,8 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, bool mipm
 	return Handle<Texture>(tex, path.str(), &textureCache);
 }
 
-Resources::Handle<Shader> Resources::getShader(const FilePath& path, bool requiresCamera) {
-	const String& name = path.str();
-
-	Shader* sh = shaderCache.tryGet(name);
-
-	if (sh == nullptr) {
-		sh = Shader::load(graphics, path);
-
-		// Any second call is expected to have the same value here as the first one.
-		if (requiresCamera) {
-			camera.addShader(*sh);
-		}
-
-		shaderCache.add(name, sh);
-	}
-
-	return Handle<Shader>(sh, name, &shaderCache);
+Shader& Resources::getRoomShader() const {
+	return *roomShader;
 }
 
 Graphics& Resources::getGraphics() const {

@@ -17,12 +17,10 @@ class Room {
 
 		void render(const PGE::Matrix4x4f& mat) const;
 
-		PGE::Shader& getShader() const;
-
 	private:
 		std::vector<PGE::Mesh*> meshes;
 		std::vector<Resources::Handle<PGE::Texture>> textures;
-		Resources::Handle<PGE::Shader> roomShader;
+		PGE::Shader& roomShader;
 		PGE::Shader::Constant* matrixConstant;
 		CollisionMesh* collisionMesh;
 };

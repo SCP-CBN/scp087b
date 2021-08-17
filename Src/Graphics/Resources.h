@@ -27,13 +27,15 @@ class Resources {
 		Resources(PGE::Graphics& gfx, class Camera& cam);
 
 		Handle<PGE::Texture> getTexture(const PGE::FilePath& path, bool mipmaps = true);
-		Handle<PGE::Shader> getShader(const PGE::FilePath& path, bool requiresCamera = false);
+
+		PGE::Shader& getRoomShader() const;
 
 		PGE::Graphics& getGraphics() const;
 
 	private:
 		Cache<PGE::Texture> textureCache;
-		Cache<PGE::Shader> shaderCache;
+
+		std::unique_ptr<PGE::Shader> roomShader;
 
 		class Camera& camera;
 
