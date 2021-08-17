@@ -12,6 +12,7 @@ class CollisionMesh {
 			: vertices(std::move(verts)), indices(std::move(inds)) { }
 
 		Collision checkCollision(const PGE::Matrix4x4f& matrix, const PGE::Line3f& line, float height, float radius) const;
+		PGE::AABBox calculateBoundingBox(const PGE::Matrix4x4f& matrix) const;
 
 	private:
 		std::vector<PGE::Vector3f> vertices;

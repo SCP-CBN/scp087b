@@ -56,3 +56,7 @@ void Room::render(const Matrix4x4f& mat) const {
 	matrixConstant->setValue(mat);
 	for (Mesh* m : meshes) { m->render(); }
 }
+
+const CollisionMesh& Room::getCollisionMesh() const {
+	return *collisionMesh;
+}

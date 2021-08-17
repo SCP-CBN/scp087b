@@ -28,3 +28,13 @@ Collision CollisionMesh::checkCollision(const Matrix4x4f& matrix, const Line3f& 
     }
     return retVal;
 }
+
+AABBox CollisionMesh::calculateBoundingBox(const Matrix4x4f& matrix) const {
+    AABBox ret = AABBox(matrix.transform(vertices[0]));
+
+    for (int i = 1; i < vertices.size(); i++) {
+        ret.addPoint(matrix.transform(vertices[i]));
+    }
+
+    return ret;
+}

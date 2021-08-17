@@ -3,10 +3,12 @@
 
 #include "Room.h"
 #include "../Transform.h"
+#include "../../Collision/CollisionMeshCollection.h"
 
 class RoomInstance {
 	public:
-		RoomInstance(const Room& room);
+		RoomInstance(const Room& room, CollisionMeshCollection& cmc);
+		~RoomInstance();
 
 		void render() const;
 
@@ -15,6 +17,9 @@ class RoomInstance {
 	private:
 		const Room& room;
 		Transform transform;
+
+		CollisionMeshCollection& cmc;
+		CollisionMeshCollection::Handle cHandle;
 };
 
 #endif // B_ROOMINSTANCE_H_INCLUDED

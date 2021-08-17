@@ -6,6 +6,7 @@
 
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
+#include "../Collision/Collider.h"
 
 using namespace PGE;
 
@@ -13,6 +14,9 @@ using namespace PGE;
 static Room* room;
 static RoomInstance* inst;
 static RoomInstance* inst2;
+
+static CollisionMeshCollection cmc;
+static Collider coll = Collider(10, 50);
 
 static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
 static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
@@ -44,9 +48,11 @@ World::World() {
     inputManager->trackInput(escape.get());
 
     room = new Room(*resources, FilePath::fromStr("GFX/sdf.b"));
-    inst = new RoomInstance(*room);
-    inst2 = new RoomInstance(*room);
+    inst = new RoomInstance(*room, cmc);
+    inst2 = new RoomInstance(*room, cmc);
     inst2->setPosition(Vector3f(0.f, 0.f, 2048.f));
+
+    coll.setCollisionMeshCollection(&cmc);
     //
 
     togglePaused();
@@ -76,19 +82,23 @@ void World::run() {
         }
 
         if (!paused) {
+            Vector3f goalPos = camera->getPosition();;
+
             constexpr float SPEED = 10.f;
             if (forward->isDown()) {
-                camera->setPosition(camera->getPosition() + camera->getForward() * SPEED);
+                goalPos += camera->getForward() * SPEED;
             }
             if (back->isDown()) {
-                camera->setPosition(camera->getPosition() - camera->getForward() * SPEED);
+                goalPos -= camera->getForward() * SPEED;
             }
             if (right->isDown()) {
-                camera->setPosition(camera->getPosition() - camera->getForward().crossProduct(camera->getUpward()) * SPEED);
+                goalPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
             if (left->isDown()) {
-                camera->setPosition(camera->getPosition() + camera->getForward().crossProduct(camera->getUpward()) * SPEED);
+                goalPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
+
+            camera->setPosition(coll.tryMove(camera->getPosition(), goalPos));
 
             if (inputManager->getMousePosition() != screenMiddle) {
                 Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;

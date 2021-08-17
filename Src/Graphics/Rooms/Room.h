@@ -17,6 +17,8 @@ class Room {
 
 		void render(const PGE::Matrix4x4f& mat) const;
 
+		const CollisionMesh& getCollisionMesh() const;
+
 	private:
 		std::vector<PGE::Mesh*> meshes;
 		std::vector<Resources::Handle<PGE::Texture>> textures;

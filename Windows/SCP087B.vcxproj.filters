@@ -41,6 +41,12 @@
     <ClCompile Include="..\Src\Timing\Timer.cpp">
       <Filter>Timing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Collision\CollisionMeshCollection.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Collision\Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -107,6 +113,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Timing\Timer.h">
       <Filter>Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Collision\CollisionMeshCollection.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Collision\Collider.h">
+      <Filter>Collision</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
