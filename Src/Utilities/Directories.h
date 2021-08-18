@@ -4,7 +4,7 @@
 #include <PGE/File/FilePath.h>
 
 namespace Directories {
-	namespace { const PGE::FilePath GFX = PGE::FilePath::fromStr("GFX/"); }
+	const PGE::FilePath GFX = PGE::FilePath::fromStr("GFX/");
 
 	const PGE::FilePath ROOMS = GFX + "Rooms/";
 	const PGE::FilePath SHADERS = GFX + "Shaders/";
