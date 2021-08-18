@@ -52,6 +52,7 @@
     <ClInclude Include="..\Src\Timing\Time.h" />
     <ClInclude Include="..\Src\Timing\TimeMaster.h" />
     <ClInclude Include="..\Src\Timing\Timer.h" />
+    <ClInclude Include="..\Src\Utilities\Directories.h" />
     <ClInclude Include="..\Src\World\World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

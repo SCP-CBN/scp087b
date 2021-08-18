@@ -2,9 +2,9 @@
 
 #include <PGE/File/BinaryReader.h>
 
-using namespace PGE;
+#include "../../Utilities/Directories.h"
 
-static const inline FilePath TEX_DIR = FilePath::fromStr("GFX/Map/");
+using namespace PGE;
 
 Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader()) {
 	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
@@ -19,12 +19,12 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 	for (int i = 0; i < texCount; i++) {
 		meshes[i] = Mesh::create(res.getGraphics());
 
-		textures[i] = res.getTexture(TEX_DIR + reader.read<String>() + ".png");
+		textures[i] = res.getTexture(Directories::TEXTURES + reader.read<String>() + ".png");
 		meshes[i]->setMaterial(Mesh::Material(roomShader, *textures[i], Mesh::Material::Opaque::YES));
 
 		i32 vertCount = reader.read<i32>();
 		StructuredData data(roomShader.getVertexLayout(), vertCount);
-		int oldCVertSize = cVertices.size();
+		int oldCVertSize = (int)cVertices.size();
 		cVertices.resize(cVertices.size() + vertCount);
 		for (int j = 0; j < vertCount; j++) {
 			cVertices[oldCVertSize + j] = reader.read<Vector3f>();
@@ -34,7 +34,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 
 		i32 primCount = reader.read<i32>();
 		std::vector<u32> primitives(primCount);
-		int oldCIndicesSize = cIndices.size();
+		int oldCIndicesSize = (int)cIndices.size();
 		cIndices.resize(cIndices.size() + primCount);
 		for (int j = 0; j < primCount; j++) {
 			cIndices[oldCIndicesSize + j] = (primitives[j] = reader.read<i32>()) + oldCVertSize;

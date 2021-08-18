@@ -70,6 +70,9 @@
     <Filter Include="Timing">
       <UniqueIdentifier>{c2c0c572-a522-465c-a9b0-3683617d985c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{79a478f7-0a29-4f7a-91a2-8e9357060821}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\World\World.h">
@@ -119,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\Collision\Collider.h">
       <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Utilities\Directories.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

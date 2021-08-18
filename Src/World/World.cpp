@@ -7,6 +7,7 @@
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
+#include "../Utilities/Directories.h"
 
 using namespace PGE;
 
@@ -56,7 +57,7 @@ World::World() {
     }
 
     { Timer _(ctor, "room");
-        room = new Room(*resources, FilePath::fromStr("GFX/Rooms/default.b"));
+        room = new Room(*resources, Directories::ROOMS + "default.b");
         inst = new RoomInstance(*room, cmc);
         inst2 = new RoomInstance(*room, cmc);
         inst2->setPosition(Vector3f(800.f, -200.f, -700.f));

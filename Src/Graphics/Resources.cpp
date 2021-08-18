@@ -3,13 +3,12 @@
 #include <spng.h>
 
 #include "Camera.h"
+#include "../Utilities/Directories.h"
 
 using namespace PGE;
 
-static const FilePath SHADER_PATH = FilePath::fromStr("GFX/Shaders/");
-
 Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
-	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, SHADER_PATH + "Room"));
+	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Room"));
 	cam.addShader(*roomShader);
 }
 
