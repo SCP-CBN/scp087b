@@ -30,33 +30,46 @@ TimeMaster master;
 //
 
 World::World() {
+    TimeMaster ctor;
+    Timer* _ = new Timer(ctor, "all");
+
     constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
-    screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-    graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+
+    { Timer _(ctor, "gfx");
+        screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
+        graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+    }
 
     camera = new Camera(WIDTH, HEIGHT, 90);
     resources = new Resources(*graphics, *camera);
 
-    inputManager = InputManager::create(*graphics);
+    { Timer _(ctor, "input");
+        inputManager = InputManager::create(*graphics);
 
-    //
-    // Do we *need* to untrack these?
-    inputManager->trackInput(forward.get());
-    inputManager->trackInput(right.get());
-    inputManager->trackInput(left.get());
-    inputManager->trackInput(back.get());
-    inputManager->trackInput(escape.get());
+        //
+        // Do we *need* to untrack these?
+        inputManager->trackInput(forward.get());
+        inputManager->trackInput(right.get());
+        inputManager->trackInput(left.get());
+        inputManager->trackInput(back.get());
+        inputManager->trackInput(escape.get());
+    }
 
-    room = new Room(*resources, FilePath::fromStr("GFX/Rooms/default.b"));
-    inst = new RoomInstance(*room, cmc);
-    inst2 = new RoomInstance(*room, cmc);
-    inst2->setPosition(Vector3f(800.f, -200.f, -700.f));
-    inst2->setRotation(Vector3f(0.f, Math::degToRad(180.f), 0.f));
+    { Timer _(ctor, "room");
+        room = new Room(*resources, FilePath::fromStr("GFX/Rooms/default.b"));
+        inst = new RoomInstance(*room, cmc);
+        inst2 = new RoomInstance(*room, cmc);
+        inst2->setPosition(Vector3f(800.f, -200.f, -700.f));
+        inst2->setRotation(Vector3f(0.f, Math::degToRad(180.f), 0.f));
+    }
 
     coll.setCollisionMeshCollection(&cmc);
     //
 
     togglePaused();
+
+    delete _;
+    std::cout << ctor.print() << std::endl;
 }
 
 World::~World() {
@@ -70,9 +83,7 @@ World::~World() {
 }
 
 void World::run() {
-    {
-        Timer _(master, "update");
-
+    { Timer _(master, "update");
         SysEvents::update();
         graphics->update();
         inputManager->update();
@@ -99,7 +110,9 @@ void World::run() {
                 goalPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
 
-            camera->setPosition(coll.tryMove(camera->getPosition(), goalPos));
+            { Timer _(master, "coll");
+                camera->setPosition(coll.tryMove(camera->getPosition(), goalPos));
+            }
 
             if (inputManager->getMousePosition() != screenMiddle) {
                 Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
@@ -109,27 +122,22 @@ void World::run() {
         }
     }
 
-    {
-        Timer _(master, "render");
+    { Timer _(master, "render");
         
-        {
-            Timer _(master, "clear");
+        { Timer _(master, "clear");
             graphics->clear(Colors::BLUE);
         }
 
-        {
-            Timer _(master, "cam");
+        { Timer _(master, "cam");
             camera->applyTransforms();
         }
 
-        {
-            Timer _(master, "inst");
+        { Timer _(master, "inst");
             inst->render();
             inst2->render();
         }
 
-        {
-            Timer _(master, "swap");
+        { Timer _(master, "swap");
             graphics->swap();
         }
     }
