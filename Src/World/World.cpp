@@ -3,11 +3,11 @@
 #include <iostream>
 
 #include "../Timing/TimeMaster.h"
-
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
 #include "../Utilities/Directories.h"
+#include "../Graphics/Text/TextRenderer.h"
 
 using namespace PGE;
 
@@ -28,6 +28,9 @@ static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardI
 static Vector2f screenMiddle;
 
 TimeMaster master;
+
+static Font* font;
+static TextRenderer* text;
 //
 
 World::World() {
@@ -43,6 +46,11 @@ World::World() {
 
     camera = new Camera(WIDTH, HEIGHT, 90);
     resources = new Resources(*graphics, *camera);
+
+    font = new Font(*resources, Directories::GFX + "BubbleShine");
+    text = new TextRenderer(*resources, *font);
+    text->setText("Funny pog pog funny");
+    text->setPosition(Vector2f(50.f, -50.f));
 
     { Timer _(ctor, "input");
         inputManager = InputManager::create(*graphics);
@@ -78,6 +86,8 @@ World::~World() {
     delete inst;
     delete room;
     delete inputManager;
+    delete text;
+    delete font;
     delete resources;
     delete camera;
     delete graphics;
@@ -133,10 +143,14 @@ void World::run() {
             camera->applyTransforms();
         }
 
+        text->render();
+
         { Timer _(master, "inst");
             inst->render();
             inst2->render();
         }
+
+        text->render();
 
         { Timer _(master, "swap");
             graphics->swap();

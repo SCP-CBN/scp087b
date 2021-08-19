@@ -19,51 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Libraries\libspng\miniz.c" />
-    <ClCompile Include="..\Libraries\libspng\spng.c" />
-    <ClCompile Include="..\Src\Collision\Collider.cpp" />
-    <ClCompile Include="..\Src\Collision\Collision.cpp" />
-    <ClCompile Include="..\Src\Collision\CollisionMesh.cpp" />
-    <ClCompile Include="..\Src\Collision\CollisionMeshCollection.cpp" />
-    <ClCompile Include="..\Src\Graphics\Camera.cpp" />
-    <ClCompile Include="..\Src\Graphics\Resources.cpp" />
-    <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp" />
-    <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp" />
-    <ClCompile Include="..\Src\Graphics\Text\Font.cpp" />
-    <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp" />
-    <ClCompile Include="..\Src\Graphics\Transform.cpp" />
-    <ClCompile Include="..\Src\Main.cpp" />
-    <ClCompile Include="..\Src\Timing\Time.cpp" />
-    <ClCompile Include="..\Src\Timing\TimeMaster.cpp" />
-    <ClCompile Include="..\Src\Timing\Timer.cpp" />
-    <ClCompile Include="..\Src\World\World.cpp" />
+    <ClCompile Include="..\Libraries\lodepng\lodepng.cpp" />
+    <ClCompile Include="..\TextMapper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Libraries\libspng\miniz.h" />
-    <ClInclude Include="..\Libraries\libspng\spng.h" />
-    <ClInclude Include="..\Src\Collision\Collider.h" />
-    <ClInclude Include="..\Src\Collision\Collision.h" />
-    <ClInclude Include="..\Src\Collision\CollisionMesh.h" />
-    <ClInclude Include="..\Src\Collision\CollisionMeshCollection.h" />
-    <ClInclude Include="..\Src\Graphics\Cache.h" />
-    <ClInclude Include="..\Src\Graphics\Camera.h" />
-    <ClInclude Include="..\Src\Graphics\Resources.h" />
-    <ClInclude Include="..\Src\Graphics\Rooms\Room.h" />
-    <ClInclude Include="..\Src\Graphics\Rooms\RoomInstance.h" />
-    <ClInclude Include="..\Src\Graphics\Text\Font.h" />
-    <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h" />
-    <ClInclude Include="..\Src\Graphics\Transform.h" />
-    <ClInclude Include="..\Src\Timing\Time.h" />
-    <ClInclude Include="..\Src\Timing\TimeMaster.h" />
-    <ClInclude Include="..\Src\Timing\Timer.h" />
-    <ClInclude Include="..\Src\Utilities\Directories.h" />
-    <ClInclude Include="..\Src\World\World.h" />
+    <ClInclude Include="..\Libraries\lodepng\lodepng.h" />
+    <ClInclude Include="..\Utilities\AProgressBar.hpp" />
+    <ClInclude Include="..\Utilities\AThrobber.hpp" />
+    <ClInclude Include="..\Utilities\ConsoleHelper.hpp" />
+    <ClInclude Include="..\Utilities\MultiPrint.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{40af0bd9-8a50-46bc-8618-e06e71d21bf5}</ProjectGuid>
-    <RootNamespace>SCP087B</RootNamespace>
+    <ProjectGuid>{ef9ae747-3d3b-4efe-985f-225e2e316af2}</ProjectGuid>
+    <RootNamespace>TextMapper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -113,115 +83,83 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
+    <IncludePath>../Libraries/freetype/include;$(SolutionDir)../Engine/Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
+    <IncludePath>../Libraries/freetype/include;$(SolutionDir)../Engine/Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
+    <IncludePath>../Libraries/freetype/include;$(SolutionDir)../Engine/Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin/$(Platform)/$(Configuration)/</OutDir>
-    <IntDir>obj/$(Platform)/$(Configuration)/</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/libspng;$(IncludePath)</IncludePath>
+    <IncludePath>../Libraries/freetype/include;$(SolutionDir)../Engine/Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SPNG_USE_MINIZ;DEBUG;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype/objs/$(Platform)/$(Configuration) Static/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SPNG_USE_MINIZ;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype/objs/$(Platform)/$(Configuration) Static/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SPNG_USE_MINIZ;DEBUG;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype/objs/$(Platform)/$(Configuration) Static/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SPNG_USE_MINIZ;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype/objs/$(Platform)/$(Configuration) Static/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

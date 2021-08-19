@@ -1,3 +1,6 @@
 [submodule "Engine"]
 	path = Engine
 	url = git@github.com:juanjp600/pge.git
+[submodule "Tools/TextMapper/Libraries/freetype"]
+	path = Tools/TextMapper/Libraries/freetype
+	url = git@github.com:Saalvage/freetype.git

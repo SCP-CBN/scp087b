@@ -47,6 +47,12 @@
     <ClCompile Include="..\Src\Collision\Collider.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Text\Font.cpp">
+      <Filter>Graphics\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp">
+      <Filter>Graphics\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -72,6 +78,9 @@
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{79a478f7-0a29-4f7a-91a2-8e9357060821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Text">
+      <UniqueIdentifier>{64e7b175-1b4a-4136-9397-471d7ef1f80c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Utilities\Directories.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Text\Font.h">
+      <Filter>Graphics\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h">
+      <Filter>Graphics\Text</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
