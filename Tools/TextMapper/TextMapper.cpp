@@ -97,6 +97,7 @@ static void textMap(const std::vector<String>& args) {
     std::cout << "Sorting by height..." << std::endl;
     std::sort(std::execution::par_unseq, glyphs.begin(), glyphs.end(), [](const Glyph& a, const Glyph& b) { return a.height < b.height; });
 
+    // TODO: Possibly optimize selected size.
     std::cout << "Determining texture size..." << std::endl;
     FT_UInt width = 1; FT_UInt height = 1;
     bool fits;
@@ -108,7 +109,7 @@ static void textMap(const std::vector<String>& args) {
             height *= 2;
         }
         FT_UInt x = 0; FT_UInt y = 0;
-        for (int i = 0; i < glyphs.size(); ++i) {
+        for (int i = 0; i < glyphs.size(); i++) {
             x += glyphs[i].width;
             if (x >= width) {
                 x = glyphs[i].width;
@@ -136,7 +137,7 @@ static void textMap(const std::vector<String>& args) {
     int yOff = 0;
     std::vector<byte> buffer(width * height);
     String str;
-    for (int i = 0; i < glyphs.size(); ++i) {
+    for (int i = 0; i < glyphs.size(); i++) {
         pb.update(i);
         if (xOff + glyphs[i].width >= width) {
             xOff = 0;
@@ -144,13 +145,13 @@ static void textMap(const std::vector<String>& args) {
         }
 
         FT_Load_Glyph(face, glyphs[i].index, FT_LOAD_RENDER);
-        for (FT_UInt y = 0; y < glyphs[i].height; ++y) {
-            for (FT_UInt x = 0; x < glyphs[i].width; ++x) {
+        for (FT_UInt y = 0; y < glyphs[i].height; y++) {
+            for (FT_UInt x = 0; x < glyphs[i].width; x++) {
                 buffer[(y + yOff) * width + x + xOff] = face->glyph->bitmap.buffer[y * glyphs[i].width + x];
             }
         }
 
-        str = "";
+        str = String();
         const auto& chars = existingIndices.equal_range(glyphs[i].index);
         for (auto it = chars.first; it != chars.second; it++) {
             str += it->second;
