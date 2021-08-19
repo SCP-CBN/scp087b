@@ -42,6 +42,7 @@ World::World() {
     { Timer _(ctor, "gfx");
         screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
         graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+        graphics->setVsync(false);
     }
 
     camera = new Camera(WIDTH, HEIGHT, 90);
@@ -104,25 +105,44 @@ void World::run() {
             togglePaused();
         }
 
+        // During one second delta will have been about this much in sum.
+        constexpr int TICKS_PER_SECOND = 60;
+        constexpr float CLOCK_TIME_SECOND = (float)Clock::period::den / Clock::period::num;
+        constexpr float CLOCK_TIME_PER_TICK = CLOCK_TIME_SECOND / TICKS_PER_SECOND;
+
+        std::chrono::time_point<Clock> now = Clock::now();
+        u64 diff = (now - prev).count();
+
+        accumulator += diff;
+        if (accumulator >= CLOCK_TIME_SECOND) {
+            text->setText(String::from(fps));
+            accumulator = 0;
+            fps = 0;
+        }
+        fps++;
+
+        float delta = diff / CLOCK_TIME_PER_TICK;
+        prev = now;
+
         if (!paused) {
-            Vector3f goalPos = camera->getPosition();;
+            Vector3f addPos;
 
             constexpr float SPEED = 10.f;
             if (forward->isDown()) {
-                goalPos += camera->getForward() * SPEED;
+                addPos += camera->getForward() * SPEED;
             }
             if (back->isDown()) {
-                goalPos -= camera->getForward() * SPEED;
+                addPos -= camera->getForward() * SPEED;
             }
             if (right->isDown()) {
-                goalPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
+                addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
             if (left->isDown()) {
-                goalPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
+                addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
 
             { Timer _(master, "coll");
-                camera->setPosition(coll.tryMove(camera->getPosition(), goalPos));
+                camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
             }
 
             if (inputManager->getMousePosition() != screenMiddle) {
@@ -142,8 +162,6 @@ void World::run() {
         { Timer _(master, "cam");
             camera->applyTransforms();
         }
-
-        text->render();
 
         { Timer _(master, "inst");
             inst->render();
