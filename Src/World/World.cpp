@@ -47,7 +47,7 @@ World::World() {
     camera = new Camera(WIDTH, HEIGHT, 90);
     resources = new Resources(*graphics, *camera);
 
-    font = new Font(*resources, Directories::GFX + "BubbleShine");
+    font = new Font(*resources, Directories::GFX + "Vegur");
     text = new TextRenderer(*resources, *font);
     text->setText("Funny pog pog funny");
     text->setPosition(Vector2f(50.f, -50.f));
