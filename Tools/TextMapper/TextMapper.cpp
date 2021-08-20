@@ -19,8 +19,6 @@ using namespace PGE;
 #define ASSERT_FREETYPE(err) { FT_Error FREETYPE_ERROR = err; PGE_ASSERT(FREETYPE_ERROR == FT_Err_Ok, String::from(FREETYPE_ERROR)); } (void)0
 
 static void textMap(const std::vector<String>& args) {
-	ConsoleHelper::setCursorVisibility(false);
-
     std::cout << "Extracting char ranges..." << std::endl;
     struct CharRange {
         char16 from;
@@ -179,7 +177,6 @@ static void textMap(const std::vector<String>& args) {
     PGE_ASSERT(ret == 0, String("lodepng Encoding error:\n") + lodepng_error_text(ret));
 
     std::cout << "All done!" << std::endl;
-    ConsoleHelper::setCursorVisibility(true);
 }
 
 int main(int argc, const char** argv) {
@@ -197,11 +194,18 @@ int main(int argc, const char** argv) {
         std::cout << "Enter " << argNames[i - 1] << ": ";
         std::cin >> args[i - 1];
     }
+#ifdef _DEBUG
     try {
+#endif
+        ConsoleHelper::setCursorVisibility(false);
         textMap(args);
+        ConsoleHelper::setCursorVisibility(true);
         return 0;
+#ifdef _DEBUG
     } catch (const Exception& e) {
         std::cout << "Mapping failed! Reason:" << std::endl << e.what() << std::endl;
+        ConsoleHelper::setCursorVisibility(true);
         return 1;
     }
+#endif
 }

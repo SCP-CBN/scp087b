@@ -19,12 +19,16 @@ class Font {
 		~Font();
 
 		PGE::Texture& getTexture() const;
-		Glyph* getGlyph(PGE::char16 ch) const;
+		Glyph& getGlyph(PGE::char16 ch) const;
+
+		float getHeight() const;
 
 	private:
 		Resources::Handle<PGE::Texture> textMap;
 
 		std::unordered_map<PGE::char16, std::shared_ptr<Glyph>> glyphs;
+
+		float height;
 };
 
 #endif // B_FONT_H_INCLUDED

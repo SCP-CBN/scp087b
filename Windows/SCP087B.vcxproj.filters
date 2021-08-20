@@ -53,6 +53,9 @@
     <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp">
       <Filter>Graphics\Text</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\World\StatWorld.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -140,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h">
       <Filter>Graphics\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\World\StatWorld.h">
+      <Filter>World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

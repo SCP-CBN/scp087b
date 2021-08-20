@@ -2,12 +2,12 @@
 
 #include <iostream>
 
-#include "../Timing/TimeMaster.h"
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
 #include "../Utilities/Directories.h"
 #include "../Graphics/Text/TextRenderer.h"
+#include "StatWorld.h"
 
 using namespace PGE;
 
@@ -27,13 +27,11 @@ static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardI
 
 static Vector2f screenMiddle;
 
-TimeMaster master;
-
 static Font* font;
 static TextRenderer* text;
 //
 
-World::World() {
+World::World(TimeMaster& tm) : tm(tm) {
     TimeMaster ctor;
     Timer* _ = new Timer(ctor, "all");
 
@@ -50,6 +48,7 @@ World::World() {
 
     font = new Font(*resources, Directories::GFX + "Vegur");
     text = new TextRenderer(*resources, *font);
+    text->setScale(10.f);
     text->setText("Funny pog pog funny");
     text->setPosition(Vector2f(50.f, -50.f));
 
@@ -95,13 +94,12 @@ World::~World() {
 }
 
 void World::run() {
-    { Timer _(master, "update");
+    { Timer _(tm, "update");
         SysEvents::update();
         graphics->update();
         inputManager->update();
 
         if (escape->isHit()) {
-            std::cout << master.print() << std::endl;;
             togglePaused();
         }
 
@@ -141,7 +139,7 @@ void World::run() {
                 addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
 
-            { Timer _(master, "coll");
+            { Timer _(tm, "coll");
                 camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
             }
 
@@ -153,24 +151,26 @@ void World::run() {
         }
     }
 
-    { Timer _(master, "render");
+    { Timer _(tm, "render");
         
-        { Timer _(master, "clear");
+        { Timer _(tm, "clear");
             graphics->clear(Colors::BLUE);
         }
 
-        { Timer _(master, "cam");
+        { Timer _(tm, "cam");
             camera->applyTransforms();
         }
 
-        { Timer _(master, "inst");
+        { Timer _(tm, "inst");
             inst->render();
             inst2->render();
         }
 
-        text->render();
+        { Timer _(tm, "text");
+            text->render();
+        }
 
-        { Timer _(master, "swap");
+        { Timer _(tm, "swap");
             graphics->swap();
         }
     }
