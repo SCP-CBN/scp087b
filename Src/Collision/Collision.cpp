@@ -161,41 +161,6 @@ Collision Collision::triangleCollide(const Line3f& line, float height, float rad
     Vector3f forward = line.pointB - line.pointA;
     Vector3f upVector(0.f, 1.f, 0.f);
 
-    if (abs(forward.normalize().dotProduct(upVector)) > 0.9999f) {
-        forward.x = 0.f; forward.z = 0.f;
-        Line3f newLine(line.pointA, line.pointA + forward);
-
-        if (forward.y > 0.f) {
-            newLine.pointA.y -= height * 0.5f - radius;
-            newLine.pointB.y += height * 0.5f - radius;
-        } else {
-            newLine.pointA.y += height * 0.5f - radius;
-            newLine.pointB.y -= height * 0.5f - radius;
-        }
-
-        Collision retVal = triangleCollide(newLine, radius, v0, v1, v2);
-
-        if (retVal.hit)         {
-            Vector3f diff = (newLine.pointB - newLine.pointA) * retVal.coveredAmount + newLine.pointA - line.pointA;
-            if (forward.y > 0.f) {
-                diff.y -= height * 0.5f - radius;
-            } else {
-                diff.y += height * 0.5f - radius;
-            }
-            retVal.line = line;
-            retVal.coveredAmount = diff.length() / line.pointB.distance(line.pointA);
-
-            if (retVal.coveredAmount > 1.f) {
-                retVal.hit = false;
-            }
-            if (retVal.coveredAmount < 0.f) {
-                retVal.coveredAmount = 0.f;
-            }
-        }
-
-        return retVal;
-    }
-
     Vector3f forwardXZ(forward.x, 0.f, forward.z);
     Vector3f planePoint = forwardXZ.normalize() * radius;
 
