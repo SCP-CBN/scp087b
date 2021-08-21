@@ -31,28 +31,11 @@ static Font* font;
 static TextRenderer* text;
 //
 
-struct {
-    float state;
-} TODO_REMOVE;
-
-
-static String hexFromFloat(float f) {
-    return String::hexFromInt(*(PGE::u32*)(void*)&f);
-}
-
-static Vector3f binRepToVec3f(PGE::u32 x, PGE::u32 y, PGE::u32 z) {
-    return Vector3f(
-        *(float*)(void*)&x,
-        *(float*)(void*)&y,
-        *(float*)(void*)&z);
-}
-
-
 World::World(TimeMaster& tm) : tm(tm) {
     TimeMaster ctor;
     Timer* _ = new Timer(ctor, "all");
 
-    constexpr int WIDTH = 1600; constexpr int HEIGHT = 900;
+    constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
 
     { Timer _(ctor, "gfx");
         screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
@@ -61,10 +44,6 @@ World::World(TimeMaster& tm) : tm(tm) {
     }
 
     camera = new Camera(WIDTH, HEIGHT, 90);
-    //camera->setPosition(Vector3f(465.f, -100.f, -80.f));
-    //camera->setRotation(Vector3f(0.f, 45.f, 0.f));
-    camera->setPosition(binRepToVec3f(0x4445032A, 0xC20261CC, 0xC12131C9));
-    camera->setRotation(binRepToVec3f(0xBFBED0BD, 0x4232FEB2, 0x0));
     resources = new Resources(*graphics, *camera);
 
     font = new Font(*resources, Directories::GFX + "Vegur");
@@ -140,46 +119,35 @@ void World::run() {
         }
         fps++;
 
-        float delta = 1.f;//diff / CLOCK_TIME_PER_TICK;
+        float delta = diff / CLOCK_TIME_PER_TICK;
         prev = now;
 
         if (!paused) {
             Vector3f addPos;
 
             constexpr float SPEED = 10.f;
-            if (forward->isDown() || true) {
+            if (forward->isDown()) {
                 addPos += camera->getForward() * SPEED;
             }
-            if (back->isDown() && false) {
+            if (back->isDown()) {
                 addPos -= camera->getForward() * SPEED;
             }
-            if (right->isDown() && false) {
+            if (right->isDown()) {
                 addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
-            if (left->isDown() && false) {
+            if (left->isDown()) {
                 addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
             }
 
             { Timer _(tm, "coll");
-                Vector3f startPos = camera->getPosition();
-                Vector3f startRot = camera->getRotation();
                 camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
-                if (camera->getPosition().z > -10.0f)
-                {
-                    std::cout << "uh oh ";
-                    std::cout << hexFromFloat(startPos.x) << " " << hexFromFloat(startPos.y) << " " << hexFromFloat(startPos.z) << "; ";
-                    std::cout << hexFromFloat(startRot.x) << " " << hexFromFloat(startRot.y) << " " << hexFromFloat(startRot.z) << "; ";
-                    int breakHere = 0;
-                }
             }
 
-            TODO_REMOVE.state += 0.4f;
-
-            //if (inputManager->getMousePosition() != screenMiddle) {
-                Vector2f diff = Vector2f(cos(TODO_REMOVE.state * 0.1f) * 0.01f, cos(TODO_REMOVE.state) * 0.5f);//(inputManager->getMousePosition() - screenMiddle) / 1000.f;
+            if (inputManager->getMousePosition() != screenMiddle) {
+                Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
                 camera->setRotation(camera->getRotation() + Vector3f(diff.y, diff.x, 0.f));
-                //inputManager->setMousePosition(screenMiddle);
-            //}
+                inputManager->setMousePosition(screenMiddle);
+            }
         }
     }
 
