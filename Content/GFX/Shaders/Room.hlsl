@@ -8,8 +8,9 @@ cbuffer cbVertex {
 }
 
 struct VS_INPUT {
-    float3 position : POSITION0;
-    float2 uv : TEXCOORD0;
+    float3 position : POSITION;
+    float3 normal : TEXCOORD0;
+    float2 uv : TEXCOORD1;
 };
 
 struct PS_INPUT {

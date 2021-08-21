@@ -29,6 +29,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		for (int j = 0; j < vertCount; j++) {
 			cVertices[oldCVertSize + j] = reader.read<Vector3f>();
 			data.setValue(j, "position", cVertices[oldCVertSize + j]);
+			data.setValue(j, "normal", reader.read<Vector3f>());
 			data.setValue(j, "uv", reader.read<Vector2f>());
 		}
 
