@@ -14,7 +14,7 @@ Collision CollisionMeshCollection::Instance::checkCollision(const Line3f& line, 
     return mesh.checkCollision(mat, line, height, radius);
 }
 
-AABBox CollisionMeshCollection::Instance::getBoundingBox() const {
+const AABBox& CollisionMeshCollection::Instance::getBoundingBox() const {
     return bbox;
 }
 
@@ -29,6 +29,11 @@ void CollisionMeshCollection::Instance::recalculateBoundingBox() {
 
 CollisionMeshCollection::Handle::Handle(int idx, Instance& inst)
 	: index(idx), instance(&inst) { }
+
+bool CollisionMeshCollection::Handle::pointInBB(const Vector3f& pos) const {
+    PGE_ASSERT(valid(), "Tried reading BB from invalid Handle");
+    return instance->getBoundingBox().contains(pos);
+}
 
 void CollisionMeshCollection::Handle::update(const Matrix4x4f& mat) const {
 	instance->updateMatrix(mat);
@@ -64,10 +69,9 @@ Collision CollisionMeshCollection::checkCollision(const Line3f& line, float heig
     lineBox.addPoint(lineBox.getMin() + Vector3f(-radius - 0.5f, -height * 0.5f - 0.5f, -radius - 0.5f));
     lineBox.addPoint(lineBox.getMax() + Vector3f(radius + 0.5f, height * 0.5f + 0.5f, radius + 0.5f));
 
-    for (const auto& it : instances) {
-        AABBox bbox = it.second.getBoundingBox();
-        if (!bbox.intersects(lineBox)) { continue; }
-        Collision coll = it.second.checkCollision(line, height, radius);
+    for (const auto& [_, cm] : instances) {
+        if (!cm.getBoundingBox().intersects(lineBox)) { continue; }
+        Collision coll = cm.checkCollision(line, height, radius);
         if (coll.hit) {
             if (!retVal.hit || retVal.coveredAmount > coll.coveredAmount) {
                 retVal = coll;

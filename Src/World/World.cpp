@@ -13,8 +13,8 @@ using namespace PGE;
 
 // Shit that needs a proper place.
 static Room* room;
-static RoomInstance* inst;
-static RoomInstance* inst2;
+static std::vector<RoomInstance*> instances;
+static int currIndex;
 
 static CollisionMeshCollection cmc;
 static Collider coll = Collider(10, 50);
@@ -29,6 +29,21 @@ static Vector2f screenMiddle;
 
 static Font* font;
 static TextRenderer* text;
+
+static void updateIndex(int newIndex) {
+    for (int i = -1; i < 2; i++) {
+        int newCheckedIndex = newIndex + i;
+        if (newCheckedIndex >= 0 && newCheckedIndex < instances.size()) {
+            instances[newIndex + i]->setCollision(true);
+        }
+
+        int checkedIndex = currIndex + i;
+        if (checkedIndex >= 0 && newCheckedIndex < instances.size() && abs(checkedIndex - newIndex) > 1) {
+            instances[checkedIndex]->setCollision(false);
+        }
+    }
+    currIndex = newIndex;
+}
 //
 
 World::World(TimeMaster& tm) : tm(tm) {
@@ -66,10 +81,19 @@ World::World(TimeMaster& tm) : tm(tm) {
 
     { Timer _(ctor, "room");
         room = new Room(*resources, Directories::ROOMS + "default.b");
-        inst = new RoomInstance(*room, cmc);
-        inst2 = new RoomInstance(*room, cmc);
-        inst2->setPosition(Vector3f(800.f, -200.f, -700.f));
-        inst2->setRotation(Vector3f(0.f, Math::degToRad(180.f), 0.f));
+        constexpr int ROOM_COUNT = 100;
+        instances.reserve(ROOM_COUNT);
+        Vector3f basePos[2];
+        Vector3f baseRot[2];
+        basePos[1] = Vector3f(800.f, 0.f, -700.f);
+        baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
+        for (int i = 0; i < ROOM_COUNT; i++) {
+            RoomInstance* newRoom = new RoomInstance(*room, cmc);
+            instances.push_back(newRoom);
+            newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, 200.f * i, 0.f));
+            newRoom->setRotation(baseRot[i % 2]);
+        }
+        updateIndex(0);
     }
 
     coll.setCollisionMeshCollection(&cmc);
@@ -82,8 +106,9 @@ World::World(TimeMaster& tm) : tm(tm) {
 }
 
 World::~World() {
-    delete inst2;
-    delete inst;
+    for (RoomInstance* inst : instances) {
+        delete inst;
+    }
     delete room;
     delete inputManager;
     delete text;
@@ -141,6 +166,16 @@ void World::run() {
 
             { Timer _(tm, "coll");
                 camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
+                if (!instances[currIndex]->pointInBB(camera->getPosition())) {
+                    if (camera->getPosition().y < instances[currIndex]->getPosition().y
+                        && instances[currIndex + 1]->pointInBB(camera->getPosition())) {
+                        updateIndex(currIndex + 1);
+                        std::cout << currIndex << std::endl;
+                    } else if (currIndex > 0 && instances[currIndex - 1]->pointInBB(camera->getPosition())) {
+                        updateIndex(currIndex - 1);
+                        std::cout << currIndex << std::endl;
+                    }
+                }
             }
 
             if (inputManager->getMousePosition() != screenMiddle) {
@@ -162,8 +197,9 @@ void World::run() {
         }
 
         { Timer _(tm, "inst");
-            inst->render();
-            inst2->render();
+            for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
+                instances[i]->render();
+            }
         }
 
         { Timer _(tm, "text");

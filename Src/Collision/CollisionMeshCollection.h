@@ -17,6 +17,7 @@ class CollisionMeshCollection {
 
             Handle() = default;
 
+            bool pointInBB(const PGE::Vector3f& pos) const;
             void update(const PGE::Matrix4x4f& mat) const;
             bool valid() const;
 
@@ -38,7 +39,7 @@ class CollisionMeshCollection {
 
             Collision checkCollision(const PGE::Line3f& line, float height, float radius) const;
 
-            PGE::AABBox getBoundingBox() const;
+            const PGE::AABBox& getBoundingBox() const;
             void updateMatrix(const PGE::Matrix4x4f& newMat);
 
             private:

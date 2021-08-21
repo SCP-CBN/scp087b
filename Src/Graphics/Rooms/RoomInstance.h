@@ -12,12 +12,18 @@ class RoomInstance {
 
 		void render() const;
 
-		void updateCollision();
+		bool pointInBB(const PGE::Vector3f& pos) const;
+
+		void setCollision(bool coll);
 
 		void setPosition(const PGE::Vector3f& pos);
 		void setRotation(const PGE::Vector3f& rot);
 
+		const PGE::Vector3f& getPosition() const;
+
 	private:
+		void updateCollision();
+
 		const Room& room;
 		Transform transform;
 
