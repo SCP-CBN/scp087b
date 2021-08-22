@@ -21,8 +21,8 @@ void RoomInstance::updateCollision() {
 	}
 }
 
-bool RoomInstance::pointInBB(const Vector3f& pos) const {
-	return cHandle.pointInBB(pos);
+const CollisionMeshCollection::Handle& RoomInstance::getCollisionHandle() const {
+	return cHandle;
 }
 
 void RoomInstance::setCollision(bool coll) {

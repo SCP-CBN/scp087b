@@ -29,6 +29,7 @@ static Vector2f screenMiddle;
 
 static Font* font;
 static TextRenderer* text;
+static TextRenderer* posText;
 
 static void updateIndex(int newIndex) {
     for (int i = -1; i < 2; i++) {
@@ -66,6 +67,11 @@ World::World(TimeMaster& tm) : tm(tm) {
     text->setScale(10.f);
     text->setText("Funny pog pog funny");
     text->setPosition(Vector2f(50.f, -50.f));
+
+    posText = new TextRenderer(*resources, *font);
+    posText->setScale(10.f);
+    posText->setText("Funny");
+    posText->setPosition(Vector2f(50.f, 50.f - 10.f * font->getHeight()));
 
     { Timer _(ctor, "input");
         inputManager = InputManager::create(*graphics);
@@ -166,16 +172,18 @@ void World::run() {
 
             { Timer _(tm, "coll");
                 camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
-                if (!instances[currIndex]->pointInBB(camera->getPosition())) {
+                if (!instances[currIndex]->getCollisionHandle().pointInBB(camera->getPosition())) {
                     if (camera->getPosition().y < instances[currIndex]->getPosition().y
-                        && instances[currIndex + 1]->pointInBB(camera->getPosition())) {
+                        && instances[currIndex + 1]->getCollisionHandle().pointInBB(camera->getPosition())) {
                         updateIndex(currIndex + 1);
-                        std::cout << currIndex << std::endl;
-                    } else if (currIndex > 0 && instances[currIndex - 1]->pointInBB(camera->getPosition())) {
+                    } else if (currIndex > 0 && instances[currIndex - 1]->getCollisionHandle().pointInBB(camera->getPosition())) {
                         updateIndex(currIndex - 1);
-                        std::cout << currIndex << std::endl;
                     }
                 }
+                posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
+                    + "Y: " + String::from(camera->getPosition().y) + '\n'
+                    + "Z: " + String::from(camera->getPosition().z) + '\n'
+                );
             }
 
             if (inputManager->getMousePosition() != screenMiddle) {
@@ -189,7 +197,7 @@ void World::run() {
     { Timer _(tm, "render");
         
         { Timer _(tm, "clear");
-            graphics->clear(Colors::BLUE);
+            graphics->clear(Colors::GRAY);
         }
 
         { Timer _(tm, "cam");
@@ -204,6 +212,7 @@ void World::run() {
 
         { Timer _(tm, "text");
             text->render();
+            posText->render();
         }
 
         { Timer _(tm, "swap");
