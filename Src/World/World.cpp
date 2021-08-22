@@ -55,7 +55,7 @@ World::World(TimeMaster& tm) : tm(tm) {
 
     { Timer _(ctor, "gfx");
         screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-        graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+        graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::OpenGL);
         graphics->setVsync(false);
     }
 

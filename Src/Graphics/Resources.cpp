@@ -10,8 +10,11 @@ using namespace PGE;
 Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
 	textShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Text"));
 	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Room"));
-
+	
+	roomShader->getFragmentShaderConstant("lightPos").setValue(Vector3f(300.f, -80.f, -25.f));
+	
 	textShader->getVertexShaderConstant("projectionMatrix").setValue(Matrix4x4f::constructOrthographicMat(100.f, 100.f, 0.1f, 1.f));
+
 	cam.addShader(*roomShader);
 }
 

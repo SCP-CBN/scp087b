@@ -7,6 +7,10 @@ cbuffer cbVertex {
     matrix projectionMatrix;
 }
 
+cbuffer cbFrag {
+    float3 lightPos;
+}
+
 struct VS_INPUT {
     float3 position : POSITION;
     float3 normal : TEXCOORD0;
@@ -15,7 +19,9 @@ struct VS_INPUT {
 
 struct PS_INPUT {
     float4 position : SV_POSITION;
-    float2 uv : TEXCOORD0;
+    float3 worldPos : TEXCOORD0;
+    float3 normal : TEXCOORD1;
+    float2 uv : TEXCOORD2;
 };
 
 struct PS_OUTPUT {
@@ -24,16 +30,17 @@ struct PS_OUTPUT {
 
 PS_INPUT VS(VS_INPUT input) {
     PS_INPUT output = (PS_INPUT)0;
-    output.position = mul(worldMatrix, float4(input.position, 1));
-    output.position = mul(viewMatrix, output.position);
+    float4 worldPos = mul(worldMatrix, float4(input.position, 1));
+    output.worldPos = worldPos.xyz;
+    output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
+    output.normal = normalize(mul(worldMatrix, float4(input.normal, 0)).xyz);
     output.uv = input.uv;
     return output;
 }
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
-    output.color = diff.Sample(smp,input.uv);
-    //output.depth = float4(input.position.w,0.0,0.0,1.0);
+    output.color = float4(diff.Sample(smp,input.uv).xyz * saturate(dot(normalize(lightPos - input.worldPos), input.normal)), 1);
     return output;
 }
