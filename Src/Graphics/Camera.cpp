@@ -9,8 +9,10 @@ Camera::Camera(float width, float height, float fov) : aspectRatio(width / heigh
 }
 
 void Camera::addShader(Shader& sh) {
+	// TODO: Determine what shader needs what.
 	projConstants.emplace_back(sh.getVertexShaderConstant("projectionMatrix"));
 	viewConstants.emplace_back(sh.getVertexShaderConstant("viewMatrix"));
+	posConstants.emplace_back(sh.getFragmentShaderConstant("viewPos"));
 }
 
 const Vector3f& Camera::getPosition() const {
@@ -20,6 +22,7 @@ const Vector3f& Camera::getPosition() const {
 void Camera::setPosition(const Vector3f& pos) {
 	position = pos;
 	invalidView = true;
+	invalidPos = true;
 }
 
 const Vector3f& Camera::getRotation() const {
@@ -64,5 +67,10 @@ void Camera::applyTransforms() const {
 		mat = Matrix4x4f::constructViewMat(position, forward, up);
 		for (Shader::Constant& c : viewConstants) { c.setValue(mat); }
 		invalidView = false;
+	}
+	
+	if (invalidPos) {
+		for (Shader::Constant& c : posConstants) { c.setValue(position); }
+		invalidPos = false;
 	}
 }

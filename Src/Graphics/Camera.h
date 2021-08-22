@@ -29,12 +29,14 @@ class Camera {
 
 		mutable bool invalidView = true;
 		mutable bool invalidProj = true;
+		mutable bool invalidPos = true;
 
 		float fieldOfView;
 		const float aspectRatio;
 
 		PGE::ReferenceVector<PGE::Shader::Constant> projConstants;
 		PGE::ReferenceVector<PGE::Shader::Constant> viewConstants;
+		PGE::ReferenceVector<PGE::Shader::Constant> posConstants;
 
 		PGE::Vector3f position;
 		PGE::Vector3f rotation;
