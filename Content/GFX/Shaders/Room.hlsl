@@ -43,9 +43,9 @@ PS_INPUT VS(VS_INPUT input) {
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
     float3 lightDir = normalize(lightPos - input.worldPos);
-    float3 diffuse = saturate(dot(lightDir, input.normal));
+    float diffuse = saturate(dot(lightDir, input.normal));
     float3 reflectDir = normalize(2 * diffuse * input.normal - lightDir);
-    float3 specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 4);
+    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 4);
     output.color = float4(diff.Sample(smp, input.uv).xyz * (diffuse + specular), 1.0);
     return output;
 }
