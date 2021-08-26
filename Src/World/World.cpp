@@ -30,6 +30,7 @@ static Vector2f screenMiddle;
 static Font* font;
 static TextRenderer* text;
 static TextRenderer* posText;
+static TextRenderer* idText;
 
 static void updateIndex(int newIndex) {
     for (int i = -1; i < 2; i++) {
@@ -44,6 +45,8 @@ static void updateIndex(int newIndex) {
         }
     }
     currIndex = newIndex;
+    idText->setText(String::from(currIndex));
+    idText->setPosition(Vector2f(-50.f + idText->getWidth(), -50.f));
 }
 //
 
@@ -65,13 +68,14 @@ World::World(TimeMaster& tm) : tm(tm) {
     font = new Font(*resources, Directories::GFX + "Vegur");
     text = new TextRenderer(*resources, *font);
     text->setScale(10.f);
-    text->setText("Funny pog pog funny");
     text->setPosition(Vector2f(50.f, -50.f));
 
     posText = new TextRenderer(*resources, *font);
     posText->setScale(10.f);
-    posText->setText("Funny");
     posText->setPosition(Vector2f(50.f, 50.f - 10.f * font->getHeight()));
+
+    idText = new TextRenderer(*resources, *font);
+    idText->setScale(10.f);
 
     { Timer _(ctor, "input");
         inputManager = InputManager::create(*graphics);
@@ -171,14 +175,11 @@ void World::run() {
             }
 
             { Timer _(tm, "coll");
-                camera->setPosition(coll.tryMove(camera->getPosition(), camera->getPosition() + addPos * delta));
-                if (!instances[currIndex]->getCollisionHandle().pointInBB(camera->getPosition())) {
-                    if (camera->getPosition().y < instances[currIndex]->getPosition().y
-                        && instances[currIndex + 1]->getCollisionHandle().pointInBB(camera->getPosition())) {
-                        updateIndex(currIndex + 1);
-                    } else if (currIndex > 0 && instances[currIndex - 1]->getCollisionHandle().pointInBB(camera->getPosition())) {
-                        updateIndex(currIndex - 1);
-                    }
+            Vector3f camPos = camera->getPosition();
+                camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
+                constexpr int ROOM_HEIGHT = 200;
+                if (int newIndex = -camera->getPosition().y / ROOM_HEIGHT; currIndex != newIndex) {
+                    updateIndex(newIndex);
                 }
                 posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
                     + "Y: " + String::from(camera->getPosition().y) + '\n'
@@ -213,6 +214,7 @@ void World::run() {
         { Timer _(tm, "text");
             text->render();
             posText->render();
+            idText->render();
         }
 
         { Timer _(tm, "swap");

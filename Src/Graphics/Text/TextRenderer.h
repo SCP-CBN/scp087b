@@ -13,6 +13,8 @@ class TextRenderer {
 		void setPosition(const PGE::Vector2f& pos);
 		void setText(const PGE::String& txt);
 
+		float getWidth() const;
+
 		void render() const;
 
 	private:
@@ -27,7 +29,7 @@ class TextRenderer {
 		PGE::Mesh::Material material;
 		PGE::Mesh* mesh;
 
-		
+		float width;
 };
 
 #endif // B_TEXTRENDERER_H_INCLUDED

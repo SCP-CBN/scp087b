@@ -60,8 +60,13 @@ void TextRenderer::setText(const String& txt) {
 		i += 4;
 		x -= scale * glyph.advance;
 	}
+	width = -x;
 
 	mesh->setGeometry(std::move(data), primitives);
+}
+
+float TextRenderer::getWidth() const {
+	return width;
 }
 
 void TextRenderer::render() const {
