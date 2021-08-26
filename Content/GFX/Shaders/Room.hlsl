@@ -43,11 +43,13 @@ PS_INPUT VS(VS_INPUT input) {
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
-    float3 lightDir = normalize(lightPos - input.worldPos);
+    float3 dist = lightPos - input.worldPos;
+    float acDist = 1.0 - saturate((dist.x * dist.x + dist.y * dist.y + dist.z * dist.y) / 100000.0);
+    float3 lightDir = normalize(dist);
     float diffuse = saturate(dot(lightDir, input.normal));
-    float3 reflectDir = normalize(2 * diffuse * input.normal - lightDir);
-    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
+    float3 reflectDir = normalize(2.0 * diffuse * input.normal - lightDir);
     float roughness = rough.Sample(smp, input.uv).r;
-    output.color = float4((diff.Sample(smp, input.uv).rgb * diffuse * roughness) + (1 - roughness) * saturate(4 * diffuse) * specular, 1.0);
+    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
+    output.color = float4(((diff.Sample(smp, input.uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist, 1.0);
     return output;
 }
