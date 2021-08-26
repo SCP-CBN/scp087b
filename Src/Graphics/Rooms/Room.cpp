@@ -28,6 +28,9 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		textures.push_back(res.getTexture(textureName + "_r.png"));
 		currTexs.push_back(*textures.back());
 
+		textures.push_back(res.getTexture(textureName + "_n.png"));
+		currTexs.push_back(*textures.back());
+
 		meshes.back()->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
 
 		i32 vertCount = reader.read<i32>();
@@ -38,9 +41,11 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 			cVertices[oldCVertSize + j] = reader.read<Vector3f>();
 			data.setValue(j, "position", cVertices[oldCVertSize + j]);
 			data.setValue(j, "normal", reader.read<Vector3f>());
+			data.setValue(j, "tangent", reader.read<Vector3f>());
+			data.setValue(j, "bitangent", reader.read<Vector3f>());
 			data.setValue(j, "uv", reader.read<Vector2f>());
 		}
-
+		
 		i32 primCount = reader.read<i32>();
 		std::vector<u32> primitives(primCount);
 		int oldCIndicesSize = (int)cIndices.size();
