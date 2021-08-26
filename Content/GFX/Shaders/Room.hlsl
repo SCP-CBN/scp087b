@@ -1,4 +1,5 @@
 Texture2D diff;
+Texture2D rough;
 SamplerState smp;
 
 cbuffer cbVertex {
@@ -45,7 +46,8 @@ PS_OUTPUT PS(PS_INPUT input) {
     float3 lightDir = normalize(lightPos - input.worldPos);
     float diffuse = saturate(dot(lightDir, input.normal));
     float3 reflectDir = normalize(2 * diffuse * input.normal - lightDir);
-    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 4);
-    output.color = float4(diff.Sample(smp, input.uv).xyz * (diffuse + specular), 1.0);
+    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
+    float roughness = rough.Sample(smp, input.uv).r;
+    output.color = float4((diff.Sample(smp, input.uv).rgb * diffuse * roughness) + (1 - roughness) * saturate(4 * diffuse) * specular, 1.0);
     return output;
 }

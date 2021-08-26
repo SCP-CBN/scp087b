@@ -14,13 +14,21 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 	std::vector<Vector3f> cVertices;
 	std::vector<u32> cIndices;
 	byte texCount = reader.read<byte>();
-	meshes.resize(texCount);
-	textures.resize(texCount);
+	meshes.reserve(texCount);
+	textures.reserve(texCount);
 	for (int i = 0; i < texCount; i++) {
-		meshes[i] = Mesh::create(res.getGraphics());
+		meshes.push_back(Mesh::create(res.getGraphics()));
 
-		textures[i] = res.getTexture(Directories::TEXTURES + reader.read<String>() + ".png");
-		meshes[i]->setMaterial(Mesh::Material(roomShader, *textures[i], Mesh::Material::Opaque::YES));
+		FilePath textureName = Directories::TEXTURES + reader.read<String>();
+		ReferenceVector<Texture> currTexs;
+
+		textures.push_back(res.getTexture(textureName + ".png"));
+		currTexs.push_back(*textures.back());
+		
+		textures.push_back(res.getTexture(textureName + "_r.png"));
+		currTexs.push_back(*textures.back());
+
+		meshes.back()->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
 
 		i32 vertCount = reader.read<i32>();
 		StructuredData data(roomShader.getVertexLayout(), vertCount);
@@ -41,7 +49,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 			cIndices[oldCIndicesSize + j] = (primitives[j] = reader.read<i32>()) + oldCVertSize;
 		}
 
-		meshes[i]->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
+		meshes.back()->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
 	}
 
 	collisionMesh = new CollisionMesh(std::move(cVertices), std::move(cIndices));

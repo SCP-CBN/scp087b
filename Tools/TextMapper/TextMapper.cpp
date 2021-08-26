@@ -180,6 +180,27 @@ static void textMap(const std::vector<String>& args) {
 }
 
 int main(int argc, const char** argv) {
+#if 0
+    std::string file;
+    if (argc == 2) {
+        file = argv[1];
+    } else {
+        std::cin >> file;
+    }
+    // TODO: Remove lol.
+    std::vector<byte> data;
+    unsigned width; unsigned height;
+
+    unsigned ret = lodepng::decode(data, width, height, file);
+    PGE_ASSERT(ret == 0, lodepng_error_text(ret));
+
+    for (int i = 0; i < width * height; i++) {
+        data[i] = data[i * 4];
+    }
+
+    ret = lodepng::encode(file + ".png", data, width, height, LodePNGColorType::LCT_GREY);
+    PGE_ASSERT(ret == 0, lodepng_error_text(ret));
+#else
     const char* argNames[] = { "font", "chars", "size" };
     std::vector<String> args(sizeof(argNames) / sizeof(*argNames));
     if (argc < 1 || argc > args.size()) {
@@ -207,5 +228,6 @@ int main(int argc, const char** argv) {
         ConsoleHelper::setCursorVisibility(true);
         return 1;
     }
+#endif
 #endif
 }
