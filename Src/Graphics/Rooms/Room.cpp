@@ -25,12 +25,15 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		textures.push_back(res.getTexture(textureName + ".png"));
 		currTexs.push_back(*textures.back());
 		
-		textures.push_back(res.getTexture(textureName + "_r.png"));
+		textures.push_back(res.getTexture(textureName + "_r.png", Texture::Format::R8));
 		currTexs.push_back(*textures.back());
-
+		
 		textures.push_back(res.getTexture(textureName + "_n.png"));
 		currTexs.push_back(*textures.back());
-
+		
+		textures.push_back(res.getTexture(textureName + "_d.png", Texture::Format::R8));
+		currTexs.push_back(*textures.back());
+		
 		meshes.back()->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
 
 		i32 vertCount = reader.read<i32>();

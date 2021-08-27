@@ -1,6 +1,7 @@
 Texture2D diff;
 Texture2D rough;
 Texture2D norm;
+Texture2D disp;
 SamplerState smp;
 
 cbuffer cbVertex {

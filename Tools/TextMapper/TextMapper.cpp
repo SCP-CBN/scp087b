@@ -180,7 +180,7 @@ static void textMap(const std::vector<String>& args) {
 }
 
 int main(int argc, const char** argv) {
-#if 0
+#if 1
     std::string file;
     if (argc == 2) {
         file = argv[1];
@@ -198,7 +198,7 @@ int main(int argc, const char** argv) {
         data[i] = data[i * 4];
     }
 
-    ret = lodepng::encode(file + ".png", data, width, height, LodePNGColorType::LCT_GREY);
+    ret = lodepng::encode(file, data, width, height, LodePNGColorType::LCT_GREY);
     PGE_ASSERT(ret == 0, lodepng_error_text(ret));
 #else
     const char* argNames[] = { "font", "chars", "size" };
