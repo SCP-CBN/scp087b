@@ -24,6 +24,9 @@ static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardIn
 static std::unique_ptr<Input> left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
 static std::unique_ptr<Input> back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
+static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
+static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
+static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 
 static Vector2f screenMiddle;
 
@@ -31,6 +34,10 @@ static Font* font;
 static TextRenderer* text;
 static TextRenderer* posText;
 static TextRenderer* idText;
+
+bool showFps = false;
+bool showPos = false;
+bool showId = false;
 
 static void updateIndex(int newIndex) {
     for (int i = -1; i < 2; i++) {
@@ -87,6 +94,9 @@ World::World(TimeMaster& tm) : tm(tm) {
         inputManager->trackInput(left.get());
         inputManager->trackInput(back.get());
         inputManager->trackInput(escape.get());
+        inputManager->trackInput(one.get());
+        inputManager->trackInput(two.get());
+        inputManager->trackInput(three.get());
     }
 
     { Timer _(ctor, "room");
@@ -134,9 +144,11 @@ void World::run() {
         graphics->update();
         inputManager->update();
 
-        if (escape->isHit()) {
-            togglePaused();
-        }
+        if (escape->isHit()) { togglePaused(); }
+
+        if (one->isHit()) { showFps = !showFps; }
+        if (two->isHit()) { showPos = !showPos; }
+        if (three->isHit()) { showId = !showId; }
 
         // During one second delta will have been about this much in sum.
         constexpr int TICKS_PER_SECOND = 60;
@@ -212,9 +224,9 @@ void World::run() {
         }
 
         { Timer _(tm, "text");
-            text->render();
-            posText->render();
-            idText->render();
+            if (showFps) { text->render(); }
+            if (showPos) { posText->render(); }
+            if (showId) { idText->render(); }
         }
 
         { Timer _(tm, "swap");
