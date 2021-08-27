@@ -54,7 +54,7 @@ PS_OUTPUT PS(PS_INPUT input) {
     float3 normal = normSmp.r * input.tangent + normSmp.g * input.bitangent + normSmp.b * input.normal;
 
     float3 dist = lightPos - input.worldPos;
-    float acDist = 1.0 - saturate((dist.x * dist.x + dist.y * dist.y + dist.z * dist.y) / 100000.0);
+    float acDist = 1.0 - saturate((dist.x * dist.x + dist.y * dist.y + dist.z * dist.z) / 100000.0);
 
     float3 lightDir = normalize(dist);
     float diffuse = saturate(dot(lightDir, normal));
@@ -63,7 +63,7 @@ PS_OUTPUT PS(PS_INPUT input) {
     float roughness = rough.Sample(smp, input.uv).r;
     float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
     
-    if (reflectDir.r > 100000) {
+    if (reflectDir.r < 100000) {
         output.color = float4(((diff.Sample(smp, input.uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist, 1.0);
     } else {
         output.color = float4((normal + 1) / 2, 1.0);
