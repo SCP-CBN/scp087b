@@ -42,7 +42,7 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
-    output.tangent = normalize(mul(worldMatrix, float4(input.tangent, 1.0)).xyz);
+    output.tangent = normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
     output.bitangent = normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
     output.uv = input.uv;
     return output;
