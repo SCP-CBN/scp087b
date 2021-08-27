@@ -42,7 +42,7 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
-    output.tangent = normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
+    output.tangent = normalize(mul(worldMatrix, float4(input.tangent, 1.0)).xyz);
     output.bitangent = normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
     output.uv = input.uv;
     return output;
@@ -51,7 +51,7 @@ PS_INPUT VS(VS_INPUT input) {
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
     float3 normSmp = norm.Sample(smp, input.uv).rgb;
-    float3 normal = normSmp.r * input.tangent + normSmp.g * input.bitangent + normSmp.b * input.normal;
+    float3 normal = (normSmp.r - 0.5) * 2.0 * input.tangent + (normSmp.g - 0.5) * 2.0 * input.bitangent + normSmp.b * input.normal;
 
     float3 dist = lightPos - input.worldPos;
     float acDist = 1.0 - saturate((dist.x * dist.x + dist.y * dist.y + dist.z * dist.z) / 100000.0);
@@ -63,11 +63,6 @@ PS_OUTPUT PS(PS_INPUT input) {
     float roughness = rough.Sample(smp, input.uv).r;
     float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
     
-    if (reflectDir.r < 100000) {
-        output.color = float4(((diff.Sample(smp, input.uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist, 1.0);
-    } else {
-        output.color = float4((normal + 1) / 2, 1.0);
-    }
-    
+    output.color = float4(((diff.Sample(smp, input.uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist, 1.0);
     return output;
 }
