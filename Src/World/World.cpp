@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include <PGE/Math/Random.h>
+#include <PGE/Math/Interpolator.h>
+
 #include "../Graphics/Rooms/RoomInstance.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
@@ -27,6 +30,7 @@ static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardI
 static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
 static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
+static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 
 static Vector2f screenMiddle;
 
@@ -97,6 +101,7 @@ World::World(TimeMaster& tm) : tm(tm) {
         inputManager->trackInput(one.get());
         inputManager->trackInput(two.get());
         inputManager->trackInput(three.get());
+        inputManager->trackInput(flash.get());
     }
 
     { Timer _(ctor, "room");
@@ -119,6 +124,8 @@ World::World(TimeMaster& tm) : tm(tm) {
     coll.setCollisionMeshCollection(&cmc);
     //
 
+    prev = Clock::now();
+
     togglePaused();
 
     delete _;
@@ -138,6 +145,12 @@ World::~World() {
     delete graphics;
 }
 
+//
+bool lightOn = false;
+static Vector3f prevColor;
+static Vector3f color;
+//
+
 void World::run() {
     { Timer _(tm, "update");
         SysEvents::update();
@@ -150,6 +163,8 @@ void World::run() {
         if (two->isHit()) { showPos = !showPos; }
         if (three->isHit()) { showId = !showId; }
 
+        if (flash->isHit()) { lightOn = !lightOn; }
+
         // During one second delta will have been about this much in sum.
         constexpr int TICKS_PER_SECOND = 60;
         constexpr float CLOCK_TIME_SECOND = (float)Clock::period::den / Clock::period::num;
@@ -157,6 +172,15 @@ void World::run() {
 
         std::chrono::time_point<Clock> now = Clock::now();
         u64 diff = (now - prev).count();
+
+        tickAccu += diff;
+        while (tickAccu >= CLOCK_TIME_PER_TICK) {
+            tickAccu -= CLOCK_TIME_PER_TICK;
+            tick();
+        }
+        
+        float tickProgress = tickAccu / CLOCK_TIME_PER_TICK;
+        resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, tickProgress));
 
         accumulator += diff;
         if (accumulator >= CLOCK_TIME_SECOND) {
@@ -242,6 +266,26 @@ void World::run() {
             graphics->swap();
         }
     }
+}
+
+//
+constexpr int FUNNY_SIZE = 32;
+static float funny[FUNNY_SIZE];
+static int funnyIndex = 0;
+static float funnySum = 0.f;
+static Random randd;
+constexpr Vector3f FIRE(0xF5 / 255.f, 0x58 / 255.f, 0x22 / 255.f);
+//
+
+void World::tick() {
+    prevColor = color;
+
+    funnySum -= funny[funnyIndex];
+    funny[funnyIndex] = lightOn ? randd.nextFloat() : 0.f;
+    funnySum += funny[funnyIndex];
+    funnyIndex = (funnyIndex + 1) % FUNNY_SIZE;
+
+    color = FIRE * funnySum / FUNNY_SIZE;
 }
 
 bool World::shouldEnd() const {

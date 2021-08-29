@@ -19,6 +19,9 @@ class World {
         void togglePaused();
 
     private:
+        void tick();
+        PGE::u64 tickAccu = 0;
+
         TimeMaster& tm;
 
         PGE::Graphics* graphics;
