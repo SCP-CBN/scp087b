@@ -169,6 +169,10 @@ void World::run() {
         float delta = diff / CLOCK_TIME_PER_TICK;
         prev = now;
 
+        if (!graphics->isWindowFocused() && !paused) {
+            togglePaused();
+        }
+
         if (!paused) {
             Vector3f addPos;
 
