@@ -53,6 +53,13 @@ PS_INPUT VS(VS_INPUT input) {
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
+
+    float3 viewDir = normalize(viewPos - input.worldPos);
+
+    float3x3 worldToTangent = float3x3(input.tangent, input.bitangent, input.normal);
+    float3 transDir = mul(worldToTangent, viewDir);
+    float2 uv = input.uv + transDir.xy / transDir.z * disp.Sample(smp, input.uv).r * 0.1;
+
     float3 normSmp = norm.Sample(smp, input.uv).rgb;
     float3 normal = (normSmp.r - 0.5) * 2.0 * input.tangent + (normSmp.g - 0.5) * 2.0 * input.bitangent + normSmp.b * input.normal;
 
@@ -64,8 +71,12 @@ PS_OUTPUT PS(PS_INPUT input) {
     
     float3 reflectDir = normalize(2.0 * diffuse * normal - lightDir);
     float roughness = rough.Sample(smp, input.uv).r;
-    float specular = pow(saturate(dot(normalize(viewPos - input.worldPos), reflectDir)), 128);
+    float specular = pow(saturate(dot(viewDir, reflectDir)), 64);
     
+    if (roughness != 1.987) {
         output.color = float4(((diff.Sample(smp, input.uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist * intensity, 1.0);
+    } else {
+        output.color = diff.Sample(smp, uv);
+    }
     return output;
 }
