@@ -53,7 +53,7 @@ PS_INPUT VS(VS_INPUT input) {
 
 static const float LAYER_COUNT_MIN = 10.0;
 static const float LAYER_COUNT_MAX = 25.0;
-static const float HEIGHT_SCALE = 0.03;
+static const float HEIGHT_SCALE = 0.06;
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
@@ -68,23 +68,23 @@ PS_OUTPUT PS(PS_INPUT input) {
     float deltaLayerDepth = 1.0 / layerCount;
 
     float2 uv = input.uv;
-    float layerDepth = 0.0;
+    float layerDepth = 1.0;
     float texDepth = disp.Sample(smp, uv).r;
+    float prevTexDepth = texDepth;
+    float2 prevUV = uv;
     [loop]
-    while (layerDepth < texDepth) {
-        uv -= deltaUV;
+    while (layerDepth > texDepth) {
+        prevUV = uv;
+        uv += deltaUV;
         // TODO: Check if we should do this.
         // If so, remove the mipmapping from the loaded texture.
         // https://stackoverflow.com/questions/56581141/direct3d11-gradient-instruction-used-in-a-loop-with-varying-iteration-forcing
+        prevTexDepth = texDepth;
         texDepth = disp.SampleLevel(smp, uv, 0).r;
-        layerDepth += deltaLayerDepth;
+        layerDepth -= deltaLayerDepth;
     }
 
-    float2 prevUV = uv + deltaUV;
-    float afterDepth = layerDepth - texDepth;
-    float beforeDepth = layerDepth - deltaLayerDepth - disp.Sample(smp, prevUV).r;
-
-    float weight = afterDepth / (afterDepth - beforeDepth);
+    float weight = (layerDepth - texDepth) / (prevTexDepth - texDepth - deltaLayerDepth);
     uv = lerp(uv, prevUV, weight);
 
     float3 normSmp = norm.Sample(smp, uv).rgb;
