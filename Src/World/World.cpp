@@ -74,6 +74,7 @@ World::World(TimeMaster& tm) : tm(tm) {
     }
 
     camera = new Camera(WIDTH, HEIGHT, 90);
+    camera->setPosition(Vector3f(345.f, -45.f, -90.f));
     resources = new Resources(*graphics, *camera);
 
     font = new Font(*resources, Directories::GFX + "Vegur");
