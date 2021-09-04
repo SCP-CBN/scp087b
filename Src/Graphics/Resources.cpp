@@ -35,6 +35,9 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, Texture::
 
 		spng_format spngFmt;
 		switch (fmt) {
+			case Texture::Format::RGBA64: {
+				spngFmt = SPNG_FMT_RGBA16;
+			} break;
 			case Texture::Format::RGBA32: {
 				spngFmt = SPNG_FMT_RGBA8;
 			} break;
