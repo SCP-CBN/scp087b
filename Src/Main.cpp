@@ -8,27 +8,39 @@
 
 using namespace PGE;
 
+class ScopedThread {
+    public:
+        ScopedThread(std::thread&& t) {
+            thread = std::move(t);
+        }
+
+        ~ScopedThread() {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
+
+    private:
+        std::thread thread;
+};
+
 int PGE::Init::main(const std::vector<String>& args) {
     TimeMaster master;
 
-    std::unique_ptr<StatWorld> statWorld = std::make_unique<StatWorld>(master);
-
+    StatWorld statWorld(master);
     World theWorld(master);
-    
-    std::thread statThread([&]() {
-        while (!statWorld->shouldEnd() && !theWorld.shouldEnd()) {
+
+    ScopedThread _ = std::thread([&]() {
+        while (!statWorld.shouldEnd() && !theWorld.shouldEnd()) {
             using namespace std::chrono_literals;
-            statWorld->run();
+            statWorld.run();
             std::this_thread::sleep_for(200ms);
         }
-        statWorld.release();
     });
     
     while (!theWorld.shouldEnd()) {
         theWorld.run();
     }
-    
-    statThread.join();
 
     return 0;
 }
