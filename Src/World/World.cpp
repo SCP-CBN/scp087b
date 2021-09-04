@@ -19,6 +19,9 @@ static Room* room;
 static std::vector<RoomInstance*> instances;
 static int currIndex;
 
+static Texture* renderTarget;
+static Mesh* renderMesh;
+
 static CollisionMeshCollection cmc;
 static Collider coll = Collider(10, 50);
 
@@ -77,6 +80,13 @@ World::World(TimeMaster& tm) : tm(tm) {
     camera->setPosition(Vector3f(345.f, -45.f, -90.f));
     resources = new Resources(*graphics, *camera);
 
+    renderTarget = Texture::createRenderTarget(*graphics, WIDTH, HEIGHT, Texture::Format::RGBA32);
+    renderMesh = Mesh::create(*graphics);
+    renderMesh->setMaterial(Mesh::Material(resources->getDreamfilterShader(), *renderTarget, Mesh::Material::Opaque::NO));
+    StructuredData data(resources->getDreamfilterShader().getVertexLayout(), 4);
+    for (u32 i = 0; i < 4; i++) { data.setValue(i, "id", i); }
+    renderMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 2, 1, 0, 1, 2, 3 });
+
     font = new Font(*resources, Directories::GFX + "Vegur");
     text = new TextRenderer(*resources, *font);
     text->setScale(10.f);
@@ -131,6 +141,8 @@ World::World(TimeMaster& tm) : tm(tm) {
 
     delete _;
     std::cout << ctor.print() << std::endl;
+    
+    graphics->clear(Colors::GRAY);
 }
 
 World::~World() {
@@ -141,6 +153,8 @@ World::~World() {
     delete inputManager;
     delete text;
     delete font;
+    delete renderMesh;
+    delete renderTarget;
     delete resources;
     delete camera;
     delete graphics;
@@ -242,9 +256,12 @@ void World::run() {
     }
 
     { Timer _(tm, "render");
-        
+        graphics->setRenderTarget(*renderTarget);
+        graphics->clear(Colors::GREEN);
+        graphics->setDepthTest(true);
+
         { Timer _(tm, "clear");
-            graphics->clear(Colors::GRAY);
+            //graphics->clear(Colors::GRAY);
         }
 
         { Timer _(tm, "cam");
@@ -266,6 +283,11 @@ void World::run() {
         { Timer _(tm, "swap");
             graphics->swap();
         }
+        
+        graphics->resetRenderTarget();
+        graphics->setDepthTest(false);
+        renderMesh->render();
+        graphics->swap();
     }
 }
 
