@@ -218,6 +218,7 @@ void World::run() {
             { Timer _(tm, "coll");
             Vector3f camPos = camera->getPosition();
                 camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
+                resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
                 constexpr int ROOM_HEIGHT = 200;
                 if (int newIndex = -camera->getPosition().y / ROOM_HEIGHT; currIndex != newIndex) {
                     updateIndex(newIndex);
