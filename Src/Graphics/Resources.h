@@ -30,7 +30,6 @@ class Resources {
 
 		PGE::Shader& getRoomShader() const;
 		PGE::Shader& getTextShader() const;
-		PGE::Shader& getDreamfilterShader() const;
 
 		PGE::Graphics& getGraphics() const;
 
@@ -39,7 +38,6 @@ class Resources {
 
 		std::unique_ptr<PGE::Shader> roomShader;
 		std::unique_ptr<PGE::Shader> textShader;
-		std::unique_ptr<PGE::Shader> dreamfilterShader;
 
 		class Camera& camera;
 

@@ -10,7 +10,6 @@ using namespace PGE;
 Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
 	textShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Text"));
 	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Room"));
-	dreamfilterShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Dreamfilter"));
 	
 	roomShader->getFragmentShaderConstant("lightPos").setValue(Vector3f(300.f, -80.f, -25.f));
 	roomShader->getFragmentShaderConstant("effectiveRangeSquared").setValue(300.f * 300.f);
@@ -66,8 +65,14 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, Texture::
 	return Handle<Texture>(tex, path.str(), &textureCache);
 }
 
-Shader& Resources::getRoomShader() const { return *roomShader; }
-Shader& Resources::getTextShader() const { return *textShader; }
-Shader& Resources::getDreamfilterShader() const { return *dreamfilterShader; }
+Shader& Resources::getRoomShader() const {
+	return *roomShader;
+}
 
-Graphics& Resources::getGraphics() const { return graphics; }
+Shader& Resources::getTextShader() const {
+	return *textShader;
+}
+
+Graphics& Resources::getGraphics() const {
+	return graphics;
+}
