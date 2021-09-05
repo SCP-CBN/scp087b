@@ -77,8 +77,9 @@ PS_OUTPUT PS(PS_INPUT input) {
     float texDepth = disp.Sample(smp, uv).r;
     float prevTexDepth = texDepth;
     float2 prevUV = uv;
-    [loop]
-    while (layerDepth > texDepth) {
+    [loop] // TODO
+    for (int i = 0; i < 50; i++) {
+        if (layerDepth <= texDepth) { break; }
         prevUV = uv;
         uv += deltaUV;
         // TODO: Check if we should do this.
@@ -120,10 +121,6 @@ PS_OUTPUT PS(PS_INPUT input) {
         } break;
         case 4: {
             output.color = rescaleVector(transDir);
-        } break;
-        case 5: {
-            // Should be ENTIRELY black!
-            output.color = float4(0.0, saturate(texDepth - layerDepth), 0.0, 1.0);
         } break;
     }
     
