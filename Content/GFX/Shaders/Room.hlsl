@@ -53,7 +53,7 @@ PS_INPUT VS(VS_INPUT input) {
 
 static const float LAYER_COUNT_MIN = 10.0;
 static const float LAYER_COUNT_MAX = 25.0;
-static const float HEIGHT_SCALE = 0.06;
+static const float HEIGHT_SCALE = 0.03;
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
@@ -98,7 +98,7 @@ PS_OUTPUT PS(PS_INPUT input) {
     
     float3 reflectDir = normalize(2.0 * diffuse * normal - lightDir);
     float roughness = rough.Sample(smp, uv).r;
-    float specular = pow(saturate(dot(viewDir, reflectDir)), 64);
+    float specular = pow(saturate(dot(viewDir, reflectDir)), 32);
 
     output.color = float4(((diff.Sample(smp, uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist * intensity, 1.0);
     return output;
