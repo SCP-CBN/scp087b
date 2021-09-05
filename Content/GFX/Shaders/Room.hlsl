@@ -15,6 +15,7 @@ cbuffer cbFrag {
     float3 viewPos;
     float3 intensity;
     float effectiveRangeSquared;
+    uint debug = 0;
 }
 
 struct VS_INPUT {
@@ -54,6 +55,10 @@ PS_INPUT VS(VS_INPUT input) {
 static const float LAYER_COUNT_MIN = 10.0;
 static const float LAYER_COUNT_MAX = 25.0;
 static const float HEIGHT_SCALE = 0.03;
+
+float4 rescaleVector(float3 xyz) {
+    return float4((xyz + 1.0) / 2.0, 1.0);
+}
 
 PS_OUTPUT PS(PS_INPUT input) {
     PS_OUTPUT output = (PS_OUTPUT)0;
@@ -100,6 +105,27 @@ PS_OUTPUT PS(PS_INPUT input) {
     float roughness = rough.Sample(smp, uv).r;
     float specular = pow(saturate(dot(viewDir, reflectDir)), 32);
 
-    output.color = float4(((diff.Sample(smp, uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist * intensity, 1.0);
+    switch(debug) {
+        default: {
+            output.color = float4(((diff.Sample(smp, uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist * intensity, 1.0);
+        } break;
+        case 1: {
+            output.color = rescaleVector(input.normal);
+        } break;
+        case 2: {
+            output.color = rescaleVector(input.tangent);
+        } break;
+        case 3: {
+            output.color = rescaleVector(input.bitangent);
+        } break;
+        case 4: {
+            output.color = rescaleVector(transDir);
+        } break;
+        case 5: {
+            // Should be ENTIRELY black!
+            output.color = float4(0.0, saturate(texDepth - layerDepth), 0.0, 1.0);
+        } break;
+    }
+    
     return output;
 }

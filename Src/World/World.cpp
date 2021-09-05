@@ -32,6 +32,8 @@ static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInpu
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 
+static std::vector<std::unique_ptr<Input>> debug(12);
+
 static Vector2f screenMiddle;
 
 static Font* font;
@@ -103,6 +105,11 @@ World::World(TimeMaster& tm) : tm(tm) {
         inputManager->trackInput(two.get());
         inputManager->trackInput(three.get());
         inputManager->trackInput(flash.get());
+
+        for (int i = 0; i < 12; i++) {
+            debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
+            inputManager->trackInput(debug[i].get());
+        }
     }
 
     { Timer _(ctor, "room");
@@ -165,6 +172,12 @@ void World::run() {
         if (three->isHit()) { showId = !showId; }
 
         if (flash->isHit()) { lightOn = !lightOn; }
+
+        for (unsigned i = 0; i < 12; i++) {
+            if (debug[i]->isHit()) {
+                resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
+            }
+        }
 
         // During one second delta will have been about this much in sum.
         constexpr int TICKS_PER_SECOND = 60;
