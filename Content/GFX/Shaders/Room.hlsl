@@ -68,7 +68,7 @@ PS_OUTPUT PS(PS_INPUT input) {
     float3x3 worldToTangent = float3x3(-input.tangent, -input.bitangent, -input.normal);
     float3 transDir = mul(worldToTangent, viewDir);
 
-    float layerCount = lerp(LAYER_COUNT_MAX, LAYER_COUNT_MIN, max(transDir.z, 0.0));
+    float layerCount = lerp(LAYER_COUNT_MAX, LAYER_COUNT_MIN, saturate(transDir.z));
     float2 deltaUV = transDir.xy * HEIGHT_SCALE / layerCount;
     float deltaLayerDepth = 1.0 / layerCount;
 
@@ -77,9 +77,8 @@ PS_OUTPUT PS(PS_INPUT input) {
     float texDepth = disp.Sample(smp, uv).r;
     float prevTexDepth = texDepth;
     float2 prevUV = uv;
-    [loop] // TODO
-    for (int i = 0; i < 50; i++) {
-        if (layerDepth <= texDepth) { break; }
+    [loop]
+    while (layerDepth > texDepth) {
         prevUV = uv;
         uv += deltaUV;
         // TODO: Check if we should do this.
