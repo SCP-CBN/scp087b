@@ -10,12 +10,13 @@ using namespace PGE;
 Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
 	textShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Text"));
 	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Room"));
+	glimpseShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Glimpse"));
 
 	roomShader->getFragmentShaderConstant("effectiveRangeSquared").setValue(300.f * 300.f);
-
 	textShader->getVertexShaderConstant("projectionMatrix").setValue(Matrix4x4f::constructOrthographicMat(100.f, 100.f, 0.1f, 1.f));
 
 	cam.addShader(*roomShader);
+	cam.addShader(*glimpseShader);
 }
 
 Resources::Handle<Texture> Resources::getTexture(const FilePath& path, Texture::Format fmt, bool mipmaps) {
@@ -70,6 +71,10 @@ Shader& Resources::getRoomShader() const {
 
 Shader& Resources::getTextShader() const {
 	return *textShader;
+}
+
+Shader& Resources::getGlimpseShader() const {
+	return *glimpseShader;
 }
 
 Graphics& Resources::getGraphics() const {

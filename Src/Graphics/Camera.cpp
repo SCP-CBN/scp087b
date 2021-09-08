@@ -12,7 +12,9 @@ void Camera::addShader(Shader& sh) {
 	// TODO: Determine what shader needs what.
 	projConstants.emplace_back(sh.getVertexShaderConstant("projectionMatrix"));
 	viewConstants.emplace_back(sh.getVertexShaderConstant("viewMatrix"));
-	posConstants.emplace_back(sh.getFragmentShaderConstant("viewPos"));
+	try {
+		posConstants.emplace_back(sh.getFragmentShaderConstant("viewPos"));
+	} catch (...) { }
 }
 
 const Vector3f& Camera::getPosition() const {
