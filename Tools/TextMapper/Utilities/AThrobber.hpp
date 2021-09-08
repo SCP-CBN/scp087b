@@ -2,7 +2,11 @@
 
 #include <thread>
 
+#include <PGE/String/String.h>
+
 #include "MultiPrint.hpp"
+
+using namespace PGE;
 
 template <int SUGGESTED_MS = -1>
 class Throbber {
@@ -54,17 +58,10 @@ class Throbber {
 
 template <int size, const String[size] strings, int ms = -1, bool clean = false>
 class StringThrobber : public Throbber<ms> {
-	public:
-		void start() override {
-			// Because increment happens before first print.
-			i = size - 1;
-			first = true;
-			Throbber<ms>::start();
-		}
-
 	protected:
-		int i;
-		bool first;
+		// Because increment happens before first print.
+		int i = size - 1;
+		bool first = true;
 
 		void throb() override {
 			if (!first) {
@@ -139,6 +136,65 @@ class BalloonThrobber : public StringThrobber<ARRAY_WITH_SIZE(BALLOON_THROBBER),
 			StringThrobber::throb();
 			// POP!
 			if (i == 4) { out << '\a'; }
+		}
+};
+
+const String repeat(const String& str, int length, int offset = 0) {
+	int off = offset % str.length();
+	String ret = str.substr(off, std::min(str.length() - off, off + length));
+	length -= ret.length();
+
+	if (length <= 0) { return ret; }
+	ret += str.multiply(length / str.length());
+	length %= str.length();
+	ret += str.substr(0, length);
+	return ret;
+}
+
+class FishThrobber : public Throbber<> {
+	public:
+		FishThrobber(std::ostream& out, int ms, const String& background, const String& fish, const String& fishReverse, int size)
+			: Throbber(out, ms),
+			background(background), fish(fish), fishReverse(fishReverse), size(size) { }
+
+	private:
+		String background;
+		String fish;
+		String fishReverse;
+		int size;
+
+		bool reverse = false;
+		int pos = 0;
+		bool first = true;
+
+		void throb() override {
+			if (first) {
+				first = false;
+			} else {
+				out << Multi{ '\b', size };
+			}
+			out << repeat(background, pos);
+			out << reverse ? fishReverse : fish;
+			out << repeat(background, size - pos - fish.length(), pos + fish.length());
+		
+			if (reverse) {
+				if (pos == 0) {
+					reverse = false;
+				} else {
+					pos--;
+				}
+			} else {
+				if (pos == size - fish.length()) {
+					reverse = true;
+				} else {
+					pos++;
+				}
+			}
+		}
+
+		void finalize() override {
+			out << Multi{ '\b', size };
+			out << Multi{ ' ', size };
 		}
 };
 
