@@ -4,3 +4,6 @@
 [submodule "Tools/TextMapper/Libraries/freetype"]
 	path = Tools/TextMapper/Libraries/freetype
 	url = git@github.com:Saalvage/freetype.git
+[submodule "Tools/Bverter/Libraries/assimp"]
+	path = Tools/Bverter/Libraries/assimp
+	url = git@github.com:juanjp600/assimp.git

@@ -9,7 +9,7 @@ using namespace PGE;
 Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader()) {
 	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
 
-	BinaryReader reader(path);
+	BinaryReader reader(path + ".b");
 
 	std::vector<Vector3f> cVertices;
 	std::vector<u32> cIndices;
