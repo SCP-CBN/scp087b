@@ -64,6 +64,8 @@ static void updateIndex(int newIndex) {
     idText->setText(String::from(currIndex));
     idText->setPosition(Vector2f(-50.f + idText->getWidth(), -50.f));
 }
+
+static std::vector<RoomInstance*> testRooms;
 //
 
 World::World(TimeMaster& tm) : tm(tm) {
@@ -130,6 +132,12 @@ World::World(TimeMaster& tm) : tm(tm) {
             newRoom->setRotation(baseRot[i % 2]);
         }
         updateIndex(0);
+
+        for (int i = 0; i < 4; i++) {
+            RoomInstance* nr = new RoomInstance(*room, cmc);
+            nr->setRotation(Vector3f(0.f, Math::degToRad(i * 90.f), 0.f));
+            testRooms.push_back(nr);
+        }
     }
 
     StructuredData data(resources->getGlimpseShader().getVertexLayout(), 4);
@@ -287,6 +295,10 @@ void World::run() {
             for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
                 instances[i]->render();
             }
+        }
+
+        for (RoomInstance* i : testRooms) {
+            i->render();
         }
 
         resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos)*
