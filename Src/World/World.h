@@ -7,6 +7,7 @@
 #include <PGE/Input/InputManager.h>
 
 #include "../Timing/TimeMaster.h"
+#include "../Timing/Ticker.h"
 
 class World {
     public:
@@ -18,11 +19,14 @@ class World {
 
         void togglePaused();
 
-    private:
+        bool update(float delta);
         void tick();
-        PGE::u64 tickAccu = 0;
+        void render(float interp) const;
 
+    private:
         TimeMaster& tm;
+        // The real master behind the curtains
+        Ticker ticker = Ticker(*this);
 
         PGE::Graphics* graphics;
         PGE::InputManager* inputManager;
@@ -30,11 +34,6 @@ class World {
         class Resources* resources;
 
         bool paused = true;
-
-        using Clock = std::chrono::steady_clock;
-        std::chrono::time_point<Clock> prev;
-        PGE::u64 accumulator = 0;
-        int fps = 0;
 };
 
 #endif // B_WORLD_H_INCLUDED
