@@ -33,6 +33,7 @@
     <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="..\Src\Graphics\Transform.cpp" />
     <ClCompile Include="..\Src\Main.cpp" />
+    <ClCompile Include="..\Src\Timing\Ticker.cpp" />
     <ClCompile Include="..\Src\Timing\Time.cpp" />
     <ClCompile Include="..\Src\Timing\TimeMaster.cpp" />
     <ClCompile Include="..\Src\Timing\Timer.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="..\Src\Graphics\Text\Font.h" />
     <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h" />
     <ClInclude Include="..\Src\Graphics\Transform.h" />
+    <ClInclude Include="..\Src\Timing\Ticker.h" />
     <ClInclude Include="..\Src\Timing\Time.h" />
     <ClInclude Include="..\Src\Timing\TimeMaster.h" />
     <ClInclude Include="..\Src\Timing\Timer.h" />

@@ -56,6 +56,9 @@
     <ClCompile Include="..\Src\World\StatWorld.cpp">
       <Filter>World</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Timing\Ticker.cpp">
+      <Filter>Timing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -146,6 +149,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\World\StatWorld.h">
       <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Timing\Ticker.h">
+      <Filter>Timing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

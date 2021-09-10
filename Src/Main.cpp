@@ -38,9 +38,7 @@ int PGE::Init::main(const std::vector<String>& args) {
         }
     });
     
-    while (!theWorld.shouldEnd()) {
-        theWorld.run();
-    }
+    theWorld.run();
 
     return 0;
 }

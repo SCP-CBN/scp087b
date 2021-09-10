@@ -70,89 +70,87 @@ static void updateIndex(int newIndex) {
 
 World::World(TimeMaster& tm) : tm(tm) {
     TimeMaster ctor;
-    Timer* _ = new Timer(ctor, "all");
+    { Timer _(ctor, "all");
 
-    constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
+        constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
 
-    { Timer _(ctor, "gfx");
-        screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-        graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
-        graphics->setVsync(false);
-    }
-
-    camera = new Camera(WIDTH, HEIGHT, 90);
-    camera->setPosition(Vector3f(345.f, -45.f, -90.f));
-    resources = new Resources(*graphics, *camera);
-
-    font = new Font(*resources, Directories::GFX + "Vegur");
-    text = new TextRenderer(*resources, *font);
-    text->setScale(10.f);
-    text->setPosition(Vector2f(50.f, -50.f));
-
-    posText = new TextRenderer(*resources, *font);
-    posText->setScale(10.f);
-    posText->setPosition(Vector2f(50.f, 50.f - 10.f * font->getHeight()));
-
-    idText = new TextRenderer(*resources, *font);
-    idText->setScale(10.f);
-
-    { Timer _(ctor, "input");
-        inputManager = InputManager::create(*graphics);
-
-        //
-        // Do we *need* to untrack these?
-        inputManager->trackInput(forward.get());
-        inputManager->trackInput(right.get());
-        inputManager->trackInput(left.get());
-        inputManager->trackInput(back.get());
-        inputManager->trackInput(escape.get());
-        inputManager->trackInput(one.get());
-        inputManager->trackInput(two.get());
-        inputManager->trackInput(three.get());
-        inputManager->trackInput(flash.get());
-
-        for (int i = 0; i < 12; i++) {
-            debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
-            inputManager->trackInput(debug[i].get());
+        { Timer _(ctor, "gfx");
+            screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+            graphics->setVsync(false);
         }
-    }
 
-    { Timer _(ctor, "room");
-        room = new Room(*resources, Directories::ROOMS + "default");
-        constexpr int ROOM_COUNT = 100;
-        instances.reserve(ROOM_COUNT);
-        Vector3f basePos[2];
-        Vector3f baseRot[2];
-        basePos[1] = Vector3f(800.f, 0.f, -700.f);
-        baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
-        for (int i = 0; i < ROOM_COUNT; i++) {
-            RoomInstance* newRoom = new RoomInstance(*room, cmc);
-            instances.push_back(newRoom);
-            newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, ROOM_HEIGHT * i, 0.f));
-            newRoom->setRotation(baseRot[i % 2]);
+        camera = new Camera(WIDTH, HEIGHT, 90);
+        camera->setPosition(Vector3f(345.f, -45.f, -90.f));
+        resources = new Resources(*graphics, *camera);
+
+        font = new Font(*resources, Directories::GFX + "Vegur");
+        text = new TextRenderer(*resources, *font);
+        text->setScale(10.f);
+        text->setPosition(Vector2f(50.f, -50.f));
+
+        posText = new TextRenderer(*resources, *font);
+        posText->setScale(10.f);
+        posText->setPosition(Vector2f(50.f, 50.f - 10.f * font->getHeight()));
+
+        idText = new TextRenderer(*resources, *font);
+        idText->setScale(10.f);
+
+        { Timer _(ctor, "input");
+            inputManager = InputManager::create(*graphics);
+
+            //
+            // Do we *need* to untrack these?
+            inputManager->trackInput(forward.get());
+            inputManager->trackInput(right.get());
+            inputManager->trackInput(left.get());
+            inputManager->trackInput(back.get());
+            inputManager->trackInput(escape.get());
+            inputManager->trackInput(one.get());
+            inputManager->trackInput(two.get());
+            inputManager->trackInput(three.get());
+            inputManager->trackInput(flash.get());
+
+            for (int i = 0; i < 12; i++) {
+                debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
+                inputManager->trackInput(debug[i].get());
+            }
         }
-        updateIndex(0);
-    }
 
-    StructuredData data(resources->getGlimpseShader().getVertexLayout(), 4);
-    data.setValue(0, "position", Vector3f(-50, -50, 0)); data.setValue(1, "position", Vector3f(50, -50, 0));
-    data.setValue(2, "position", Vector3f(-50, 50, 0)); data.setValue(3, "position", Vector3f(50, 50, 0));
-    data.setValue(0, "uv", Vector2f(0.f, 1.f)); data.setValue(1, "uv", Vector2f(1.f, 1.f));
-    data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
-    glimpseMesh = Mesh::create(*graphics);
-    glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
-    glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.png");
-    glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
+        { Timer _(ctor, "room");
+            room = new Room(*resources, Directories::ROOMS + "default");
+            constexpr int ROOM_COUNT = 100;
+            instances.reserve(ROOM_COUNT);
+            Vector3f basePos[2];
+            Vector3f baseRot[2];
+            basePos[1] = Vector3f(800.f, 0.f, -700.f);
+            baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
+            for (int i = 0; i < ROOM_COUNT; i++) {
+                RoomInstance* newRoom = new RoomInstance(*room, cmc);
+                instances.push_back(newRoom);
+                newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, ROOM_HEIGHT * i, 0.f));
+                newRoom->setRotation(baseRot[i % 2]);
+            }
+            updateIndex(0);
+        }
+
+        StructuredData data(resources->getGlimpseShader().getVertexLayout(), 4);
+        data.setValue(0, "position", Vector3f(-50, -50, 0)); data.setValue(1, "position", Vector3f(50, -50, 0));
+        data.setValue(2, "position", Vector3f(-50, 50, 0)); data.setValue(3, "position", Vector3f(50, 50, 0));
+        data.setValue(0, "uv", Vector2f(0.f, 1.f)); data.setValue(1, "uv", Vector2f(1.f, 1.f));
+        data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
+        glimpseMesh = Mesh::create(*graphics);
+        glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.png");
+        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
     
 
-    coll.setCollisionMeshCollection(&cmc);
-    //
+        coll.setCollisionMeshCollection(&cmc);
+        //
 
-    prev = Clock::now();
+        togglePaused();
 
-    togglePaused();
-
-    delete _;
+    }
     std::cout << ctor.print() << std::endl;
 }
 
@@ -180,132 +178,7 @@ static Vector3f glimpsePos = Vector3f(250.f, -100.f, -50.f);
 //
 
 void World::run() {
-    { Timer _(tm, "update");
-        SysEvents::update();
-        graphics->update();
-        inputManager->update();
-
-        if (escape->isHit()) { togglePaused(); }
-
-        if (one->isHit()) { showFps = !showFps; }
-        if (two->isHit()) { showPos = !showPos; }
-        if (three->isHit()) { showId = !showId; }
-
-        if (flash->isHit()) { lightOn = !lightOn; }
-
-        for (unsigned i = 0; i < 12; i++) {
-            if (debug[i]->isHit()) {
-                resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
-            }
-        }
-
-        // During one second delta will have been about this much in sum.
-        constexpr int TICKS_PER_SECOND = 60;
-        constexpr float CLOCK_TIME_SECOND = (float)Clock::period::den / Clock::period::num;
-        constexpr float CLOCK_TIME_PER_TICK = CLOCK_TIME_SECOND / TICKS_PER_SECOND;
-
-        std::chrono::time_point<Clock> now = Clock::now();
-        u64 diff = (now - prev).count();
-
-        tickAccu += diff;
-        while (tickAccu >= CLOCK_TIME_PER_TICK) {
-            tickAccu -= (u64)CLOCK_TIME_PER_TICK;
-            tick();
-        }
-        
-        float tickProgress = tickAccu / CLOCK_TIME_PER_TICK;
-        resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, tickProgress));
-
-        accumulator += diff;
-        if (accumulator >= CLOCK_TIME_SECOND) {
-            text->setText(String::from(fps));
-            accumulator = 0;
-            fps = 0;
-        }
-        fps++;
-
-        float delta = diff / CLOCK_TIME_PER_TICK;
-        prev = now;
-
-        if (!graphics->isWindowFocused() && !paused) {
-            togglePaused();
-        }
-
-        if (!paused) {
-            Vector3f addPos;
-
-            constexpr float SPEED = 10.f;
-            if (forward->isDown()) {
-                addPos += camera->getForward() * SPEED;
-            }
-            if (back->isDown()) {
-                addPos -= camera->getForward() * SPEED;
-            }
-            if (right->isDown()) {
-                addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-            }
-            if (left->isDown()) {
-                addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-            }
-
-            { Timer _(tm, "coll");
-            Vector3f camPos = camera->getPosition();
-                camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
-                resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
-                if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
-                    updateIndex(newIndex);
-                }
-                posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
-                    + "Y: " + String::from(camera->getPosition().y) + '\n'
-                    + "Z: " + String::from(camera->getPosition().z) + '\n'
-                );
-            }
-
-            if (inputManager->getMousePosition() != screenMiddle) {
-                Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
-                if (abs(camera->getRotation().x) >= 0.5f * Math::PI) { diff.x = -diff.x; }
-                Vector3f newRot = camera->getRotation() + Vector3f(diff.y, diff.x, 0.f);
-                newRot.x = fmod(newRot.x, 2 * Math::PI);
-                newRot.y = fmod(newRot.y, 2 * Math::PI);
-                newRot.z = fmod(newRot.z, 2 * Math::PI);
-                camera->setRotation(newRot);
-                inputManager->setMousePosition(screenMiddle);
-            }
-        }
-    }
-
-    { Timer _(tm, "render");
-        
-        { Timer _(tm, "clear");
-            graphics->clear(Colors::GRAY);
-        }
-
-        { Timer _(tm, "cam");
-            camera->applyTransforms();
-        }
-
-        { Timer _(tm, "inst");
-            for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
-                instances[i]->render();
-            }
-        }
-
-        resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos)*
-            Matrix4x4f::lookAt(glimpsePos, camera->getPosition())
-        );
-
-        glimpseMesh->render();
-
-        { Timer _(tm, "text");
-            if (showFps) { text->render(); }
-            if (showPos) { posText->render(); }
-            if (showId) { idText->render(); }
-        }
-
-        { Timer _(tm, "swap");
-            graphics->swap();
-        }
-    }
+    ticker.run();
 }
 
 //
@@ -316,6 +189,109 @@ static float funnySum = 0.f;
 static Random randd;
 constexpr Vector3f FIRE(0xF5 / 255.f, 0x58 / 255.f, 0x22 / 255.f);
 //
+
+bool World::update(float delta) {
+    SysEvents::update();
+    graphics->update();
+    inputManager->update();
+
+    if (escape->isHit()) { togglePaused(); }
+
+    if (one->isHit()) { showFps = !showFps; }
+    if (two->isHit()) { showPos = !showPos; }
+    if (three->isHit()) { showId = !showId; }
+
+    if (flash->isHit()) { lightOn = !lightOn; }
+
+    if (!graphics->isWindowFocused() && !paused) {
+        togglePaused();
+    }
+
+    if (!paused) {
+        Vector3f addPos;
+
+        constexpr float SPEED = 10.f;
+        if (forward->isDown()) {
+            addPos += camera->getForward() * SPEED;
+        }
+        if (back->isDown()) {
+            addPos -= camera->getForward() * SPEED;
+        }
+        if (right->isDown()) {
+            addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
+        }
+        if (left->isDown()) {
+            addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
+        }
+
+        {
+            Timer _(tm, "coll");
+            Vector3f camPos = camera->getPosition();
+            camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
+            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
+            if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
+                updateIndex(newIndex);
+            }
+            posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
+                + "Y: " + String::from(camera->getPosition().y) + '\n'
+                + "Z: " + String::from(camera->getPosition().z) + '\n'
+            );
+        }
+
+        if (inputManager->getMousePosition() != screenMiddle) {
+            Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
+            if (abs(camera->getRotation().x) >= 0.5f * Math::PI) { diff.x = -diff.x; }
+            Vector3f newRot = camera->getRotation() + Vector3f(diff.y, diff.x, 0.f);
+            newRot.x = fmod(newRot.x, 2 * Math::PI);
+            newRot.y = fmod(newRot.y, 2 * Math::PI);
+            newRot.z = fmod(newRot.z, 2 * Math::PI);
+            camera->setRotation(newRot);
+            inputManager->setMousePosition(screenMiddle);
+        }
+    }
+
+    return !shouldEnd();
+}
+
+void World::render(float interp) const {
+    for (unsigned i = 0; i < 12; i++) {
+        if (debug[i]->isHit()) {
+            resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
+        }
+    }
+
+    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
+
+    { Timer _(tm, "clear");
+        graphics->clear(Colors::GRAY);
+    }
+
+    { Timer _(tm, "cam");
+        camera->applyTransforms();
+    }
+
+    { Timer _(tm, "inst");
+        for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
+            instances[i]->render();
+        }
+    }
+
+    resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos)*
+        Matrix4x4f::lookAt(glimpsePos, camera->getPosition())
+    );
+
+    glimpseMesh->render();
+
+    { Timer _(tm, "text");
+        if (showFps) { text->render(); }
+        if (showPos) { posText->render(); }
+        if (showId) { idText->render(); }
+    }
+
+    { Timer _(tm, "swap");
+        graphics->swap();
+    }
+}
 
 void World::tick() {
     prevColor = color;
