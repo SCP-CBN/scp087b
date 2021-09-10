@@ -48,6 +48,8 @@ bool showId = false;
 static Resources::Handle<Texture> glimpseTex;
 static Mesh* glimpseMesh;
 
+constexpr int ROOM_HEIGHT = 200;
+
 static void updateIndex(int newIndex) {
     for (int i = -1; i < 2; i++) {
         int newCheckedIndex = newIndex + i;
@@ -126,7 +128,7 @@ World::World(TimeMaster& tm) : tm(tm) {
         for (int i = 0; i < ROOM_COUNT; i++) {
             RoomInstance* newRoom = new RoomInstance(*room, cmc);
             instances.push_back(newRoom);
-            newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, 200.f * i, 0.f));
+            newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, ROOM_HEIGHT * i, 0.f));
             newRoom->setRotation(baseRot[i % 2]);
         }
         updateIndex(0);
@@ -250,7 +252,6 @@ void World::run() {
             Vector3f camPos = camera->getPosition();
                 camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
                 resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
-                constexpr int ROOM_HEIGHT = 200;
                 if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                     updateIndex(newIndex);
                 }
