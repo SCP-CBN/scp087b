@@ -72,6 +72,10 @@ float TextRenderer::getWidth() const {
 	return width;
 }
 
+float TextRenderer::getHeight() const {
+	return font.getHeight() * scale;
+}
+
 void TextRenderer::render() const {
 	positionConstant.setValue(position);
 	mesh->render();

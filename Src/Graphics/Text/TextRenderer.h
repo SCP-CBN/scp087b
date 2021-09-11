@@ -14,6 +14,7 @@ class TextRenderer {
 		void setText(const PGE::String& txt);
 
 		float getWidth() const;
+		float getHeight() const;
 
 		void render() const;
 

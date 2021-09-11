@@ -87,11 +87,11 @@ World::World(TimeMaster& tm) : tm(tm) {
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
         text->setScale(10.f);
-        text->setPosition(Vector2f(50.f, -50.f));
+        text->setPosition(Vector2f(50.f, -50.f + text->getHeight()));
 
         posText = new TextRenderer(*resources, *font);
         posText->setScale(10.f);
-        posText->setPosition(Vector2f(50.f, 50.f - 10.f * font->getHeight()));
+        posText->setPosition(Vector2f(50.f, 50.f - text->getHeight()));
 
         idText = new TextRenderer(*resources, *font);
         idText->setScale(10.f);
@@ -249,6 +249,8 @@ bool World::update(float delta) {
             inputManager->setMousePosition(screenMiddle);
         }
     }
+    
+    text->setText(String::from(ticker.getFPS()) + "\n" + String::from(ticker.getInterpFPS()));
 
     return !shouldEnd();
 }

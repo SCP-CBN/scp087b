@@ -54,7 +54,7 @@ PS_INPUT VS(VS_INPUT input) {
 
 static const float LAYER_COUNT_MIN = 10.0;
 static const float LAYER_COUNT_MAX = 25.0;
-static const float HEIGHT_SCALE = 0.03;
+static const float HEIGHT_SCALE = 0.015;
 
 float4 rescaleVector(float3 xyz) {
     return float4((xyz + 1.0) / 2.0, 1.0);
