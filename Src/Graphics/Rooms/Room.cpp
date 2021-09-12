@@ -6,6 +6,8 @@
 
 using namespace PGE;
 
+constexpr int TEXTURES_PER_MATERIAL = 4;
+
 Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader()) {
 	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
 
@@ -14,13 +16,13 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 	std::vector<Vector3f> cVertices;
 	std::vector<u32> cIndices;
 	byte texCount = reader.read<byte>();
-	meshes.reserve(texCount);
-	textures.reserve(texCount);
+	meshes.reserve(texCount * TEXTURES_PER_MATERIAL);
+	textures.reserve(texCount * TEXTURES_PER_MATERIAL);
 	for (int i = 0; i < texCount; i++) {
 		meshes.push_back(Mesh::create(res.getGraphics()));
 
 		FilePath textureName = Directories::TEXTURES + reader.read<String>();
-		ReferenceVector<Texture> currTexs;
+		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
 
 		textures.push_back(res.getTexture(textureName + ".png"));
 		currTexs.push_back(*textures.back());
@@ -61,9 +63,12 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 	}
 
 	collisionMesh = new CollisionMesh(std::move(cVertices), std::move(cIndices));
+
+	debugTex = res.getTexture(Directories::TEXTURES + "check.png");
 }
 
 Room::~Room() {
+	debugTex.drop();
 	delete collisionMesh;
 	for (Mesh* m : meshes) { delete m; }
 	for (Resources::Handle<Texture> tex : textures) { tex.drop(); }
@@ -76,4 +81,22 @@ void Room::render(const Matrix4x4f& mat) const {
 
 const CollisionMesh& Room::getCollisionMesh() const {
 	return *collisionMesh;
+}
+
+void Room::toggleDebug() {
+	for (int i = 0; i < meshes.size(); i++) {
+		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
+		int j;
+		if (debug) {
+			j = 0;
+		} else {
+			currTexs.push_back(*debugTex);
+			j = 1;
+		}
+		for (; j < TEXTURES_PER_MATERIAL; j++) {
+			currTexs.push_back(*textures[i * TEXTURES_PER_MATERIAL + j]);
+		}
+		meshes[i]->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
+	}
+	debug =! debug;
 }

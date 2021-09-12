@@ -8,6 +8,8 @@ cbuffer cbVertex {
     matrix worldMatrix;
     matrix viewMatrix;
     matrix projectionMatrix;
+    float2 uvOff;
+    float2 uvScale;
 }
 
 cbuffer cbFrag {
@@ -15,7 +17,7 @@ cbuffer cbFrag {
     float3 viewPos;
     float3 intensity;
     float effectiveRangeSquared;
-    uint debug = 0;
+    uint debug;
 }
 
 struct VS_INPUT {
@@ -46,9 +48,9 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
-    output.tangent = normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
-    output.bitangent = normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
-    output.uv = input.uv;
+    output.tangent = uvScale.x * normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
+    output.bitangent = uvScale.y * normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
+    output.uv = uvScale * input.uv + uvOff;
     return output;
 }
 
@@ -120,6 +122,9 @@ PS_OUTPUT PS(PS_INPUT input) {
         } break;
         case 4: {
             output.color = rescaleVector(transDir);
+        } break;
+        case 5: {
+            output.color = diff.Sample(smp, input.uv);
         } break;
     }
     

@@ -31,6 +31,7 @@ static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInpu
 static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
+static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -110,6 +111,7 @@ World::World(TimeMaster& tm) : tm(tm) {
             inputManager->trackInput(two.get());
             inputManager->trackInput(three.get());
             inputManager->trackInput(flash.get());
+            inputManager->trackInput(checky.get());
 
             for (int i = 0; i < 12; i++) {
                 debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
@@ -203,6 +205,8 @@ bool World::update(float delta) {
 
     if (flash->isHit()) { lightOn = !lightOn; }
 
+    if (checky->isHit()) { room->toggleDebug(); }
+
     if (!graphics->isWindowFocused() && !paused) {
         togglePaused();
     }
@@ -274,11 +278,13 @@ void World::render(float interp) const {
 
     { Timer _(tm, "inst");
         for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
+            resources->getRoomShader().getVertexShaderConstant("uvOff").setValue(i % 2 == 0 ? Vector2f() :  Vector2f(-6.6774, -5.395f));
+            resources->getRoomShader().getVertexShaderConstant("uvScale").setValue(i % 2 == 0 ? Vector2f(1) : Vector2f(-1));
             instances[i]->render();
         }
     }
 
-    resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos)*
+    resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos) *
         Matrix4x4f::lookAt(glimpsePos, camera->getPosition())
     );
 

@@ -19,9 +19,13 @@ class Room {
 
 		const CollisionMesh& getCollisionMesh() const;
 
+		void toggleDebug();
+
 	private:
 		std::vector<PGE::Mesh*> meshes;
 		std::vector<Resources::Handle<PGE::Texture>> textures;
+		Resources::Handle<PGE::Texture> debugTex;
+		bool debug = false;
 		PGE::Shader& roomShader;
 		PGE::Shader::Constant* matrixConstant;
 		CollisionMesh* collisionMesh;
