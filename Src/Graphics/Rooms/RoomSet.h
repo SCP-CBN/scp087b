@@ -7,7 +7,8 @@
 
 class RoomSet {
 	public:
-		RoomSet(const std::vector<IRoomInfo*>& infos);
+		RoomSet(std::vector<IRoomInfo*>&& infos);
+		~RoomSet();
 
 		void load(Resources& res);
 		void unload();
@@ -17,8 +18,11 @@ class RoomSet {
 
 		int getCount() const;
 
+		const IRoomInfo* begin() const;
+		const IRoomInfo* end() const;
+
 	private:
-		std::vector<std::unique_ptr<IRoomInfo>> rooms;
+		std::vector<IRoomInfo*> rooms;
 		int totalWeight;
 };
 

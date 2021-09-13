@@ -2,12 +2,17 @@
 
 using namespace PGE;
 
-RoomSet::RoomSet(const std::vector<IRoomInfo*>& infos) {
+RoomSet::RoomSet(std::vector<IRoomInfo*>&& infos) {
 	totalWeight = -1;
-	rooms.reserve(infos.size());
 	for (IRoomInfo* r : infos) {
-		rooms.push_back(std::unique_ptr<IRoomInfo>(r));
 		totalWeight += r->getWeight();
+	}
+	rooms = std::move(infos);
+}
+
+RoomSet::~RoomSet() {
+	for (IRoomInfo* r : rooms) {
+		delete r;
 	}
 }
 
@@ -40,4 +45,12 @@ const IRoomInfo& RoomSet::getRandomRoom(Random& random) const {
 
 int RoomSet::getCount() const {
 	return rooms.size();
+}
+
+const IRoomInfo* RoomSet::begin() const {
+	return rooms.front();
+}
+
+const IRoomInfo* RoomSet::end() const {
+	return rooms.back() + 1;
 }
