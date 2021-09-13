@@ -29,6 +29,7 @@
     <ClCompile Include="..\Src\Graphics\Resources.cpp" />
     <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp" />
     <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp" />
+    <ClCompile Include="..\Src\Graphics\Rooms\RoomSet.cpp" />
     <ClCompile Include="..\Src\Graphics\Text\Font.cpp" />
     <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="..\Src\Graphics\Transform.cpp" />
@@ -51,7 +52,9 @@
     <ClInclude Include="..\Src\Graphics\Camera.h" />
     <ClInclude Include="..\Src\Graphics\Resources.h" />
     <ClInclude Include="..\Src\Graphics\Rooms\Room.h" />
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomInfo.h" />
     <ClInclude Include="..\Src\Graphics\Rooms\RoomInstance.h" />
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomSet.h" />
     <ClInclude Include="..\Src\Graphics\Text\Font.h" />
     <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h" />
     <ClInclude Include="..\Src\Graphics\Transform.h" />

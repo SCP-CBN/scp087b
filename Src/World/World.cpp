@@ -15,11 +15,10 @@
 using namespace PGE;
 
 // Shit that needs a proper place.
-static Room* room;
 static std::vector<RoomInstance*> instances;
 static int currIndex;
 
-static CollisionMeshCollection cmc;
+static CollisionMeshCollection coMeCo;
 static Collider coll = Collider(10, 50);
 
 static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
@@ -69,7 +68,12 @@ static void updateIndex(int newIndex) {
 }
 //
 
-World::World(TimeMaster& tm) : tm(tm) {
+World::World(TimeMaster& tm) : tm(tm),
+    rooms({
+        new RoomInfo("default", 100),
+        new RoomInfo("defaultFull", 50)
+    }) {
+
     TimeMaster ctor;
     { Timer _(ctor, "all");
 
@@ -84,6 +88,10 @@ World::World(TimeMaster& tm) : tm(tm) {
         camera = new Camera(WIDTH, HEIGHT, 90);
         camera->setPosition(Vector3f(345.f, -45.f, -90.f));
         resources = new Resources(*graphics, *camera);
+
+        { Timer _(ctor, "rooms");
+            rooms.load(*resources);
+        }
 
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
@@ -119,18 +127,23 @@ World::World(TimeMaster& tm) : tm(tm) {
             }
         }
 
-        { Timer _(ctor, "room");
-            room = new Room(*resources, Directories::ROOMS + "default");
+        { Timer _(ctor, "map");
             constexpr int ROOM_COUNT = 100;
             instances.reserve(ROOM_COUNT);
             Vector3f basePos[2];
             Vector3f baseRot[2];
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
             baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
+            Random rand;
             for (int i = 0; i < ROOM_COUNT; i++) {
-                RoomInstance* newRoom = new RoomInstance(*room, cmc);
+                RoomInstance* newRoom;
+                // Debug/Showcase TODO: Remove
+                if (i < 2) { newRoom = rooms.getRoom(0).instantiate(coMeCo); }
+                else if (i < 4) { newRoom = rooms.getRoom(1).instantiate(coMeCo); }
+                else { newRoom = rooms.getRandomRoom(rand).instantiate(coMeCo); }
+                //
                 instances.push_back(newRoom);
-                newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, ROOM_HEIGHT * i, 0.f));
+                newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
                 newRoom->setRotation(baseRot[i % 2]);
             }
             updateIndex(0);
@@ -147,7 +160,7 @@ World::World(TimeMaster& tm) : tm(tm) {
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
     
 
-        coll.setCollisionMeshCollection(&cmc);
+        coll.setCollisionMeshCollection(&coMeCo);
         //
 
         togglePaused();
@@ -162,7 +175,7 @@ World::~World() {
     for (RoomInstance* inst : instances) {
         delete inst;
     }
-    delete room;
+    rooms.unload();
     delete inputManager;
     delete text;
     delete font;
@@ -205,7 +218,11 @@ bool World::update(float delta) {
 
     if (flash->isHit()) { lightOn = !lightOn; }
 
-    if (checky->isHit()) { room->toggleDebug(); }
+    if (checky->isHit()) {
+        for (int i = 0; i < rooms.getCount(); i++) {
+            rooms.getRoom(i).getRoom().toggleDebug();
+        }
+    }
 
     if (!graphics->isWindowFocused() && !paused) {
         togglePaused();
@@ -278,7 +295,7 @@ void World::render(float interp) const {
 
     { Timer _(tm, "inst");
         for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
-            resources->getRoomShader().getVertexShaderConstant("uvOff").setValue(i % 2 == 0 ? Vector2f() :  Vector2f(-6.6774, -5.395f));
+            resources->getRoomShader().getVertexShaderConstant("uvOff").setValue(i % 2 == 0 ? Vector2f() :  Vector2f(-6.6774f, -5.395f));
             resources->getRoomShader().getVertexShaderConstant("uvScale").setValue(i % 2 == 0 ? Vector2f(1) : Vector2f(-1));
             instances[i]->render();
         }

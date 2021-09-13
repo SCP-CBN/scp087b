@@ -8,6 +8,7 @@
 
 #include "../Timing/TimeMaster.h"
 #include "../Timing/Ticker.h"
+#include "../Graphics/Rooms/RoomSet.h"
 
 class World {
     public:
@@ -27,6 +28,8 @@ class World {
         TimeMaster& tm;
         // The real master behind the curtains
         Ticker ticker = Ticker(*this);
+
+        RoomSet rooms;
 
         PGE::Graphics* graphics;
         PGE::InputManager* inputManager;

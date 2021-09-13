@@ -59,6 +59,9 @@
     <ClCompile Include="..\Src\Timing\Ticker.cpp">
       <Filter>Timing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Rooms\RoomSet.cpp">
+      <Filter>Graphics\Rooms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -152,6 +155,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Timing\Ticker.h">
       <Filter>Timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomInfo.h">
+      <Filter>Graphics\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Rooms\RoomSet.h">
+      <Filter>Graphics\Rooms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
