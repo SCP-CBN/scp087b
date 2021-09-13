@@ -47,10 +47,10 @@ int RoomSet::getCount() const {
 	return rooms.size();
 }
 
-const IRoomInfo* RoomSet::begin() const {
-	return rooms.front();
+const IRoomInfo* const* RoomSet::begin() const {
+	return &rooms.front();
 }
 
-const IRoomInfo* RoomSet::end() const {
-	return rooms.back() + 1;
+const IRoomInfo* const* RoomSet::end() const {
+	return &rooms.back() + 1;
 }

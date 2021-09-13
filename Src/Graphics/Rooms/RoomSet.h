@@ -18,8 +18,8 @@ class RoomSet {
 
 		int getCount() const;
 
-		const IRoomInfo* begin() const;
-		const IRoomInfo* end() const;
+		const IRoomInfo* const* begin() const;
+		const IRoomInfo* const* end() const;
 
 	private:
 		std::vector<IRoomInfo*> rooms;

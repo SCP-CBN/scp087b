@@ -219,8 +219,8 @@ bool World::update(float delta) {
     if (flash->isHit()) { lightOn = !lightOn; }
 
     if (checky->isHit()) {
-        for (const IRoomInfo& r : rooms) {
-            r.getRoom().toggleDebug();
+        for (const IRoomInfo* r : rooms) {
+            r->getRoom().toggleDebug();
         }
     }
 
