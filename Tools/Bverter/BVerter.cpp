@@ -72,7 +72,7 @@ static bool convertModel(const FilePath& file) {
                     writer.write<float>(mesh->mVertices[k].z * 100.f);
                     writer.write(mesh->mNormals[k]);
                     writer.write(mesh->mTangents[k]);
-                    writer.write(mesh->mBitangents[k]);
+                    writer.write(mesh->mBitangents[k] * -1.f);
                     aiVector3D uv = mesh->mTextureCoords[0][k]; // Lmao wtf ass imp
                     writer.write<float>(uv.x); writer.write<float>(uv.y);
                 }
