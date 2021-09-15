@@ -139,12 +139,7 @@ World::World(TimeMaster& tm) : tm(tm),
             baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
             Random rand;
             for (int i = 0; i < ROOM_COUNT; i++) {
-                RoomInstance* newRoom;
-                // Debug/Showcase TODO: Remove
-                if (i < 2) { newRoom = rooms.getRoom(0).instantiate(coMeCo); }
-                else if (i < 4) { newRoom = rooms.getRoom(1).instantiate(coMeCo); }
-                else { newRoom = rooms.getRandomRoom(rand).instantiate(coMeCo); }
-                //
+                RoomInstance* newRoom = rooms.getRandomRoom(rand).instantiate(coMeCo);
                 instances.push_back(newRoom);
                 newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
                 newRoom->setRotation(baseRot[i % 2]);
