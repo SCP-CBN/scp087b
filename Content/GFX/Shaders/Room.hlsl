@@ -111,19 +111,19 @@ PS_OUTPUT PS(PS_INPUT input) {
         default: {
             output.color = float4(((diff.Sample(smp, uv).rgb * diffuse) + (1.0 - roughness) * saturate(4 * diffuse) * specular) * acDist * intensity, 1.0);
         } break;
-        case 1: {
+        case 1u: {
             output.color = rescaleVector(input.normal);
         } break;
-        case 2: {
+        case 2u: {
             output.color = rescaleVector(input.tangent);
         } break;
-        case 3: {
+        case 3u: {
             output.color = rescaleVector(input.bitangent);
         } break;
-        case 4: {
+        case 4u: {
             output.color = rescaleVector(transDir);
         } break;
-        case 5: {
+        case 5u: {
             output.color = diff.Sample(smp, input.uv);
         } break;
     }
