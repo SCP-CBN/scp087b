@@ -32,7 +32,6 @@ static bool convertModel(const FilePath& file) {
         aiProcess_PreTransformVertices |
         aiProcess_ImproveCacheLocality |
         aiProcess_RemoveRedundantMaterials |
-        aiProcess_FixInfacingNormals |
         aiProcess_FindDegenerates |
         aiProcess_FindInvalidData |
         aiProcess_GenUVCoords |
@@ -40,9 +39,7 @@ static bool convertModel(const FilePath& file) {
         aiProcess_OptimizeMeshes
     );
 
-    if (scene == nullptr) {
-        throw PGE_CREATE_EX(importer.GetErrorString());
-    }
+    PGE_ASSERT(scene != nullptr, importer.GetErrorString());
 
     BinaryWriter writer(converterResult(file));
     writer.write<byte>(scene->mNumMaterials);
@@ -50,7 +47,9 @@ static bool convertModel(const FilePath& file) {
         aiString texName;
         PGE_ASSERT(scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &texName) == aiReturn_SUCCESS, "Failed to get texture name");
         String tex(texName.C_Str());
-        writer.write(tex.substr(tex.begin(), tex.findLast(".")));
+        tex = tex.replace("\\", "/");
+        String write = tex.substr(tex.findLast("/") - 1, tex.findLast("."));
+        writer.write(tex.substr(tex.findLast("/") - 1, tex.findLast(".")));
 
         u32 vertCount = 0;
         u32 indexCount = 0;
