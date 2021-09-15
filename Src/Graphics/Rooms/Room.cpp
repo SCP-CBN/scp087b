@@ -10,6 +10,8 @@ constexpr int TEXTURES_PER_MATERIAL = 4;
 
 Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader()) {
 	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
+	uvOffConstant = &roomShader.getVertexShaderConstant("uvOff");
+	uvRotConstant = &roomShader.getVertexShaderConstant("uvRot");
 
 	BinaryReader reader(path + ".b");
 
@@ -74,8 +76,10 @@ Room::~Room() {
 	for (Resources::Handle<Texture> tex : textures) { tex.drop(); }
 }
 
-void Room::render(const Matrix4x4f& mat) const {
+void Room::render(const Matrix4x4f& mat, const Vector2f& uvOff, float uvRot) const {
 	matrixConstant->setValue(mat);
+	uvOffConstant->setValue(uvOff);
+	uvRotConstant->setValue(uvRot);
 	for (Mesh* m : meshes) { m->render(); }
 }
 

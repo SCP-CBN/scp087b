@@ -9,7 +9,7 @@ cbuffer cbVertex {
     matrix viewMatrix;
     matrix projectionMatrix;
     float2 uvOff;
-    float2 uvScale;
+    float uvRot;
 }
 
 cbuffer cbFrag {
@@ -48,9 +48,20 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
-    output.tangent = uvScale.x * normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
-    output.bitangent = uvScale.y * normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
-    output.uv = uvScale * input.uv + uvOff;
+    float usin = sin(uvRot); float ucos = cos(uvRot);
+    matrix fullRotator = matrix(
+        ucos, 0.f, usin, 0.f,
+        0.f, 1.f, 0.f, 0.f,
+        -usin, 0.f, ucos, 0.f,
+        0.f, 0.f, 0.f, 1.f
+    );
+    output.tangent = normalize(mul(fullRotator, mul(worldMatrix, float4(input.tangent, 0.0))).xyz);
+    output.bitangent = normalize(mul(fullRotator, mul(worldMatrix, float4(input.bitangent, 0.0))).xyz);
+    float2x2 rotator = float2x2(
+        ucos, -usin,
+        usin, ucos
+    );
+    output.uv = mul(rotator, input.uv) + uvOff;
     return output;
 }
 

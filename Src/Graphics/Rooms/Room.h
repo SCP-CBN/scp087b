@@ -15,7 +15,7 @@ class Room {
 		Room(Resources& res, const PGE::FilePath& path);
 		~Room();
 
-		void render(const PGE::Matrix4x4f& mat) const;
+		void render(const PGE::Matrix4x4f& mat, const PGE::Vector2f& uvOff, float uvRot) const;
 
 		const CollisionMesh& getCollisionMesh() const;
 
@@ -28,6 +28,8 @@ class Room {
 		bool debug = false;
 		PGE::Shader& roomShader;
 		PGE::Shader::Constant* matrixConstant;
+		PGE::Shader::Constant* uvOffConstant;
+		PGE::Shader::Constant* uvRotConstant;
 		CollisionMesh* collisionMesh;
 };
 

@@ -73,8 +73,8 @@ static void updateIndex(int newIndex) {
 
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
-        new RoomInfo("default", 100),
-        new RoomInfo("defaultFull", 50)
+        new RoomInfo("default", 100, Vector2f(-4.1019f, -3.7058f)),
+        new RoomInfo("room1", 50, Vector2f(-4.3094, -3.9694f))
     }) {
 
     TimeMaster ctor;
@@ -138,8 +138,11 @@ World::World(TimeMaster& tm) : tm(tm),
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
             baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
             Random rand;
+            Vector2f uv;
             for (int i = 0; i < ROOM_COUNT; i++) {
-                RoomInstance* newRoom = rooms.getRandomRoom(rand).instantiate(coMeCo);
+                const IRoomInfo* info = &rooms.getRandomRoom(rand);
+                RoomInstance* newRoom = info->instantiate(coMeCo, uv, i % 2 == 0 ? 0 : Math::degToRad(180));
+                uv += (i % 2 == 0 ? 1 : -1) * info->getUvOff();
                 instances.push_back(newRoom);
                 newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
                 newRoom->setRotation(baseRot[i % 2]);
@@ -296,8 +299,6 @@ void World::render(float interp) const {
 
     { Timer _(tm, "inst");
         for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
-            resources->getRoomShader().getVertexShaderConstant("uvOff").setValue(i % 2 == 0 ? Vector2f() :  Vector2f(-6.6774f, -5.395f));
-            resources->getRoomShader().getVertexShaderConstant("uvScale").setValue(i % 2 == 0 ? Vector2f(1) : Vector2f(-1));
             instances[i]->render();
         }
     }
