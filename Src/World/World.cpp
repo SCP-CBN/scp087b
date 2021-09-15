@@ -31,6 +31,7 @@ static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInpu
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
+static std::unique_ptr<Input> n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -44,6 +45,8 @@ static TextRenderer* idText;
 bool showFps = false;
 bool showPos = false;
 bool showId = false;
+
+bool noclip = false;
 
 static Resources::Handle<Texture> glimpseTex;
 static Mesh* glimpseMesh;
@@ -76,7 +79,6 @@ World::World(TimeMaster& tm) : tm(tm),
 
     TimeMaster ctor;
     { Timer _(ctor, "all");
-
         constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
 
         { Timer _(ctor, "gfx");
@@ -120,6 +122,7 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(three.get());
             inputManager->trackInput(flash.get());
             inputManager->trackInput(checky.get());
+            inputManager->trackInput(n.get());
 
             for (int i = 0; i < 12; i++) {
                 debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
@@ -218,6 +221,8 @@ bool World::update(float delta) {
 
     if (flash->isHit()) { lightOn = !lightOn; }
 
+    if (n->isHit()) { noclip = !noclip; }
+    
     if (checky->isHit()) {
         for (const IRoomInfo* r : rooms) {
             r->getRoom().toggleDebug();
@@ -248,7 +253,8 @@ bool World::update(float delta) {
         {
             Timer _(tm, "coll");
             Vector3f camPos = camera->getPosition();
-            camera->setPosition(coll.tryMove(camPos, camPos + addPos * delta));
+            Vector3f toPos = camPos + addPos * delta;
+            camera->setPosition(noclip ? toPos : coll.tryMove(camPos, toPos));
             resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);
