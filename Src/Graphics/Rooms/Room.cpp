@@ -42,9 +42,11 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 	std::vector<u32> cIndices;
 
 	for (int i = 0; i < 4; i++) {
-		iMeshes[i] = Mesh::create(res.getGraphics());
-		readMesh(reader, *iMeshes[i], cVertices, cIndices);
-		uvOffsets[i] = reader.read<Vector2f>();
+		byte index = reader.read<byte>();
+
+		iMeshes[index] = Mesh::create(res.getGraphics());
+		readMesh(reader, *iMeshes[index], cVertices, cIndices);
+		uvOffsets[index] = reader.read<Vector2f>();
 
 		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
 
@@ -61,7 +63,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		textures.push_back(res.getTexture(textureName + "_d.png", Texture::Format::R8));
 		currTexs.push_back(*textures.back());
 
-		iMeshes[i]->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
+		iMeshes[index]->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
 	}
 
 	byte texCount = reader.read<byte>();

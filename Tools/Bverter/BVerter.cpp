@@ -38,12 +38,24 @@ struct ConnectionPoint {
 };
 
 // Fuck you assimp, once again, this time for not providing constexpr vectors!!
-static const std::array matNames {
+static const std::array seamMats {
     ConnectionPoint{ "ceiling_mat", aiVector3D() },
     ConnectionPoint{ "floor_mat", aiVector3D(7.f, -3.92830f, -5.38239f) },
     ConnectionPoint{ "innerwall_mat", aiVector3D() },
     ConnectionPoint{ "outerwall_mat", aiVector3D() }
 };
+
+static int getSeamIndex(const String& name) {
+    for (int i = 0; i < seamMats.size(); i++) {
+        if (name == seamMats[i].mat) { return i; }
+    }
+    return -1;
+}
+
+template <size_t SIZE>
+static void assertAll(const std::array<bool, SIZE> values) {
+
+}
 
 // extra is called once for every vertex
 static void writeMesh(BinaryWriter& writer, const aiScene* scene, int matIndex, const std::function<void(aiMesh*, unsigned)>& extra = [](auto...){ }) {
@@ -103,17 +115,21 @@ static bool convertModel(const FilePath& file) {
 
     BinaryWriter writer(converterResult(file));
 
-    unsigned j = 0;
+    std::array<bool, seamMats.size()> hasMat{ };
     for (unsigned i = 0; i < scene->mNumMaterials; i++) {
         aiMaterial* mat = scene->mMaterials[i];
         String name = mat->GetName().C_Str();
         std::cout << name << std::endl;
-        if (name == matNames[j].mat) {
+        int seamIndex = getSeamIndex(name);
+        if (seamIndex >= 0) {
+            hasMat[seamIndex] = true;
+            writer.write<byte>(seamIndex);
+
             aiMesh* closestMesh = nullptr;
             unsigned closestIndex;
             ai_real shortestLength = std::numeric_limits<ai_real>::infinity();
             writeMesh(writer, scene, i, [&](aiMesh* mesh, unsigned index) {
-                ai_real dist = (mesh->mVertices[index] - matNames[j].pos).SquareLength();
+                ai_real dist = (mesh->mVertices[index] - seamMats[seamIndex].pos).SquareLength();
                 if (dist < shortestLength) {
                     closestMesh = mesh;
                     closestIndex = index;
@@ -124,21 +140,20 @@ static bool convertModel(const FilePath& file) {
             aiVector3D uv = closestMesh->mTextureCoords[0][closestIndex];
             writer.write<float>(uv.x); writer.write<float>(uv.y);
             std::cout << sqrt(shortestLength) << " " << uv.x << ", " << uv.y << ", " << uv.z << std::endl;
-
-            j++;
         }
     }
-    PGE_ASSERT(matNames.size() == j, "Not all connection meshes were included!");
+    for (size_t i = 0; i < hasMat.size(); i++) {
+        PGE_ASSERT(hasMat[i], "Not all connection meshes were included! Missing: " + seamMats[i].mat);
+    }
 
-    j = 0;
     writer.write<byte>(scene->mNumMaterials - 4);
     for (unsigned i = 0; i < scene->mNumMaterials; i++) {
         aiMaterial* mat = scene->mMaterials[i];
 
         bool contains = false;
-        for (int k = j; k < matNames.size(); k++) {
-            if (mat->GetName().C_Str() == matNames[k].mat) {
-                j = k; contains = true; break;
+        for (int j = 0; j < seamMats.size(); j++) {
+            if (mat->GetName().C_Str() == seamMats[j].mat) {
+                contains = true; break;
             }
         }
         if (contains) { continue; }
@@ -174,7 +189,7 @@ int main(int argc, char** argv) {
     }
 
     bool recompile = false;
-#if 0 // Set to 1 when working on this.
+#if 1 // Set to 1 when working on this.
     recompile = true;
 #endif
 
