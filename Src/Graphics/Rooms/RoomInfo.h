@@ -10,13 +10,12 @@ class IRoomInfo {
 	public:
 		virtual ~IRoomInfo() = default;
 
-		virtual RoomInstance* instantiate(CollisionMeshCollection& cmc, const PGE::Vector2f& uvOff, float uvRot) const = 0;
+		virtual RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info) const = 0;
 
 		virtual void load(Resources& res) = 0;
 		virtual void unload() = 0;
 
 		virtual int getWeight() const = 0;
-		virtual const PGE::Vector2f& getUvOff() const = 0;
 		virtual Room& getRoom() const = 0;
 
 	protected:
@@ -28,15 +27,15 @@ class RoomInfo : public IRoomInfo {
 	static_assert(std::is_base_of<RoomInstance, RI>::value);
 
 	public:
-		RoomInfo(const PGE::String& name, int weight, const PGE::Vector2f& uvOff) : name(name), weight(weight), uvOff(uvOff) { }
+		RoomInfo(const PGE::String& name, int weight) : name(name), weight(weight) { }
 
 		~RoomInfo() {
 			delete room;
 		}
 
-		RoomInstance* instantiate(CollisionMeshCollection& cmc, const PGE::Vector2f& uvOff, float uvRot) const override {
+		RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info) const override {
 			PGE_ASSERT(room != nullptr, "Room was not loaded!");
-			return new RI(*room, cmc, uvOff, uvRot);
+			return new RI(*room, cmc, info);
 		}
 
 		void load(Resources& res) override {
@@ -53,10 +52,6 @@ class RoomInfo : public IRoomInfo {
 			return weight;
 		}
 
-		const PGE::Vector2f& getUvOff() const override {
-			return uvOff;
-		}
-
 		Room& getRoom() const override {
 			PGE_ASSERT(room != nullptr, "Room was not loaded");
 			return *room;
@@ -65,7 +60,6 @@ class RoomInfo : public IRoomInfo {
 	private:
 		const PGE::String name;
 		const int weight;
-		const PGE::Vector2f uvOff;
 
 		Room* room = nullptr;
 };

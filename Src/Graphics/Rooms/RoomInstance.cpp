@@ -2,8 +2,8 @@
 
 using namespace PGE;
 
-RoomInstance::RoomInstance(const Room& room, CollisionMeshCollection& cmc, const PGE::Vector2f& uvOff, float uvRot)
-	: room(room), cmc(cmc), uvOff(uvOff), uvRot(uvRot) { }
+RoomInstance::RoomInstance(const Room& room, CollisionMeshCollection& cmc, const Room::RenderInfo& info)
+	: room(room), cmc(cmc), info(info) { }
 
 RoomInstance::~RoomInstance() {
 	if (cHandle.valid()) {
@@ -12,7 +12,7 @@ RoomInstance::~RoomInstance() {
 }
 
 void RoomInstance::render() const {
-	room.render(transform.getModelMatrix(), uvOff, uvRot);
+	room.render(transform.getModelMatrix(), info);
 }
 
 void RoomInstance::updateCollision() {

@@ -73,8 +73,8 @@ static void updateIndex(int newIndex) {
 
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
-        new RoomInfo("default", 100, Vector2f(-4.1019f, -3.7058f)),
-        new RoomInfo("room1", 50, Vector2f(-4.3094, -3.9694f))
+        new RoomInfo("default", 100),
+        new RoomInfo("room1", 50)
     }) {
 
     TimeMaster ctor;
@@ -138,11 +138,14 @@ World::World(TimeMaster& tm) : tm(tm),
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
             baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
             Random rand;
-            Vector2f uv;
+            Room::RenderInfo rInfo;
             for (int i = 0; i < ROOM_COUNT; i++) {
                 const IRoomInfo* info = &rooms.getRandomRoom(rand);
-                RoomInstance* newRoom = info->instantiate(coMeCo, uv, i % 2 == 0 ? 0 : Math::degToRad(180));
-                uv += (i % 2 == 0 ? 1 : -1) * info->getUvOff();
+                rInfo.rotation = i % 2 == 0 ? 0 : Math::degToRad(180);
+                RoomInstance* newRoom = info->instantiate(coMeCo, rInfo);
+                for (int j = 0; j < 4; j++) {
+                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1 : -1) * info->getRoom().getUvOffset((Room::MeshType)j);
+                }
                 instances.push_back(newRoom);
                 newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
                 newRoom->setRotation(baseRot[i % 2]);

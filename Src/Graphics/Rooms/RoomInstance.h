@@ -7,7 +7,7 @@
 
 class RoomInstance {
 	public:
-		RoomInstance(const Room& room, CollisionMeshCollection& cmc, const PGE::Vector2f& uvOff, float uvRot);
+		RoomInstance(const Room& room, CollisionMeshCollection& cmc, const Room::RenderInfo& info);
 		~RoomInstance();
 
 		void render() const;
@@ -30,8 +30,7 @@ class RoomInstance {
 		CollisionMeshCollection& cmc;
 		CollisionMeshCollection::Handle cHandle;
 
-		PGE::Vector2f uvOff;
-		float uvRot;
+		Room::RenderInfo info;
 };
 
 #endif // B_ROOMINSTANCE_H_INCLUDED
