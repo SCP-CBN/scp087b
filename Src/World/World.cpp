@@ -19,7 +19,7 @@ static std::vector<RoomInstance*> instances;
 static int currIndex;
 
 static CollisionMeshCollection coMeCo;
-static Collider coll = Collider(10, 50);
+static Collider coll = Collider(10.f, 50.f);
 
 static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
 static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
@@ -337,6 +337,7 @@ bool World::shouldEnd() const {
 
 void World::togglePaused() {
     paused = !paused;
+    graphics->setMouseCaptured(!paused);
     inputManager->setMouseVisibility(paused);
     inputManager->setMousePosition(screenMiddle);
 }
