@@ -54,6 +54,7 @@ class Room {
 		
 		CollisionMesh* collisionMesh;
 
+		const PGE::ReferenceVector<PGE::Texture> readMaterial(Resources& res, const PGE::FilePath& tex);
 		void readMesh(PGE::BinaryReader& reader, PGE::Mesh& mesh, std::vector<PGE::Vector3f>& cVertices, std::vector<PGE::u32>& cIndices);
 };
 

@@ -6,6 +6,23 @@ using namespace PGE;
 
 constexpr int TEXTURES_PER_MATERIAL = 4;
 
+const ReferenceVector<Texture> Room::readMaterial(Resources& res, const FilePath& tex) {
+	ReferenceVector<Texture> ret; ret.reserve(TEXTURES_PER_MATERIAL);
+	textures.push_back(res.getTexture(tex + ".png"));
+	ret.push_back(*textures.back());
+
+	textures.push_back(res.getTexture(tex + "_r.png", Texture::Format::R8));
+	ret.push_back(*textures.back());
+
+	textures.push_back(res.getTexture(tex + "_n.png"));
+	ret.push_back(*textures.back());
+
+	textures.push_back(res.getTexture(tex + "_d.png", Texture::Format::R8));
+	ret.push_back(*textures.back());
+
+	return ret;
+}
+
 void Room::readMesh(BinaryReader& reader, Mesh& mesh, std::vector<Vector3f>& cVertices, std::vector<u32>& cIndices) {
 	i32 vertCount = reader.read<i32>();
 	StructuredData data(roomShader.getVertexLayout(), vertCount);
@@ -48,22 +65,8 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		readMesh(reader, *iMeshes[index], cVertices, cIndices);
 		uvOffsets[index] = reader.read<Vector2f>();
 
-		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
-
 		FilePath textureName = Directories::TEXTURES + (index < 2 ? "concretefloor" : "brickwall");
-		textures.push_back(res.getTexture(textureName + ".png"));
-		currTexs.push_back(*textures.back());
-
-		textures.push_back(res.getTexture(textureName + "_r.png", Texture::Format::R8));
-		currTexs.push_back(*textures.back());
-
-		textures.push_back(res.getTexture(textureName + "_n.png"));
-		currTexs.push_back(*textures.back());
-
-		textures.push_back(res.getTexture(textureName + "_d.png", Texture::Format::R8));
-		currTexs.push_back(*textures.back());
-
-		iMeshes[index]->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
+		iMeshes[index]->setMaterial(Mesh::Material(roomShader, readMaterial(res, textureName), Mesh::Material::Opaque::YES));
 	}
 
 	byte texCount = reader.read<byte>();
@@ -73,21 +76,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		otherMeshes.push_back(Mesh::create(res.getGraphics()));
 
 		FilePath textureName = Directories::TEXTURES + reader.read<String>();
-		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
-
-		textures.push_back(res.getTexture(textureName + ".png"));
-		currTexs.push_back(*textures.back());
-		
-		textures.push_back(res.getTexture(textureName + "_r.png", Texture::Format::R8));
-		currTexs.push_back(*textures.back());
-		
-		textures.push_back(res.getTexture(textureName + "_n.png"));
-		currTexs.push_back(*textures.back());
-		
-		textures.push_back(res.getTexture(textureName + "_d.png", Texture::Format::R8));
-		currTexs.push_back(*textures.back());
-		
-		otherMeshes.back()->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
+		otherMeshes.back()->setMaterial(Mesh::Material(roomShader, readMaterial(res, textureName), Mesh::Material::Opaque::YES));
 		readMesh(reader, *otherMeshes.back(), cVertices, cIndices);
 	}
 
