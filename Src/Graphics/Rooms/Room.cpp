@@ -50,7 +50,7 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 
 		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
 
-		FilePath textureName = Directories::TEXTURES + "brickwall";
+		FilePath textureName = Directories::TEXTURES + (index < 2 ? "concretefloor" : "brickwall");
 		textures.push_back(res.getTexture(textureName + ".png"));
 		currTexs.push_back(*textures.back());
 
