@@ -189,7 +189,8 @@ int main(int argc, char** argv) {
     }
 
     bool recompile = false;
-#if 1 // Set to 1 when working on this.
+#if 0 // Set to 1 when working on this.
+#pragma message ("RECOMPILATION IS ENABLED!!!")
     recompile = true;
 #endif
 
