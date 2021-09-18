@@ -7,3 +7,6 @@
 [submodule "Tools/Bverter/Libraries/assimp"]
 	path = Tools/Bverter/Libraries/assimp
 	url = git@github.com:juanjp600/assimp.git
+[submodule "Libraries/gli"]
+	path = Libraries/gli
+	url = git@github.com:g-truc/gli.git
