@@ -12,6 +12,8 @@
 #include "../Graphics/Text/TextRenderer.h"
 #include "StatWorld.h"
 
+#include <gli/gli.hpp>
+
 using namespace PGE;
 
 // Shit that needs a proper place.
@@ -83,7 +85,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::DirectX11);
             graphics->setVsync(false);
         }
 
@@ -154,7 +156,7 @@ World::World(TimeMaster& tm) : tm(tm),
         data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
         glimpseMesh = Mesh::create(*graphics);
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
-        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.png");
+        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.dds", Texture::CompressedFormat::BC3);
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
     
 
@@ -162,7 +164,6 @@ World::World(TimeMaster& tm) : tm(tm),
         //
 
         togglePaused();
-
     }
     std::cout << ctor.print() << std::endl;
 }
