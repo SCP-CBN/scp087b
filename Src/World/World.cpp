@@ -43,8 +43,6 @@ bool showFps = false;
 bool showPos = false;
 bool showId = false;
 
-bool noclip = false;
-
 static Resources::Handle<Texture> glimpseTex;
 static Mesh* glimpseMesh;
 
