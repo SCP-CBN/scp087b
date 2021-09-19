@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -34,6 +34,7 @@
     <ClCompile Include="..\Src\Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="..\Src\Graphics\Transform.cpp" />
     <ClCompile Include="..\Src\Main.cpp" />
+    <ClCompile Include="..\Src\Player\PlayerController.cpp" />
     <ClCompile Include="..\Src\Timing\Ticker.cpp" />
     <ClCompile Include="..\Src\Timing\Time.cpp" />
     <ClCompile Include="..\Src\Timing\TimeMaster.cpp" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\Src\Graphics\Text\Font.h" />
     <ClInclude Include="..\Src\Graphics\Text\TextRenderer.h" />
     <ClInclude Include="..\Src\Graphics\Transform.h" />
+    <ClInclude Include="..\Src\Player\PlayerController.h" />
     <ClInclude Include="..\Src\Timing\Ticker.h" />
     <ClInclude Include="..\Src\Timing\Time.h" />
     <ClInclude Include="..\Src\Timing\TimeMaster.h" />
