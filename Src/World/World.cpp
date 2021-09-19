@@ -205,8 +205,6 @@ bool World::update(float delta) {
     if (three->isHit()) { showId = !showId; }
 
     if (flash->isHit()) { lightOn = !lightOn; }
-
-    if (n->isHit()) { noclip = !noclip; }
     
     if (checky->isHit()) {
         for (const IRoomInfo* r : rooms) {

@@ -39,7 +39,6 @@
     <ClCompile Include="..\Src\Timing\Time.cpp" />
     <ClCompile Include="..\Src\Timing\TimeMaster.cpp" />
     <ClCompile Include="..\Src\Timing\Timer.cpp" />
-    <ClCompile Include="..\Src\World\PlayerController.cpp" />
     <ClCompile Include="..\Src\World\StatWorld.cpp" />
     <ClCompile Include="..\Src\World\World.cpp" />
   </ItemGroup>
@@ -66,7 +65,6 @@
     <ClInclude Include="..\Src\Timing\TimeMaster.h" />
     <ClInclude Include="..\Src\Timing\Timer.h" />
     <ClInclude Include="..\Src\Utilities\Directories.h" />
-    <ClInclude Include="..\Src\World\PlayerController.h" />
     <ClInclude Include="..\Src\World\StatWorld.h" />
     <ClInclude Include="..\Src\World\World.h" />
   </ItemGroup>
