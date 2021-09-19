@@ -147,7 +147,7 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
 
         // CREATE PLAYER
-        playerCon = new PlayerController(inputManager, camera, &coMeCo, PLAYER_HEIGHT, screenMiddle);
+        playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
         playerCon->setPosition(PLAYER_SPAWN);
         togglePaused();
     }

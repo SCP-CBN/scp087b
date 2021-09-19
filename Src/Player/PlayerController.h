@@ -5,8 +5,6 @@
 
 #include "../Collision/Collider.h"
 
-using namespace PGE;
-
 class Camera;
 
 class PlayerController {
@@ -21,8 +19,8 @@ class PlayerController {
 		static constexpr float SPEED = 10.f;
 		static constexpr float GRAVITY = 9.8f / 60.f;
 	
-		Vector3f playerPos;
-		Vector3f camOffset; // Head height
+		PGE::Vector3f playerPos;
+		PGE::Vector3f camOffset; // Head height
 
 		float vertVel;
 
@@ -30,11 +28,11 @@ class PlayerController {
 
 		Collider collider;
 
-		std::unique_ptr<Input> forward;
-		std::unique_ptr<Input> right;
-		std::unique_ptr<Input> left;
-		std::unique_ptr<Input> back;
-		std::unique_ptr<Input> n;
+		std::unique_ptr<PGE::Input> forward;
+		std::unique_ptr<PGE::Input> right;
+		std::unique_ptr<PGE::Input> left;
+		std::unique_ptr<PGE::Input> back;
+		std::unique_ptr<PGE::Input> n;
 
 		PGE::InputManager& inputManager;
 };
