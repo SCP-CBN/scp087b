@@ -126,7 +126,7 @@ World::World(TimeMaster& tm) : tm(tm),
             Vector3f baseRot[2];
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
             baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
-            Random rand;
+            Random rand(String("juan hates cheese").getHashCode());
             Room::RenderInfo rInfo;
             for (int i = 0; i < ROOM_COUNT; i++) {
                 const IRoomInfo* info = &rooms.getRandomRoom(rand);

@@ -14,7 +14,7 @@ const ReferenceVector<Texture> Room::readMaterial(Resources& res, const FilePath
 	textures.push_back(res.getTexture(tex + "_r.png", Texture::Format::R8));
 	ret.push_back(*textures.back());
 
-	textures.push_back(res.getTexture(tex + "_n.png"));
+	textures.push_back(res.getTexture(tex + "_n.ktx2", Texture::CompressedFormat::BC5));
 	ret.push_back(*textures.back());
 
 	textures.push_back(res.getTexture(tex + "_d.png", Texture::Format::R8));
