@@ -11,10 +11,11 @@ class PlayerController {
 	public:
 		PlayerController(PGE::InputManager* inputManager, class Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, Vector2f screenMiddle);
 		
-		void update(float delta, bool noClip);
+		void update(float delta);
 		void setPosition(PGE::Vector3f inPos);
 
 	private:
+		bool noClip = false;
 		static constexpr float speed = 10.f;
 		static constexpr float gravity = 9.8f / 60.f;
 	
@@ -33,6 +34,7 @@ class PlayerController {
 		std::unique_ptr<Input> right;
 		std::unique_ptr<Input> left;
 		std::unique_ptr<Input> back;
+		std::unique_ptr<Input> n;
 
 		PGE::InputManager* inputManager;
 };
