@@ -68,7 +68,7 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, const Tex
 			gli::texture glTex = gli::load_dds((char*)bytes.data(), bytes.size());
 			std::vector<Texture::Mipmap> mipmaps;
 			for (int i = 0; i < glTex.levels(); i++) {
-				mipmaps.emplace_back(glTex.extent(i).x, glTex.extent(i).y, glTex.size(i), (byte*)glTex.data(0, 0, i));
+				mipmaps.emplace_back(glTex.extent(i).x, glTex.extent(i).y, (byte*)glTex.data(0, 0, i), glTex.size(i));
 			}
 			tex = Texture::loadCompressed(graphics, mipmaps, cfmt);
 		}
