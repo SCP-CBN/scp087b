@@ -26,7 +26,7 @@ class Resources {
 
 		Resources(PGE::Graphics& gfx, class Camera& cam);
 
-		Handle<PGE::Texture> getTexture(const PGE::FilePath& path, PGE::Texture::Format fmt = PGE::Texture::Format::RGBA32, bool mipmaps = true);
+		Handle<PGE::Texture> getTexture(const PGE::FilePath& path, const PGE::Texture::AnyFormat& fmt = PGE::Texture::Format::RGBA32, bool mipmaps = true);
 
 		PGE::Shader& getRoomShader() const;
 		PGE::Shader& getTextShader() const;

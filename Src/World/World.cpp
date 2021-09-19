@@ -13,6 +13,8 @@
 #include "StatWorld.h"
 #include "PlayerController.h";
 
+#include <gli/gli.hpp>
+
 using namespace PGE;
 
 constexpr int playerHeight = 150;
@@ -81,7 +83,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::DirectX11);
             graphics->setVsync(false);
         }
 
@@ -147,14 +149,13 @@ World::World(TimeMaster& tm) : tm(tm),
         data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
         glimpseMesh = Mesh::create(*graphics);
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
-        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.png");
+        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.dds", Texture::CompressedFormat::BC3);
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
 
         // CREATE PLAYER
         playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, noclip, screenMiddle);
         playerCon->setPosition(playerSpawn);
         togglePaused();
-
     }
     std::cout << ctor.print() << std::endl;
 }
@@ -301,7 +302,6 @@ bool World::shouldEnd() const {
 
 void World::togglePaused() {
     paused = !paused;
-    graphics->setMouseCaptured(!paused);
-    inputManager->setMouseVisibility(paused);
+    inputManager->setMouseRelativeInput(!paused);
     inputManager->setMousePosition(screenMiddle);
 }
