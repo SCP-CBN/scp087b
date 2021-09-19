@@ -151,7 +151,7 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
 
         // CREATE PLAYER
-        playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, noclip, screenMiddle);
+        playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, screenMiddle);
         playerCon->setPosition(playerSpawn);
         togglePaused();
     }
@@ -224,7 +224,7 @@ bool World::update(float delta) {
 
         {
             Timer _(tm, "coll");
-            playerCon->update(delta);
+            playerCon->update(delta, noclip);
             resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);

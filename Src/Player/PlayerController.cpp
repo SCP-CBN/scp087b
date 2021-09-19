@@ -2,8 +2,8 @@
 
 #include "../Graphics/Camera.h"
 
-PlayerController::PlayerController(PGE::InputManager* inputManager, Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, bool noclip, Vector2f screenMiddle) 
-	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight/2 - 5, 0), noclip(noclip), screenMiddle(screenMiddle) {
+PlayerController::PlayerController(PGE::InputManager* inputManager, Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, Vector2f screenMiddle) 
+	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight/2 - 5, 0), screenMiddle(screenMiddle) {
 	forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
 	right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
 	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
@@ -17,7 +17,7 @@ PlayerController::PlayerController(PGE::InputManager* inputManager, Camera* came
 	collider.setCollisionMeshCollection(coMeCo);
 }
 
-void PlayerController::update(float delta) {
+void PlayerController::update(float delta, bool noClip) {
 	Vector3f addPos;
 	
 	// Using camera direction (possibly temporary)
@@ -34,17 +34,18 @@ void PlayerController::update(float delta) {
 		addPos += camera->getForward().crossProduct(camera->getUpward());
 	}
 
-	addPos.y = 0;
 	// Stop two inputs making speed root 2.
 	addPos = addPos.normalize() * speed;
-
-	//addPos += PGE::Vector3f(0, -gravity * delta, 0);
+	addPos.y = noClip ? addPos.y : 0;
 
 	Vector3f toPos = playerPos + addPos * delta;
-	toPos.y += vertVel - gravity * delta;
+
+	toPos.y += noClip ? 0 : vertVel - gravity * delta;
 	float oldY = playerPos.y;
-	setPosition(noclip ? toPos : collider.tryMove(playerPos, toPos));
+
+	setPosition(noClip ? toPos : collider.tryMove(playerPos, toPos));
 	vertVel = playerPos.y - oldY;
+
 	camera->setPosition(playerPos + camOffset);
 
 	// Mouse Control
