@@ -11,9 +11,7 @@
 #include "../Utilities/Directories.h"
 #include "../Graphics/Text/TextRenderer.h"
 #include "StatWorld.h"
-#include "PlayerController.h";
-
-#include <gli/gli.hpp>
+#include "../Player/PlayerController.h";
 
 using namespace PGE;
 
