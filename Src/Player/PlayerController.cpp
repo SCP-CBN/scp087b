@@ -49,8 +49,8 @@ void PlayerController::update(float delta, bool noClip) {
 	camera->setPosition(playerPos + camOffset);
 
 	// Mouse Control
-	if (inputManager->getMousePosition() != screenMiddle) {
-		Vector2f diff = inputManager->consumeMouseDelta() / 1000.f;
+	Vector2f diff = inputManager->consumeMouseDelta() / 1000.f;
+	if (!diff.equals(Vectors::ZERO2F)) {
 		if (abs(camera->getRotation().x) >= 0.5f * Math::PI) { diff.x = -diff.x; }
 		Vector3f newRot = camera->getRotation() + Vector3f(diff.y, diff.x, 0.f);
 		newRot.x = fmod(newRot.x, 2 * Math::PI);
