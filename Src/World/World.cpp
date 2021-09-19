@@ -29,7 +29,6 @@ static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInpu
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
-static std::unique_ptr<Input> n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -115,7 +114,6 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(three.get());
             inputManager->trackInput(flash.get());
             inputManager->trackInput(checky.get());
-            inputManager->trackInput(n.get());
 
             for (int i = 0; i < 12; i++) {
                 debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
@@ -207,8 +205,6 @@ bool World::update(float delta) {
     if (three->isHit()) { showId = !showId; }
 
     if (flash->isHit()) { lightOn = !lightOn; }
-
-    if (n->isHit()) { noclip = !noclip; }
     
     if (checky->isHit()) {
         for (const IRoomInfo* r : rooms) {
@@ -224,7 +220,7 @@ bool World::update(float delta) {
 
         {
             Timer _(tm, "coll");
-            playerCon->update(delta, noclip);
+            playerCon->update(delta);
             resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);

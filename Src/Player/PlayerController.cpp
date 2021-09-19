@@ -8,16 +8,18 @@ PlayerController::PlayerController(PGE::InputManager* inputManager, Camera* came
 	right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
 	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
 	back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
+	n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
 
 	inputManager->trackInput(forward.get());
 	inputManager->trackInput(right.get());
 	inputManager->trackInput(left.get());
 	inputManager->trackInput(back.get());
+	inputManager->trackInput(n.get());
 
 	collider.setCollisionMeshCollection(coMeCo);
 }
 
-void PlayerController::update(float delta, bool noClip) {
+void PlayerController::update(float delta) {
 	Vector3f addPos;
 	
 	// Using camera direction (possibly temporary)
@@ -32,6 +34,9 @@ void PlayerController::update(float delta, bool noClip) {
 	}
 	if (left->isDown()) {
 		addPos += camera->getForward().crossProduct(camera->getUpward());
+	}
+	if (n->isHit()) {
+		noClip = !noClip;
 	}
 
 	// Stop two inputs making speed root 2.
