@@ -5,20 +5,20 @@
 #include <PGE/Math/Random.h>
 #include <PGE/Math/Interpolator.h>
 
+#include "../Utilities/Directories.h"
 #include "../Graphics/Rooms/RoomInstance.h"
+#include "../Graphics/Text/TextRenderer.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
-#include "../Utilities/Directories.h"
-#include "../Graphics/Text/TextRenderer.h"
+#include "../Player/PlayerController.h"
 #include "StatWorld.h"
-#include "../Player/PlayerController.h";
 
 using namespace PGE;
 
-constexpr int playerHeight = 150;
-constexpr Vector3f playerSpawn(345.f, -45.f, -90.f);
-
 // Shit that needs a proper place.
+constexpr float PLAYER_HEIGHT = 150.f;
+constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
+
 static std::vector<RoomInstance*> instances;
 static int currIndex;
 
@@ -147,8 +147,8 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
 
         // CREATE PLAYER
-        playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, screenMiddle);
-        playerCon->setPosition(playerSpawn);
+        playerCon = new PlayerController(inputManager, camera, &coMeCo, PLAYER_HEIGHT, screenMiddle);
+        playerCon->setPosition(PLAYER_SPAWN);
         togglePaused();
     }
     std::cout << ctor.print() << std::endl;

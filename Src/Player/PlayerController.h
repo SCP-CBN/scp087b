@@ -7,26 +7,26 @@
 
 using namespace PGE;
 
+class Camera;
+
 class PlayerController {
 	public:
-		PlayerController(PGE::InputManager* inputManager, class Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, Vector2f screenMiddle);
+		PlayerController(PGE::InputManager& inputManager, Camera& camera, CollisionMeshCollection& cmc, float playerHeight);
 		
 		void update(float delta);
-		void setPosition(PGE::Vector3f inPos);
+		void setPosition(const PGE::Vector3f& inPos);
 
 	private:
 		bool noClip = false;
-		static constexpr float speed = 10.f;
-		static constexpr float gravity = 9.8f / 60.f;
+		static constexpr float SPEED = 10.f;
+		static constexpr float GRAVITY = 9.8f / 60.f;
 	
 		Vector3f playerPos;
 		Vector3f camOffset; // Head height
 
 		float vertVel;
 
-		Vector2f screenMiddle;
-
-		class Camera* camera;
+		Camera& camera;
 
 		Collider collider;
 
@@ -36,7 +36,7 @@ class PlayerController {
 		std::unique_ptr<Input> back;
 		std::unique_ptr<Input> n;
 
-		PGE::InputManager* inputManager;
+		PGE::InputManager& inputManager;
 };
 
 #endif // B_PLAYERCONTROLLER_H_INCLUDED
