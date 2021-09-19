@@ -10,3 +10,7 @@
 [submodule "Libraries/gli"]
 	path = Libraries/gli
 	url = git@github.com:g-truc/gli.git
+[submodule "Libraries/ktx"]
+	path = Libraries/ktx
+	branch = B
+	url = git@github.com:Saalvage/KTX-Software.git

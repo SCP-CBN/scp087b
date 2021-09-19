@@ -57,6 +57,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "..\Tools\Bverter\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstatic", "..\Tools\Bverter\Libraries\assimp\ProjectFiles\VS2019\contrib\zlib\zlibstatic.vcxproj", "{2B0932E6-1194-310E-8B3A-88010E86CEDB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ktx_read", "..\Libraries\ktx\project_files\win\ktx_read.vcxproj", "{9B6AB092-5057-3260-A8C6-C340F4AEB991}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -141,6 +143,12 @@ Global
 		{2B0932E6-1194-310E-8B3A-88010E86CEDB}.Release|x64.ActiveCfg = Release|x64
 		{2B0932E6-1194-310E-8B3A-88010E86CEDB}.Release|x64.Build.0 = Release|x64
 		{2B0932E6-1194-310E-8B3A-88010E86CEDB}.Release|x86.ActiveCfg = Release|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Debug|x64.ActiveCfg = Debug|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Debug|x64.Build.0 = Debug|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Debug|x86.ActiveCfg = Debug|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Release|x64.ActiveCfg = Release|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Release|x64.Build.0 = Release|x64
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +166,7 @@ Global
 		{05402E84-9390-44A8-81C0-86F75912D938} = {E45C8D00-B2E1-4A8A-8D8B-B0AA9FA899A0}
 		{D7D7D53B-A9B6-3D4E-A784-2A3CEFEF73B8} = {A84D534F-09D9-4E53-B4E1-1ACEB00247C3}
 		{2B0932E6-1194-310E-8B3A-88010E86CEDB} = {A84D534F-09D9-4E53-B4E1-1ACEB00247C3}
+		{9B6AB092-5057-3260-A8C6-C340F4AEB991} = {7554B67E-1726-497A-BA9C-9A4F844BFEA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {321CE764-D974-4CEB-90FB-E549E00E5CD1}
