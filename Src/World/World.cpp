@@ -11,20 +11,18 @@
 #include "../Utilities/Directories.h"
 #include "../Graphics/Text/TextRenderer.h"
 #include "StatWorld.h"
+#include "PlayerController.h";
 
 using namespace PGE;
+
+constexpr int playerHeight = 150;
+constexpr Vector3f playerSpawn(345.f, -45.f, -90.f);
 
 // Shit that needs a proper place.
 static std::vector<RoomInstance*> instances;
 static int currIndex;
 
 static CollisionMeshCollection coMeCo;
-static Collider coll = Collider(10.f, 50.f);
-
-static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
-static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
-static std::unique_ptr<Input> left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
-static std::unique_ptr<Input> back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
 static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
 static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
@@ -88,7 +86,6 @@ World::World(TimeMaster& tm) : tm(tm),
         }
 
         camera = new Camera(WIDTH, HEIGHT, 90);
-        camera->setPosition(Vector3f(345.f, -45.f, -90.f));
         resources = new Resources(*graphics, *camera);
 
         { Timer _(ctor, "rooms");
@@ -112,10 +109,6 @@ World::World(TimeMaster& tm) : tm(tm),
 
             //
             // Do we *need* to untrack these?
-            inputManager->trackInput(forward.get());
-            inputManager->trackInput(right.get());
-            inputManager->trackInput(left.get());
-            inputManager->trackInput(back.get());
             inputManager->trackInput(escape.get());
             inputManager->trackInput(one.get());
             inputManager->trackInput(two.get());
@@ -156,11 +149,10 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
         glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.png");
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
-    
 
-        coll.setCollisionMeshCollection(&coMeCo);
-        //
-
+        // CREATE PLAYER
+        playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, noclip, screenMiddle);
+        playerCon->setPosition(playerSpawn);
         togglePaused();
 
     }
@@ -174,6 +166,7 @@ World::~World() {
         delete inst;
     }
     rooms.unload();
+    delete playerCon;
     delete inputManager;
     delete text;
     delete font;
@@ -229,28 +222,11 @@ bool World::update(float delta) {
     }
 
     if (!paused) {
-        Vector3f addPos;
-
-        constexpr float SPEED = 10.f;
-        if (forward->isDown()) {
-            addPos += camera->getForward() * SPEED;
-        }
-        if (back->isDown()) {
-            addPos -= camera->getForward() * SPEED;
-        }
-        if (right->isDown()) {
-            addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-        }
-        if (left->isDown()) {
-            addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-        }
 
         {
             Timer _(tm, "coll");
-            Vector3f camPos = camera->getPosition();
-            Vector3f toPos = camPos + addPos * delta;
-            camera->setPosition(noclip ? toPos : coll.tryMove(camPos, toPos));
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
+            playerCon->update(delta);
+            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);
             }
@@ -258,17 +234,6 @@ bool World::update(float delta) {
                 + "Y: " + String::from(camera->getPosition().y) + '\n'
                 + "Z: " + String::from(camera->getPosition().z) + '\n'
             );
-        }
-
-        if (inputManager->getMousePosition() != screenMiddle) {
-            Vector2f diff = (inputManager->getMousePosition() - screenMiddle) / 1000.f;
-            if (abs(camera->getRotation().x) >= 0.5f * Math::PI) { diff.x = -diff.x; }
-            Vector3f newRot = camera->getRotation() + Vector3f(diff.y, diff.x, 0.f);
-            newRot.x = fmod(newRot.x, 2 * Math::PI);
-            newRot.y = fmod(newRot.y, 2 * Math::PI);
-            newRot.z = fmod(newRot.z, 2 * Math::PI);
-            camera->setRotation(newRot);
-            inputManager->setMousePosition(screenMiddle);
         }
     }
     
