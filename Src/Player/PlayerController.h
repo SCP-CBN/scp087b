@@ -9,13 +9,12 @@ using namespace PGE;
 
 class PlayerController {
 	public:
-		PlayerController(PGE::InputManager* inputManager, class Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, bool noclip, Vector2f screenMiddle);
+		PlayerController(PGE::InputManager* inputManager, class Camera* camera, CollisionMeshCollection* coMeCo, float playerHeight, Vector2f screenMiddle);
 		
-		void update(float delta);
+		void update(float delta, bool noClip);
 		void setPosition(PGE::Vector3f inPos);
 
 	private:
-		bool noclip;
 		static constexpr float speed = 10.f;
 		static constexpr float gravity = 9.8f / 60.f;
 	

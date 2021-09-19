@@ -162,6 +162,9 @@ World::World(TimeMaster& tm) : tm(tm),
         coll.setCollisionMeshCollection(&coMeCo);
         //
 
+        // CREATE PLAYER
+        playerCon = new PlayerController(inputManager, camera, &coMeCo, playerHeight, screenMiddle);
+        playerCon->setPosition(playerSpawn);
         togglePaused();
     }
     std::cout << ctor.print() << std::endl;
@@ -247,10 +250,8 @@ bool World::update(float delta) {
 
         {
             Timer _(tm, "coll");
-            Vector3f camPos = camera->getPosition();
-            Vector3f toPos = camPos + addPos * delta;
-            camera->setPosition(noclip ? toPos : coll.tryMove(camPos, toPos));
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
+            playerCon->update(delta, noclip);
+            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);
             }
