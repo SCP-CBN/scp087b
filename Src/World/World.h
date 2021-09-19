@@ -33,8 +33,9 @@ class World {
 
         PGE::Graphics* graphics;
         PGE::InputManager* inputManager;
-        class Camera* camera;
+        Camera* camera;
         class Resources* resources;
+        class PlayerController* playerCon;
 
         bool paused = true;
 };

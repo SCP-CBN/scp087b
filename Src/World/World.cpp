@@ -5,33 +5,30 @@
 #include <PGE/Math/Random.h>
 #include <PGE/Math/Interpolator.h>
 
+#include "../Utilities/Directories.h"
 #include "../Graphics/Rooms/RoomInstance.h"
+#include "../Graphics/Text/TextRenderer.h"
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
-#include "../Utilities/Directories.h"
-#include "../Graphics/Text/TextRenderer.h"
+#include "../Player/PlayerController.h"
 #include "StatWorld.h"
 
 using namespace PGE;
 
 // Shit that needs a proper place.
+constexpr float PLAYER_HEIGHT = 150.f;
+constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
+
 static std::vector<RoomInstance*> instances;
 static int currIndex;
 
 static CollisionMeshCollection coMeCo;
-static Collider coll = Collider(10.f, 50.f);
-
-static std::unique_ptr<Input> forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
-static std::unique_ptr<Input> right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
-static std::unique_ptr<Input> left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
-static std::unique_ptr<Input> back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
 static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
 static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
 static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
-static std::unique_ptr<Input> n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -45,8 +42,6 @@ static TextRenderer* idText;
 bool showFps = false;
 bool showPos = false;
 bool showId = false;
-
-bool noclip = false;
 
 static Resources::Handle<Texture> glimpseTex;
 static Mesh* glimpseMesh;
@@ -88,7 +83,6 @@ World::World(TimeMaster& tm) : tm(tm),
         }
 
         camera = new Camera(WIDTH, HEIGHT, 90);
-        camera->setPosition(Vector3f(345.f, -45.f, -90.f));
         resources = new Resources(*graphics, *camera);
 
         { Timer _(ctor, "rooms");
@@ -112,17 +106,12 @@ World::World(TimeMaster& tm) : tm(tm),
 
             //
             // Do we *need* to untrack these?
-            inputManager->trackInput(forward.get());
-            inputManager->trackInput(right.get());
-            inputManager->trackInput(left.get());
-            inputManager->trackInput(back.get());
             inputManager->trackInput(escape.get());
             inputManager->trackInput(one.get());
             inputManager->trackInput(two.get());
             inputManager->trackInput(three.get());
             inputManager->trackInput(flash.get());
             inputManager->trackInput(checky.get());
-            inputManager->trackInput(n.get());
 
             for (int i = 0; i < 12; i++) {
                 debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
@@ -162,11 +151,10 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
         glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.ktx2", Texture::CompressedFormat::BC3);
         glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
-    
 
-        coll.setCollisionMeshCollection(&coMeCo);
-        //
-
+        // CREATE PLAYER
+        playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
+        playerCon->setPosition(PLAYER_SPAWN);
         togglePaused();
     }
     std::cout << ctor.print() << std::endl;
@@ -179,6 +167,7 @@ World::~World() {
         delete inst;
     }
     rooms.unload();
+    delete playerCon;
     delete inputManager;
     delete text;
     delete font;
@@ -220,8 +209,6 @@ bool World::update(float delta) {
     if (three->isHit()) { showId = !showId; }
 
     if (flash->isHit()) { lightOn = !lightOn; }
-
-    if (n->isHit()) { noclip = !noclip; }
     
     if (checky->isHit()) {
         for (const IRoomInfo* r : rooms) {
@@ -234,28 +221,11 @@ bool World::update(float delta) {
     }
 
     if (!paused) {
-        Vector3f addPos;
-
-        constexpr float SPEED = 10.f;
-        if (forward->isDown()) {
-            addPos += camera->getForward() * SPEED;
-        }
-        if (back->isDown()) {
-            addPos -= camera->getForward() * SPEED;
-        }
-        if (right->isDown()) {
-            addPos -= camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-        }
-        if (left->isDown()) {
-            addPos += camera->getForward().crossProduct(camera->getUpward()) * SPEED;
-        }
 
         {
             Timer _(tm, "coll");
-            Vector3f camPos = camera->getPosition();
-            Vector3f toPos = camPos + addPos * delta;
-            camera->setPosition(noclip ? toPos : coll.tryMove(camPos, toPos));
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition());
+            playerCon->update(delta);
+            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 updateIndex(newIndex);
             }
@@ -263,16 +233,6 @@ bool World::update(float delta) {
                 + "Y: " + String::from(camera->getPosition().y) + '\n'
                 + "Z: " + String::from(camera->getPosition().z) + '\n'
             );
-        }
-
-        if (inputManager->getMousePosition() != screenMiddle) {
-            Vector2f diff = inputManager->consumeMouseDelta() / 1000.f;
-            if (abs(camera->getRotation().x) >= 0.5f * Math::PI) { diff.x = -diff.x; }
-            Vector3f newRot = camera->getRotation() + Vector3f(diff.y, diff.x, 0.f);
-            newRot.x = fmod(newRot.x, 2 * Math::PI);
-            newRot.y = fmod(newRot.y, 2 * Math::PI);
-            newRot.z = fmod(newRot.z, 2 * Math::PI);
-            camera->setRotation(newRot);
         }
     }
     
