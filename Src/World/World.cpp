@@ -64,6 +64,9 @@ static void updateIndex(int newIndex) {
     idText->setText(String::from(currIndex));
     idText->setPosition(Vector2f(-50.f + idText->getWidth(), -50.f));
 }
+
+static Texture* rt;
+static Texture* rt2;
 //
 
 World::World(TimeMaster& tm) : tm(tm),
@@ -78,7 +81,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::DirectX11);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::OpenGL);
             graphics->setVsync(false);
         }
 
@@ -88,6 +91,9 @@ World::World(TimeMaster& tm) : tm(tm),
         { Timer _(ctor, "rooms");
             rooms.load(*resources);
         }
+
+        rt = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
+        rt2 = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
 
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
@@ -150,7 +156,6 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpseMesh = Mesh::create(*graphics);
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
         glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.ktx2", Texture::CompressedFormat::BC3);
-        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
 
         // CREATE PLAYER
         playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
@@ -161,6 +166,8 @@ World::World(TimeMaster& tm) : tm(tm),
 }
 
 World::~World() {
+    delete rt;
+    delete rt2;
     glimpseTex.drop();
     delete glimpseMesh;
     for (RoomInstance* inst : instances) {
@@ -242,13 +249,23 @@ bool World::update(float delta) {
 }
 
 void World::render(float interp) const {
+    if (!std::isnan(interp)) {
+        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *rt2, Mesh::Material::Opaque::YES));
+        graphics->setRenderTarget(*rt);
+        render(nanf(""));
+        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *rt, Mesh::Material::Opaque::YES));
+        graphics->setRenderTarget(*rt2);
+        render(nanf(""));
+        graphics->resetRenderTarget();
+    }
+
     for (unsigned i = 0; i < 12; i++) {
         if (debug[i]->isHit()) {
             resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
         }
     }
 
-    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
+    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, 1));
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);
@@ -276,8 +293,10 @@ void World::render(float interp) const {
         if (showId) { idText->render(); }
     }
 
-    { Timer _(tm, "swap");
-        graphics->swap();
+    if (!std::isnan(interp)) {
+        { Timer _(tm, "swap");
+            graphics->swap();
+        }
     }
 }
 
