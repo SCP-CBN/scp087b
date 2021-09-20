@@ -28,7 +28,7 @@ class Font {
 
 		std::unordered_map<PGE::char16, std::shared_ptr<Glyph>> glyphs;
 
-		float height;
+		float charHeight;
 };
 
 #endif // B_FONT_H_INCLUDED
