@@ -133,7 +133,7 @@ World::World(TimeMaster& tm) : tm(tm),
                 rInfo.rotation = i % 2 == 0 ? 0 : Math::degToRad(180);
                 RoomInstance* newRoom = info->instantiate(coMeCo, rInfo);
                 for (int j = 0; j < 4; j++) {
-                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1 : -1) * info->getRoom().getUvOffset((Room::MeshType)j);
+                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1.f : -1.f) * info->getRoom().getUvOffset((Room::MeshType)j);
                 }
                 instances.push_back(newRoom);
                 newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));

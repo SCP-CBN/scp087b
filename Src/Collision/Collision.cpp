@@ -24,6 +24,7 @@ Collision Collision::update(const Line3f& line, float t, const Vector3f& n) {
 
 Collision Collision::sphereCollide(const Line3f& line, float radius, const Vector3f& otherPos, float other_radius) {
     radius += other_radius;
+    // TODO: ???
     //Line3f l = Line3f(line.pointA.subtract(otherPos),line.pointB.subtract(otherPos));
     Vector3f lineDir = line.pointB - line.pointA;
 

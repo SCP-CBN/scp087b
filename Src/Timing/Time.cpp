@@ -21,8 +21,8 @@ void Time::print(String& ret, u64 parentTime, int depth, const String& name) con
         ret += "> " + percentString(time - babySum, time);
         ret += '\n';
 
-        for (const auto& [name, child] : children) {
-            child.print(ret, time, depth + 1, name.str);
+        for (const auto& [childName, child] : children) {
+            child.print(ret, time, depth + 1, childName.str);
         }
     }
 }
