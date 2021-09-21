@@ -7,23 +7,24 @@
 
 class RoomInstance {
 	public:
-		RoomInstance(const Room& room, CollisionMeshCollection& cmc, const Room::RenderInfo& info);
-		~RoomInstance();
+		RoomInstance(const Room& room, CollisionMeshCollection& cmc, const Room::RenderInfo& info, const PGE::Vector3f& pos);
+		virtual ~RoomInstance();
 
-		void render() const;
+		virtual void update(float delta) { }
+		virtual void tick() { }
+		virtual void render(float interp) const;
 
-		void setCollision(bool coll);
+		// Start updating, rendering & colliding.
+		virtual void activate();
+		// Stop updating, rendering & colliding.
+		virtual void deactive();
 
-		void setPosition(const PGE::Vector3f& pos);
-		void setRotation(const PGE::Vector3f& rot);
-
-		const CollisionMeshCollection::Handle& getCollisionHandle() const;
-
-		const PGE::Vector3f& getPosition() const;
+		// Reach floor.
+		virtual void enter() { }
+		// Leave floor.
+		virtual void leave() { }
 
 	private:
-		void updateCollision();
-
 		const Room& room;
 		Transform transform;
 

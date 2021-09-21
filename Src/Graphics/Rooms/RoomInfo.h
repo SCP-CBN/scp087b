@@ -10,7 +10,7 @@ class IRoomInfo {
 	public:
 		virtual ~IRoomInfo() = default;
 
-		virtual RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info) const = 0;
+		virtual RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info, const PGE::Vector3f& pos) const = 0;
 
 		virtual void load(Resources& res) = 0;
 		virtual void unload() = 0;
@@ -33,9 +33,9 @@ class RoomInfo : public IRoomInfo {
 			delete room;
 		}
 
-		RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info) const override {
+		RoomInstance* instantiate(CollisionMeshCollection& cmc, const Room::RenderInfo& info, const PGE::Vector3f& pos) const override {
 			PGE_ASSERT(room != nullptr, "Room was not loaded!");
-			return new RI(*room, cmc, info);
+			return new RI(*room, cmc, info, pos);
 		}
 
 		void load(Resources& res) override {
