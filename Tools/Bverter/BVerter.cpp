@@ -52,11 +52,6 @@ static int getSeamIndex(const String& name) {
     return -1;
 }
 
-template <size_t SIZE>
-static void assertAll(const std::array<bool, SIZE> values) {
-
-}
-
 // extra is called once for every vertex
 static void writeMesh(BinaryWriter& writer, const aiScene* scene, int matIndex, const std::function<void(aiMesh*, unsigned)>& extra = [](auto...){ }) {
     u32 vertCount = 0;
@@ -136,7 +131,7 @@ static bool convertModel(const FilePath& file) {
                     shortestLength = dist;
                 }
             });
-            //PGE_ASSERT(Math::equalFloats(0.f, shortestLength), "Could not find vertex at exit for material " + name);
+            PGE_ASSERT(Math::equalFloats(0.f, shortestLength), "Could not find vertex at exit for material " + name);
             aiVector3D uv = closestMesh->mTextureCoords[0][closestIndex];
             writer.write<float>(uv.x); writer.write<float>(uv.y);
             std::cout << sqrt(shortestLength) << " " << uv.x << ", " << uv.y << ", " << uv.z << std::endl;

@@ -48,6 +48,7 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
+    // TODO: Not working 100%
     float usin = sin(uvRot); float ucos = cos(uvRot);
     matrix fullRotator = matrix(
         ucos, 0.f, usin, 0.f,
