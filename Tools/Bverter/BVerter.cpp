@@ -39,10 +39,10 @@ struct ConnectionPoint {
 
 // Fuck you assimp, once again, this time for not providing constexpr vectors!!
 static const std::array seamMats {
-    ConnectionPoint{ "ceiling_mat", aiVector3D() },
+    ConnectionPoint{ "ceiling_mat", aiVector3D(7.f, -1.78146f, -5.3812f) },
     ConnectionPoint{ "floor_mat", aiVector3D(7.f, -3.92830f, -5.38239f) },
-    ConnectionPoint{ "innerwall_mat", aiVector3D() },
-    ConnectionPoint{ "outerwall_mat", aiVector3D() }
+    ConnectionPoint{ "innerwall_mat", aiVector3D(7.f, -3.98425f, -5.3812f) },
+    ConnectionPoint{ "outerwall_mat", aiVector3D(8.f, -3.98424f, -5.3812f) }
 };
 
 static int getSeamIndex(const String& name) {
