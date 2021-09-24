@@ -15,7 +15,7 @@ class PlayerController {
 		void setPosition(const PGE::Vector3f& inPos);
 
 	private:
-		bool noClip = false;
+		bool noClip = true;
 		static constexpr float SPEED = 10.f;
 		static constexpr float GRAVITY = 9.8f / 60.f;
 	

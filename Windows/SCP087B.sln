@@ -48,6 +48,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "..\Tools\TextMa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Bverter", "..\Tools\Bverter\Windows\Bverter.vcxproj", "{05402E84-9390-44A8-81C0-86F75912D938}"
 	ProjectSection(ProjectDependencies) = postProject
+		{86FA7807-97DD-432B-BAFD-4B8304762DEA} = {86FA7807-97DD-432B-BAFD-4B8304762DEA}
 		{D7D7D53B-A9B6-3D4E-A784-2A3CEFEF73B8} = {D7D7D53B-A9B6-3D4E-A784-2A3CEFEF73B8}
 	EndProjectSection
 EndProject

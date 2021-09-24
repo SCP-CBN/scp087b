@@ -9,7 +9,7 @@ cbuffer cbVertex {
     matrix viewMatrix;
     matrix projectionMatrix;
     float2 uvOff;
-    float2 uvScale;
+    float uvRot;
 }
 
 cbuffer cbFrag {
@@ -48,9 +48,20 @@ PS_INPUT VS(VS_INPUT input) {
     output.position = mul(viewMatrix, worldPos);
     output.position = mul(projectionMatrix, output.position);
     output.normal = normalize(mul(worldMatrix, float4(input.normal, 0.0)).xyz);
-    output.tangent = uvScale.x * normalize(mul(worldMatrix, float4(input.tangent, 0.0)).xyz);
-    output.bitangent = uvScale.y * normalize(mul(worldMatrix, float4(input.bitangent, 0.0)).xyz);
-    output.uv = uvScale * input.uv + uvOff;
+    float usin = sin(uvRot); float ucos = cos(uvRot);
+    matrix fullRotator = matrix(
+        ucos, 0.f, usin, 0.f,
+        0.f, 1.f, 0.f, 0.f,
+        -usin, 0.f, ucos, 0.f,
+        0.f, 0.f, 0.f, 1.f
+    );
+    output.tangent = normalize(mul(fullRotator, mul(worldMatrix, float4(input.tangent, 0.0))).xyz);
+    output.bitangent = normalize(mul(fullRotator, mul(worldMatrix, float4(input.bitangent, 0.0))).xyz);
+    float2x2 rotator = float2x2(
+        ucos, -usin,
+        usin, ucos
+    );
+    output.uv = mul(rotator, input.uv) + uvOff;
     return output;
 }
 
@@ -94,8 +105,10 @@ PS_OUTPUT PS(PS_INPUT input) {
     float weight = (layerDepth - texDepth) / (prevTexDepth - texDepth - deltaLayerDepth);
     uv = lerp(uv, prevUV, weight);
 
-    float3 normSmp = norm.Sample(smp, uv).rgb;
-    float3 normal = normalize((normSmp.r - 0.5) * 2.0 * input.tangent + (normSmp.g - 0.5) * 2.0 * input.bitangent + normSmp.b * input.normal);
+    float2 normSmp = norm.Sample(smp, uv).rg;
+    float r = 2 * normSmp.r - 1; float g = 2 * normSmp.g - 1;
+    float normBlue = 0.5 * sqrt(1.0 - r * r - g * g) + 0.5;
+    float3 normal = normalize((normSmp.r - 0.5) * 2.0 * input.tangent + (normSmp.g - 0.5) * 2.0 * input.bitangent + normBlue * input.normal);
 
     float3 dist = lightPos - input.worldPos;
     float acDist = 1.0 - saturate((dist.x * dist.x + dist.y * dist.y + dist.z * dist.z) / effectiveRangeSquared);
@@ -125,6 +138,9 @@ PS_OUTPUT PS(PS_INPUT input) {
         } break;
         case 5u: {
             output.color = diff.Sample(smp, input.uv);
+        } break;
+        case 6u: {
+            output.color = float4(normSmp.r, normSmp.g, normBlue, 1.0);
         } break;
     }
     
