@@ -36,6 +36,7 @@ class World {
         Camera* camera;
         class Resources* resources;
         class PlayerController* playerCon;
+        class Glimpse* glimpse;
 
         bool paused = true;
 };
