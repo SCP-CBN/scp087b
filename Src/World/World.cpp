@@ -227,9 +227,13 @@ bool World::update(float delta) {
             playerCon->update(delta);
             resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
-                instances[currIndex]->leave();
+                if (currIndex >= 0 && currIndex < instances.size()) {
+                    instances[currIndex]->leave();
+                }
                 updateIndex(newIndex);
-                instances[newIndex]->enter();
+                if (newIndex >= 0 && newIndex < instances.size()) {
+                    instances[newIndex]->enter();
+                }
             }
             posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
                 + "Y: " + String::from(camera->getPosition().y) + '\n'

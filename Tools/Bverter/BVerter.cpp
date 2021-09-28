@@ -4,6 +4,7 @@
 #include <array>
 
 #include <PGE/File/BinaryWriter.h>
+#include <PGE/Math/Math.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
