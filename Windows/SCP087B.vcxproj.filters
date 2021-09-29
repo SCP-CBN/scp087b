@@ -65,6 +65,9 @@
     <ClCompile Include="..\Src\Player\PlayerController.cpp">
       <Filter>Player</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Entities\Glimpse.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -96,6 +99,9 @@
     </Filter>
     <Filter Include="Player">
       <UniqueIdentifier>{28d32e2f-fac6-44a9-b627-b2033f9a02b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{09628c4b-817b-4614-8c24-809b4100565a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +176,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\Player\PlayerController.h">
       <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Entities\Glimpse.h">
+      <Filter>Entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
