@@ -19,7 +19,7 @@ using namespace PGE;
 // Shit that needs a proper place.
 constexpr float PLAYER_HEIGHT = 150.f;
 constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
-static Vector3f glimpsePos = Vector3f(250.f, -100.f, -50.f);
+constexpr Vector3f GLIMPSE_POS(250.f, -100.f, -50.f);
 
 static CollisionMeshCollection coMeCo;
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
@@ -143,7 +143,7 @@ World::World(TimeMaster& tm) : tm(tm),
         }
 
         glimpse = new Glimpse(*resources);
-        glimpse->setPosition(glimpsePos);
+        glimpse->setPosition(GLIMPSE_POS);
 
         // CREATE PLAYER
         playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);

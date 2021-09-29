@@ -14,7 +14,7 @@ class Glimpse {
         void update(const PGE::Vector3f& direction);
 
     private:
-        Resources &resources;
+        Resources& resources;
         PGE::Vector3f glimpsePos;
         PGE::Mesh* glimpseMesh;
         Resources::Handle<PGE::Texture> glimpseTex;
