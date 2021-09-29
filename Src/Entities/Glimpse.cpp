@@ -1,7 +1,8 @@
 #include "Glimpse.h"
 
+#include <PGE/Graphics/Material.h>
+
 #include "../Graphics/Resources.h"
-#include <PGE/Graphics/Graphics.h>
 #include "../Utilities/Directories.h"
 
 using namespace PGE;
@@ -16,12 +17,14 @@ Glimpse::Glimpse(Resources& res) : resources(res) {
     glimpseMesh = Mesh::create(graphics);
     glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
     glimpseTex = resources.getTexture(Directories::TEXTURES + "glimpse.ktx2", Texture::CompressedFormat::BC3);
-    glimpseMesh->setMaterial(Mesh::Material(resources.getGlimpseShader(), *glimpseTex, Mesh::Material::Opaque::YES));
+    material = Material::create(graphics, resources.getGlimpseShader(), *glimpseTex, Material::Opaque::YES);
+    glimpseMesh->setMaterial(material);
 }
 
 Glimpse::~Glimpse() {
-    glimpseTex.drop();
     delete glimpseMesh;
+    delete material;
+    glimpseTex.drop();
 }
 
 void Glimpse::setPosition(const Vector3f& inPos) {

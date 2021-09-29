@@ -27,7 +27,7 @@ class TextRenderer {
 		PGE::Vector2f position;
 		PGE::Shader::Constant& positionConstant;
 
-		PGE::Mesh::Material material;
+		PGE::Material* material;
 		PGE::Mesh* mesh;
 
 		float width;

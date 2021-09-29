@@ -38,23 +38,25 @@ class Room {
 		void toggleDebug();
 
 	private:
+		Resources& resources;
+		
 		std::array<PGE::Vector2f, 4> uvOffsets;
 	
 		std::array<PGE::Mesh*, 4> iMeshes;
 		std::vector<PGE::Mesh*> otherMeshes;
 
+		std::vector<PGE::Material*> materials;
 		std::vector<Resources::Handle<PGE::Texture>> textures;
 		Resources::Handle<PGE::Texture> debugTex;
 		bool debug = false;
 		
-		PGE::Shader& roomShader;
 		PGE::Shader::Constant* matrixConstant;
 		PGE::Shader::Constant* uvOffConstant;
 		PGE::Shader::Constant* uvRotConstant;
 		
 		CollisionMesh* collisionMesh;
 
-		const PGE::ReferenceVector<PGE::Texture> readMaterial(Resources& res, const PGE::FilePath& tex);
+		PGE::Material* readMaterial(Resources& res, const PGE::FilePath& tex);
 		void readMesh(PGE::BinaryReader& reader, PGE::Mesh& mesh, std::vector<PGE::Vector3f>& cVertices, std::vector<PGE::u32>& cIndices);
 };
 

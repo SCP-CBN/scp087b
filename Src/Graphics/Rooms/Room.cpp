@@ -1,31 +1,34 @@
 #include "Room.h"
 
+#include <PGE/Graphics/Material.h>
+
 #include "../../Utilities/Directories.h"
 
 using namespace PGE;
 
 constexpr int TEXTURES_PER_MATERIAL = 4;
 
-const ReferenceVector<Texture> Room::readMaterial(Resources& res, const FilePath& tex) {
-	ReferenceVector<Texture> ret; ret.reserve(TEXTURES_PER_MATERIAL);
+Material* Room::readMaterial(Resources& res, const FilePath& tex) {
+	ReferenceVector<Texture> texs; texs.reserve(TEXTURES_PER_MATERIAL);
 	textures.push_back(res.getTexture(tex + ".png"));
-	ret.push_back(*textures.back());
+	texs.push_back(*textures.back());
 
 	textures.push_back(res.getTexture(tex + "_r.png", Texture::Format::R8));
-	ret.push_back(*textures.back());
+	texs.push_back(*textures.back());
 
 	textures.push_back(res.getTexture(tex + "_n.ktx2", Texture::CompressedFormat::BC5));
-	ret.push_back(*textures.back());
+	texs.push_back(*textures.back());
 
 	textures.push_back(res.getTexture(tex + "_d.png", Texture::Format::R8));
-	ret.push_back(*textures.back());
+	texs.push_back(*textures.back());
 
-	return ret;
+	materials.emplace_back(Material::create(res.getGraphics(), res.getRoomShader(), texs, Material::Opaque::YES));
+	return materials.back();
 }
 
 void Room::readMesh(BinaryReader& reader, Mesh& mesh, std::vector<Vector3f>& cVertices, std::vector<u32>& cIndices) {
 	i32 vertCount = reader.read<i32>();
-	StructuredData data(roomShader.getVertexLayout(), vertCount);
+	StructuredData data(resources.getRoomShader().getVertexLayout(), vertCount);
 	int oldCVertSize = (int)cVertices.size();
 	cVertices.resize(cVertices.size() + vertCount);
 	for (int j = 0; j < vertCount; j++) {
@@ -48,10 +51,16 @@ void Room::readMesh(BinaryReader& reader, Mesh& mesh, std::vector<Vector3f>& cVe
 	mesh.setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
 }
 
-Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader()) {
+Room::Room(Resources& res, const FilePath& path) : resources(res) {
+	Shader& roomShader = resources.getRoomShader();
 	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
 	uvOffConstant = &roomShader.getVertexShaderConstant("uvOff");
 	uvRotConstant = &roomShader.getVertexShaderConstant("uvRot");
+
+	materials.reserve(2);
+	textures.reserve(2 * TEXTURES_PER_MATERIAL);
+	readMaterial(res, Directories::TEXTURES + "concretefloor");
+	readMaterial(res, Directories::TEXTURES + "brickwall");
 
 	BinaryReader reader(path + ".b");
 
@@ -65,18 +74,18 @@ Room::Room(Resources& res, const FilePath& path) : roomShader(res.getRoomShader(
 		readMesh(reader, *iMeshes[index], cVertices, cIndices);
 		uvOffsets[index] = reader.read<Vector2f>();
 
-		FilePath textureName = Directories::TEXTURES + (index < 2 ? "concretefloor" : "brickwall");
-		iMeshes[index]->setMaterial(Mesh::Material(roomShader, readMaterial(res, textureName), Mesh::Material::Opaque::YES));
+		iMeshes[index]->setMaterial(materials[index / 2]);
 	}
 
 	byte texCount = reader.read<byte>();
+	materials.reserve(materials.size() + texCount);
+	textures.reserve(textures.size() + texCount * TEXTURES_PER_MATERIAL);
 	otherMeshes.reserve(texCount * TEXTURES_PER_MATERIAL);
-	textures.reserve(texCount * TEXTURES_PER_MATERIAL);
 	for (int i = 0; i < texCount; i++) {
 		otherMeshes.push_back(Mesh::create(res.getGraphics()));
 
 		FilePath textureName = Directories::TEXTURES + reader.read<String>();
-		otherMeshes.back()->setMaterial(Mesh::Material(roomShader, readMaterial(res, textureName), Mesh::Material::Opaque::YES));
+		otherMeshes.back()->setMaterial(readMaterial(res, textureName));
 		readMesh(reader, *otherMeshes.back(), cVertices, cIndices);
 	}
 
@@ -90,6 +99,7 @@ Room::~Room() {
 	delete collisionMesh;
 	for (Mesh* m : otherMeshes) { delete m; }
 	for (Mesh* m : iMeshes) { delete m; }
+	for (Material* m : materials) { delete m; }
 	for (Resources::Handle<Texture> tex : textures) { tex.drop(); }
 }
 
@@ -116,19 +126,23 @@ const Vector2f& Room::getUvOffset(MeshType type) const {
 }
 
 void Room::toggleDebug() {
-	for (int i = 0; i < iMeshes.size(); i++) {
-		ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
-		int j;
-		if (debug) {
-			j = 0;
-		} else {
+	// Add the debug materials.
+	if (textures.size() / TEXTURES_PER_MATERIAL == materials.size()) {
+		materials.reserve(materials.size() + 2);
+		Shader& roomShader = resources.getRoomShader();
+		for (int i = 0; i < 2; i++) {
+			ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
 			currTexs.push_back(*debugTex);
-			j = 1;
+			for (int j = 1; j < TEXTURES_PER_MATERIAL; j++) {
+				currTexs.push_back(*textures[i * TEXTURES_PER_MATERIAL + j]);
+			}
+			materials.push_back(Material::create(resources.getGraphics(), roomShader, currTexs, Material::Opaque::YES));
 		}
-		for (; j < TEXTURES_PER_MATERIAL; j++) {
-			currTexs.push_back(*textures[i * TEXTURES_PER_MATERIAL + j]);
-		}
-		iMeshes[i]->setMaterial(Mesh::Material(roomShader, currTexs, Mesh::Material::Opaque::YES));
 	}
+
 	debug =! debug;
+	int start = debug ? materials.size() - 2 : 0;
+	for (int i = 0; i < iMeshes.size(); i++) {
+		iMeshes[i]->setMaterial(materials[start + i / 2]);
+	}
 }

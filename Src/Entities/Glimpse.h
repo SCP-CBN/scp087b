@@ -1,8 +1,9 @@
 #ifndef B_GLIMPSE_H_INCLUDED
 #define B_GLIMPSE_H_INCLUDED
 
-#include "../Graphics/Resources.h"
 #include <PGE/Graphics/Mesh.h>
+
+#include "../Graphics/Resources.h"
 
 class Glimpse {
     public:
@@ -17,6 +18,7 @@ class Glimpse {
         Resources& resources;
         PGE::Vector3f glimpsePos;
         PGE::Mesh* glimpseMesh;
+        PGE::Material* material;
         Resources::Handle<PGE::Texture> glimpseTex;
 };
 
