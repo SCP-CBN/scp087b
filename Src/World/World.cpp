@@ -22,14 +22,6 @@ constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
 constexpr Vector3f GLIMPSE_POS(250.f, -100.f, -50.f);
 
 static CollisionMeshCollection coMeCo;
-static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
-static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
-static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
-static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
-static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
-static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
-
-static std::vector<std::unique_ptr<Input>> debug(12);
 
 static Vector2f screenMiddle;
 
@@ -37,10 +29,6 @@ static Font* font;
 static TextRenderer* text;
 static TextRenderer* posText;
 static TextRenderer* idText;
-
-bool showFps = false;
-bool showPos = false;
-bool showId = false;
 
 constexpr int ROOM_HEIGHT = 200;
 
@@ -110,17 +98,6 @@ World::World(TimeMaster& tm) : tm(tm),
 
             //
             // Do we *need* to untrack these?
-            inputManager->trackInput(escape.get());
-            inputManager->trackInput(one.get());
-            inputManager->trackInput(two.get());
-            inputManager->trackInput(three.get());
-            inputManager->trackInput(flash.get());
-            inputManager->trackInput(checky.get());
-
-            for (int i = 0; i < 12; i++) {
-                debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
-                inputManager->trackInput(debug[i].get());
-            }
         }
 
         { Timer _(ctor, "map");
@@ -146,7 +123,7 @@ World::World(TimeMaster& tm) : tm(tm),
         glimpse->setPosition(GLIMPSE_POS);
 
         // CREATE PLAYER
-        playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
+        playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT, *this);
         playerCon->setPosition(PLAYER_SPAWN);
         togglePaused();
     }
@@ -170,7 +147,6 @@ World::~World() {
 }
 
 //
-bool lightOn = false;
 static Vector3f prevColor;
 static Vector3f color;
 //
@@ -193,19 +169,7 @@ bool World::update(float delta) {
     graphics->update();
     inputManager->update();
 
-    if (escape->isHit()) { togglePaused(); }
-
-    if (one->isHit()) { showFps = !showFps; }
-    if (two->isHit()) { showPos = !showPos; }
-    if (three->isHit()) { showId = !showId; }
-
-    if (flash->isHit()) { lightOn = !lightOn; }
-    
-    if (checky->isHit()) {
-        for (const IRoomInfo* r : rooms) {
-            r->getRoom().toggleDebug();
-        }
-    }
+    playerCon->nonMoveUpdates();
 
     if (!graphics->isWindowFocused() && !paused) {
         togglePaused();
@@ -239,12 +203,6 @@ bool World::update(float delta) {
 }
 
 void World::render(float interp) const {
-    for (unsigned i = 0; i < 12; i++) {
-        if (debug[i]->isHit()) {
-            resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
-        }
-    }
-
     resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
 
     { Timer _(tm, "clear");

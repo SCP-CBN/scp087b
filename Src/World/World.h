@@ -24,6 +24,14 @@ class World {
         void tick();
         void render(float interp) const;
 
+        //Temp UserInterface and lighting block
+        void swapFps() { showFps = !showFps; }
+        void swapPos() { showPos = !showPos; }
+        void swapId() { showId = !showId; }
+        void swapLight() { lightOn = !lightOn; }
+        Resources* getResources() { return resources; }
+        RoomSet getRoomset() { return rooms; }
+
     private:
         TimeMaster& tm;
         // The real master behind the curtains
@@ -39,6 +47,12 @@ class World {
         class Glimpse* glimpse;
 
         bool paused = true;
+
+        //Temp UserInterface block
+        bool showFps = false;
+        bool showPos = false;
+        bool showId = false;
+        bool lightOn = false;
 };
 
 #endif // B_WORLD_H_INCLUDED

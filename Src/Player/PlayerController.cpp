@@ -4,19 +4,37 @@
 
 using namespace PGE;
 
-PlayerController::PlayerController(InputManager& inputManager, Camera& camera, CollisionMeshCollection& cmc, float playerHeight) 
-	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight /2 - 5.f, 0) {
+PlayerController::PlayerController(InputManager& inputManager, Camera& camera, CollisionMeshCollection& cmc, float playerHeight, World& world) 
+	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight /2 - 5.f, 0), world(world) {
 	forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
 	right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
 	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
 	back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
 	n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
 
+	one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
+	two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
+	three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
+	escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
+	flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
+	checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
+
 	inputManager.trackInput(forward.get());
 	inputManager.trackInput(right.get());
 	inputManager.trackInput(left.get());
 	inputManager.trackInput(back.get());
 	inputManager.trackInput(n.get());
+	inputManager.trackInput(flash.get());
+
+	//UserInterface block
+	inputManager.trackInput(one.get());
+	inputManager.trackInput(two.get());
+	inputManager.trackInput(three.get());
+	inputManager.trackInput(escape.get());
+	for (int i = 0; i < 12; i++) {
+		debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
+		inputManager.trackInput(debug[i].get());
+	}
 
 	collider.setCollisionMeshCollection(&cmc);
 }
@@ -39,6 +57,9 @@ void PlayerController::update(float delta) {
 	}
 	if (n->isHit()) {
 		noClip = !noClip;
+	}
+	if (flash->isHit()) {
+		world.swapLight();
 	}
 
 	// Stop two inputs making speed root 2.
@@ -69,4 +90,29 @@ void PlayerController::update(float delta) {
 
 void PlayerController::setPosition(const Vector3f& inPos) {
 	playerPos = inPos;
+}
+
+void PlayerController::nonMoveUpdates() {
+	if (one->isHit()) {
+		world.swapFps();
+	}
+	if (two->isHit()) {
+		world.swapPos();
+	}
+	if (three->isHit()) {
+		world.swapId();
+	}
+	if (escape->isHit()) {
+		world.togglePaused();
+	}
+	for (unsigned i = 0; i < 12; i++) {
+		if (debug[i]->isHit()) {
+			world.getResources()->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
+		}
+	}
+	if (checky->isHit()) {
+		for (const IRoomInfo* r : world.getRoomset()) {
+			r->getRoom().toggleDebug();
+		}
+	}
 }
