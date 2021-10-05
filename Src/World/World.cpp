@@ -260,7 +260,7 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "glimpse");
-        glimpse->update(camera->getPosition());
+        glimpse->lerpFacing(camera->getPosition());
         glimpse->render();
     }
 

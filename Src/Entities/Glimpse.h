@@ -12,13 +12,15 @@ class Glimpse {
 
         void setPosition(const PGE::Vector3f& inPos);
         void render();
-        void update(const PGE::Vector3f& direction);
+        void lerpFacing(const PGE::Vector3f& direction);
+        void setFacing(const PGE::Vector3f& direction);
 
     private:
         Resources& resources;
         PGE::Vector3f glimpsePos;
         PGE::Mesh* glimpseMesh;
         PGE::Material* material;
+        PGE::Vector3f facing;
         Resources::Handle<PGE::Texture> glimpseTex;
 };
 

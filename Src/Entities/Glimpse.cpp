@@ -1,6 +1,7 @@
 #include "Glimpse.h"
 
 #include <PGE/Graphics/Material.h>
+#include <PGE/Math/Interpolator.h>
 
 #include "../Graphics/Resources.h"
 #include "../Utilities/Directories.h"
@@ -35,8 +36,13 @@ void Glimpse::render() {
     glimpseMesh->render();
 }
 
-void Glimpse::update(const Vector3f& direction) {
+void Glimpse::lerpFacing(const Vector3f& direction) {
+    setFacing(PGE::Interpolator::lerp(facing, direction, 0.01));
+}
+
+void Glimpse::setFacing(const Vector3f& direction) {
     resources.getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(
         Matrix4x4f::translate(glimpsePos) * Matrix4x4f::lookAt(glimpsePos, direction)
     );
+    facing = direction;
 }
