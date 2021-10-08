@@ -36,8 +36,12 @@ void Glimpse::render() {
     glimpseMesh->render();
 }
 
-void Glimpse::lerpFacing(const Vector3f& direction) {
-    setFacing(PGE::Interpolator::lerp(facing, direction, 0.01));
+void Glimpse::lerpFacing(float interp) {
+    setFacing(PGE::Interpolator::lerp(priorTickFacing, currTick, interp));
+}
+
+void Glimpse::setPriorTick(const Vector3f& direction) {
+    priorTickFacing = direction;
 }
 
 void Glimpse::setFacing(const Vector3f& direction) {
