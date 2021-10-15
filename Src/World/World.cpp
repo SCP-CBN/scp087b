@@ -163,6 +163,8 @@ World::~World() {
     delete playerCon;
     delete inputManager;
     delete text;
+    delete posText;
+    delete idText;
     delete font;
     delete resources;
     delete camera;
