@@ -33,6 +33,8 @@ class Room {
 
 		const CollisionMesh& getCollisionMesh() const;
 
+		const PGE::Vector3f& getExit() const;
+		float getExitAngle() const;
 		const PGE::Vector2f& getUvOffset(MeshType type) const;
 
 		void toggleDebug();
@@ -40,6 +42,9 @@ class Room {
 	private:
 		Resources& resources;
 		
+		PGE::Vector3f exit;
+		float exitAngle;
+
 		std::array<PGE::Vector2f, 4> uvOffsets;
 	
 		std::array<PGE::Mesh*, 4> iMeshes;

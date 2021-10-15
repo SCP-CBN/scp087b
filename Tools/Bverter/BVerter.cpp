@@ -5,6 +5,8 @@
 
 #include <PGE/File/BinaryWriter.h>
 #include <PGE/Math/Math.h>
+#include <PGE/Math/Vector.h>
+#include <PGE/Math/Matrix.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -34,16 +36,16 @@ static int defaultSteps =
     aiProcess_OptimizeMeshes;
 
 struct ConnectionPoint {
-    String mat;
-    aiVector3D pos;
+    const char* mat;
+    Vector3f pos;
 };
 
 // Fuck you assimp, once again, this time for not providing constexpr vectors!!
-static const std::array seamMats {
-    ConnectionPoint{ "ceiling_mat", aiVector3D(7.f, -1.78146f, -5.3812f) },
-    ConnectionPoint{ "floor_mat", aiVector3D(7.f, -3.92830f, -5.38239f) },
-    ConnectionPoint{ "innerwall_mat", aiVector3D(7.f, -3.98425f, -5.3812f) },
-    ConnectionPoint{ "outerwall_mat", aiVector3D(8.f, -3.98424f, -5.3812f) }
+static constexpr std::array seamMats {
+    ConnectionPoint{ "ceiling_mat", Vector3f(0.5f, 1.21854f, 0.f) },
+    ConnectionPoint{ "floor_mat", Vector3f(0.5f, -0.9283f, 0.f) },
+    ConnectionPoint{ "innerwall_mat", Vector3f(0.5f, -0.98424f, 0.f) },
+    ConnectionPoint{ "outerwall_mat", Vector3f(-0.5f, -0.98424f, 0.f) }
 };
 
 static int getSeamIndex(const String& name) {
@@ -100,16 +102,42 @@ static void writeMesh(BinaryWriter& writer, const aiScene* scene, int matIndex, 
     }
 }
 
+static const aiVector3D toAssimp(const Vector3f& vec) {
+    return aiVector3D(vec.x, vec.y, vec.z);
+}
+
+static float parseFloat(const String& str) {
+    return str.trim().to<float>();
+}
+
 static bool convertModel(const FilePath& file) {
     Assimp::Importer importer;
     if (!importer.IsExtensionSupported(("." + file.getExtension()).cstr())) {
         return false;
     }
 
+    FilePath metaFile = (file.trimExtension() + ".meta");
+    PGE_ASSERT(metaFile.exists(), "Metadata file doesn't exist");
+    std::vector<String> metaData = metaFile.readText().split(",", true);
+    PGE_ASSERT(metaData.size() == 4, "Metadata file is incomplete");
+
+    Vector3f exit(parseFloat(metaData[0]), parseFloat(metaData[1]), parseFloat(metaData[2]));
+    aiVector3D assExit(toAssimp(exit));
+    float angle = Math::degToRad(parseFloat(metaData[3]));
+
+    BinaryWriter writer(converterResult(file));
+
+    writer.write(exit * 100.f);
+    writer.write(angle);
+
     const aiScene* scene = importer.ReadFile(file.str().cstr(), defaultSteps);
     PGE_ASSERT(scene != nullptr, importer.GetErrorString());
 
-    BinaryWriter writer(converterResult(file));
+    Matrix4x4f rotator = Matrix4x4f::rotate(Vector3f(0.f, angle, 0.f));
+    std::array<aiVector3D, seamMats.size()> rotated;
+    for (int i = 0; i < rotated.size(); i++) {
+        rotated[i] = toAssimp(rotator.transform(seamMats[i].pos));
+    }
 
     std::array<bool, seamMats.size()> hasMat{ };
     for (unsigned i = 0; i < scene->mNumMaterials; i++) {
@@ -125,7 +153,7 @@ static bool convertModel(const FilePath& file) {
             unsigned closestIndex;
             ai_real shortestLength = std::numeric_limits<ai_real>::infinity();
             writeMesh(writer, scene, i, [&](aiMesh* mesh, unsigned index) {
-                ai_real dist = (mesh->mVertices[index] - seamMats[seamIndex].pos).SquareLength();
+                ai_real dist = (mesh->mVertices[index] - (assExit + rotated[seamIndex])).SquareLength();
                 if (dist < shortestLength) {
                     closestMesh = mesh;
                     closestIndex = index;
@@ -139,7 +167,7 @@ static bool convertModel(const FilePath& file) {
         }
     }
     for (size_t i = 0; i < hasMat.size(); i++) {
-        PGE_ASSERT(hasMat[i], "Not all connection meshes were included! Missing: " + seamMats[i].mat);
+        PGE_ASSERT(hasMat[i], String("Not all connection meshes were included! Missing: ") + seamMats[i].mat);
     }
 
     writer.write<byte>(scene->mNumMaterials - 4);

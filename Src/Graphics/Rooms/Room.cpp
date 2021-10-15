@@ -64,6 +64,9 @@ Room::Room(Resources& res, const FilePath& path) : resources(res) {
 
 	BinaryReader reader(path + ".b");
 
+	exit = reader.read<Vector3f>();
+	exitAngle = reader.read<float>();
+
 	std::vector<Vector3f> cVertices;
 	std::vector<u32> cIndices;
 
@@ -119,6 +122,14 @@ void Room::render(const Matrix4x4f& mat, const RenderInfo& info) const {
 
 const CollisionMesh& Room::getCollisionMesh() const {
 	return *collisionMesh;
+}
+
+const Vector3f& Room::getExit() const {
+	return exit;
+}
+
+float Room::getExitAngle() const {
+	return exitAngle;
 }
 
 const Vector2f& Room::getUvOffset(MeshType type) const {

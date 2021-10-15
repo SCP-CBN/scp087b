@@ -73,7 +73,7 @@ static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
         new RoomInfo("default", 100),
-        new RoomInfo("room1", 50)
+        /*new RoomInfo("room1", 50)*/
     }) {
 
     TimeMaster ctor;
@@ -126,18 +126,29 @@ World::World(TimeMaster& tm) : tm(tm),
         { Timer _(ctor, "map");
             constexpr int ROOM_COUNT = 100;
             instances.reserve(ROOM_COUNT);
-            Vector3f basePos[2];
-            basePos[1] = Vector3f(800.f, 0.f, -700.f);
+            Vector3f runningPos = Vectors::ZERO3F;
+            float runningAngle = 0.f;
+            Room::RenderInfo runningInfo;
             Random rand(String("juan hates cheese").getHashCode());
-            Room::RenderInfo rInfo;
             for (int i = 0; i < ROOM_COUNT; i++) {
                 const IRoomInfo* info = &rooms.getRandomRoom(rand);
-                rInfo.rotation = i % 2 == 0 ? 0 : Math::degToRad(180);
-                RoomInstance* newRoom = info->instantiate(coMeCo, rInfo, basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
-                for (int j = 0; j < 4; j++) {
-                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1.f : -1.f) * info->getRoom().getUvOffset((Room::MeshType)j);
+                runningInfo.rotation = runningAngle;
+                RoomInstance* newRoom = info->instantiate(coMeCo, runningInfo, runningPos);
+                float cos = std::cos(runningAngle); float sin = std::sin(runningAngle);
+                for (int j = 0; j < 2; j++) {
+                    Vector2f uv = info->getRoom().getUvOffset((Room::MeshType)j);
+                    runningInfo.offsets[j] += Vector2f(
+                        uv.x * cos + uv.y * sin,
+                        uv.x * -sin + uv.y * cos
+                    );
+                }
+                for (int j = 2; j < 4; j++) {
+                    runningInfo.offsets[j] += info->getRoom().getUvOffset((Room::MeshType)j);
                 }
                 instances.push_back(newRoom);
+
+                runningPos += Matrix4x4f::rotate(Vector3f(0.f, runningAngle, 0.f)).transform(info->getRoom().getExit());
+                runningAngle += info->getRoom().getExitAngle();
             }
             updateIndex(0);
         }
