@@ -11,6 +11,7 @@ TextRenderer::TextRenderer(Resources& res, const Font& fnt)
 	material = Material::create(res.getGraphics(), res.getTextShader(), fnt.getTexture(), Material::Opaque::NO);
 	mesh = Mesh::create(res.getGraphics());
 	mesh->setMaterial(material);
+	mesh->setUpdateStrategy(Mesh::UpdateStrategy::PER_FRAME);
 }
 
 TextRenderer::~TextRenderer() {

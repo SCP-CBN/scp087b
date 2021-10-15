@@ -30,7 +30,7 @@ class TextRenderer {
 		PGE::Material* material;
 		PGE::Mesh* mesh;
 
-		float width;
+		float width = 0;
 };
 
 #endif // B_TEXTRENDERER_H_INCLUDED
