@@ -37,7 +37,7 @@ Font::Font(Resources& res, const FilePath& path) {
 		}
 	}
 
-	height = glyphs.find('T')->second->size.y;
+	charHeight = glyphs.find('T')->second->size.y;
 }
 
 Font::~Font() {
@@ -53,5 +53,5 @@ Font::Glyph& Font::getGlyph(char16 ch) const {
 }
 
 float Font::getHeight() const {
-	return height;
+	return charHeight;
 }

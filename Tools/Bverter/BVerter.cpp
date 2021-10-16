@@ -4,6 +4,7 @@
 #include <array>
 
 #include <PGE/File/BinaryWriter.h>
+#include <PGE/Math/Math.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -39,10 +40,10 @@ struct ConnectionPoint {
 
 // Fuck you assimp, once again, this time for not providing constexpr vectors!!
 static const std::array seamMats {
-    ConnectionPoint{ "ceiling_mat", aiVector3D() },
+    ConnectionPoint{ "ceiling_mat", aiVector3D(7.f, -1.78146f, -5.3812f) },
     ConnectionPoint{ "floor_mat", aiVector3D(7.f, -3.92830f, -5.38239f) },
-    ConnectionPoint{ "innerwall_mat", aiVector3D() },
-    ConnectionPoint{ "outerwall_mat", aiVector3D() }
+    ConnectionPoint{ "innerwall_mat", aiVector3D(7.f, -3.98425f, -5.3812f) },
+    ConnectionPoint{ "outerwall_mat", aiVector3D(8.f, -3.98424f, -5.3812f) }
 };
 
 static int getSeamIndex(const String& name) {
@@ -50,11 +51,6 @@ static int getSeamIndex(const String& name) {
         if (name == seamMats[i].mat) { return i; }
     }
     return -1;
-}
-
-template <size_t SIZE>
-static void assertAll(const std::array<bool, SIZE> values) {
-
 }
 
 // extra is called once for every vertex
@@ -136,7 +132,7 @@ static bool convertModel(const FilePath& file) {
                     shortestLength = dist;
                 }
             });
-            //PGE_ASSERT(Math::equalFloats(0.f, shortestLength), "Could not find vertex at exit for material " + name);
+            PGE_ASSERT(Math::equalFloats(0.f, shortestLength), "Could not find vertex at exit for material " + name);
             aiVector3D uv = closestMesh->mTextureCoords[0][closestIndex];
             writer.write<float>(uv.x); writer.write<float>(uv.y);
             std::cout << sqrt(shortestLength) << " " << uv.x << ", " << uv.y << ", " << uv.z << std::endl;

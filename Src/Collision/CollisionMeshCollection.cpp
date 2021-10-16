@@ -46,7 +46,7 @@ bool CollisionMeshCollection::Handle::valid() const {
 CollisionMeshCollection::Handle CollisionMeshCollection::addInstance(const CollisionMesh& mesh, const Matrix4x4f& matrix) {
     int freeInt;
     if (freeInts.empty()) {
-        freeInt = instances.size();
+        freeInt = (int)instances.size();
     } else {
         freeInt = freeInts.top();
         freeInts.pop();

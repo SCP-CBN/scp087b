@@ -1,18 +1,21 @@
 #include "TextRenderer.h"
 
 #include <PGE/Graphics/Graphics.h>
+#include <PGE/Graphics/Material.h>
 
 using namespace PGE;
 
 TextRenderer::TextRenderer(Resources& res, const Font& fnt)
 	: font(fnt),
 	positionConstant(res.getTextShader().getVertexShaderConstant("position")) {
-	material = Mesh::Material(res.getTextShader(), fnt.getTexture(), Mesh::Material::Opaque::NO);
+	material = Material::create(res.getGraphics(), res.getTextShader(), fnt.getTexture(), Material::Opaque::NO);
 	mesh = Mesh::create(res.getGraphics());
 	mesh->setMaterial(material);
+	mesh->setUpdateStrategy(Mesh::UpdateStrategy::PER_FRAME);
 }
 
 TextRenderer::~TextRenderer() {
+	delete material;
 	delete mesh;
 }
 
@@ -30,7 +33,7 @@ void TextRenderer::setPosition(const Vector2f& pos) {
 }
 
 void TextRenderer::setText(const String& txt) {
-	StructuredData data(material.getShader().getVertexLayout(), txt.length() * 4);
+	StructuredData data(material->getShader().getVertexLayout(), txt.length() * 4);
 	std::vector<Mesh::Triangle> primitives;
 
 	if (!txt.isEmpty()) {

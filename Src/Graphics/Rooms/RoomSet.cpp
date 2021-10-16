@@ -44,7 +44,7 @@ const IRoomInfo& RoomSet::getRandomRoom(Random& random) const {
 }
 
 int RoomSet::getCount() const {
-	return rooms.size();
+	return (int)rooms.size();
 }
 
 const IRoomInfo* const* RoomSet::begin() const {

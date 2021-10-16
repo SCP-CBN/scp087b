@@ -4,6 +4,7 @@
 
 #include <PGE/Math/Random.h>
 #include <PGE/Math/Interpolator.h>
+#include <PGE/Graphics/Material.h>
 
 #include "../Utilities/Directories.h"
 #include "../Graphics/Rooms/RoomInstance.h"
@@ -18,9 +19,7 @@ using namespace PGE;
 // Shit that needs a proper place.
 constexpr float PLAYER_HEIGHT = 150.f;
 constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
-
-static std::vector<RoomInstance*> instances;
-static int currIndex;
+constexpr Vector3f GLIMPSE_POS(250.f, -100.f, -50.f);
 
 static CollisionMeshCollection coMeCo;
 static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
@@ -43,21 +42,20 @@ bool showFps = false;
 bool showPos = false;
 bool showId = false;
 
-static Resources::Handle<Texture> glimpseTex;
-static Mesh* glimpseMesh;
-
 constexpr int ROOM_HEIGHT = 200;
 
+static std::vector<RoomInstance*> instances;
+static int currIndex = -999;
 static void updateIndex(int newIndex) {
     for (int i = -1; i < 2; i++) {
         int newCheckedIndex = newIndex + i;
-        if (newCheckedIndex >= 0 && newCheckedIndex < instances.size()) {
-            instances[newIndex + i]->setCollision(true);
+        if (newCheckedIndex >= 0 && newCheckedIndex < instances.size() && abs(newCheckedIndex - currIndex) > 1) {
+            instances[newIndex + i]->activate();
         }
 
         int checkedIndex = currIndex + i;
-        if (checkedIndex >= 0 && newCheckedIndex < instances.size() && abs(checkedIndex - newIndex) > 1) {
-            instances[checkedIndex]->setCollision(false);
+        if (checkedIndex >= 0 && checkedIndex < instances.size() && abs(checkedIndex - newIndex) > 1) {
+            instances[checkedIndex]->deactive();
         }
     }
     currIndex = newIndex;
@@ -65,8 +63,15 @@ static void updateIndex(int newIndex) {
     idText->setPosition(Vector2f(-50.f + idText->getWidth(), -50.f));
 }
 
-static Texture* rt;
-static Texture* rt2;
+static Texture* rt; static Material* mat;
+static Texture* rt2; static Material* mat2;
+static Mesh* glimpseMesh;
+
+static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
+    for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
+        func(*instances[i]);
+    }
+}
 //
 
 World::World(TimeMaster& tm) : tm(tm),
@@ -81,7 +86,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, false, Graphics::Renderer::OpenGL);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::DirectX11);
             graphics->setVsync(false);
         }
 
@@ -94,6 +99,9 @@ World::World(TimeMaster& tm) : tm(tm),
 
         rt = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
         rt2 = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
+
+        mat = Material::create(*graphics, resources->getGlimpseShader(), *rt, Material::Opaque::YES);
+        mat2 = Material::create(*graphics, resources->getGlimpseShader(), *rt2, Material::Opaque::YES);
 
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
@@ -129,21 +137,17 @@ World::World(TimeMaster& tm) : tm(tm),
             constexpr int ROOM_COUNT = 100;
             instances.reserve(ROOM_COUNT);
             Vector3f basePos[2];
-            Vector3f baseRot[2];
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
-            baseRot[1] = Vector3f(0.f, Math::degToRad(180.f), 0.f);
             Random rand(String("juan hates cheese").getHashCode());
             Room::RenderInfo rInfo;
             for (int i = 0; i < ROOM_COUNT; i++) {
                 const IRoomInfo* info = &rooms.getRandomRoom(rand);
                 rInfo.rotation = i % 2 == 0 ? 0 : Math::degToRad(180);
-                RoomInstance* newRoom = info->instantiate(coMeCo, rInfo);
+                RoomInstance* newRoom = info->instantiate(coMeCo, rInfo, basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
                 for (int j = 0; j < 4; j++) {
-                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1 : -1) * info->getRoom().getUvOffset((Room::MeshType)j);
+                    rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1.f : -1.f) * info->getRoom().getUvOffset((Room::MeshType)j);
                 }
                 instances.push_back(newRoom);
-                newRoom->setPosition(basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
-                newRoom->setRotation(baseRot[i % 2]);
             }
             updateIndex(0);
         }
@@ -155,7 +159,6 @@ World::World(TimeMaster& tm) : tm(tm),
         data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
         glimpseMesh = Mesh::create(*graphics);
         glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
-        glimpseTex = resources->getTexture(Directories::TEXTURES + "glimpse.ktx2", Texture::CompressedFormat::BC3);
 
         // CREATE PLAYER
         playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
@@ -166,17 +169,20 @@ World::World(TimeMaster& tm) : tm(tm),
 }
 
 World::~World() {
-    delete rt;
-    delete rt2;
-    glimpseTex.drop();
+    delete rt; delete mat;
+    delete rt2; delete mat2;
     delete glimpseMesh;
+    applyToActiveRooms([](RoomInstance& r) { r.deactive(); });
     for (RoomInstance* inst : instances) {
         delete inst;
     }
     rooms.unload();
+    delete glimpse;
     delete playerCon;
     delete inputManager;
     delete text;
+    delete posText;
+    delete idText;
     delete font;
     delete resources;
     delete camera;
@@ -187,8 +193,6 @@ World::~World() {
 bool lightOn = false;
 static Vector3f prevColor;
 static Vector3f color;
-
-static Vector3f glimpsePos = Vector3f(250.f, -100.f, -50.f);
 //
 
 void World::run() {
@@ -228,18 +232,24 @@ bool World::update(float delta) {
     }
 
     if (!paused) {
-
-        {
-            Timer _(tm, "coll");
+        { Timer _(tm, "coll");
             playerCon->update(delta);
             resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
+                if (currIndex >= 0 && currIndex < instances.size()) {
+                    instances[currIndex]->leave();
+                }
                 updateIndex(newIndex);
+                if (newIndex >= 0 && newIndex < instances.size()) {
+                    instances[newIndex]->enter();
+                }
             }
             posText->setText("X: " + String::from(camera->getPosition().x) + '\n'
                 + "Y: " + String::from(camera->getPosition().y) + '\n'
                 + "Z: " + String::from(camera->getPosition().z) + '\n'
             );
+
+            applyToActiveRooms([=](RoomInstance& r) { r.update(delta); });
         }
     }
     
@@ -250,10 +260,10 @@ bool World::update(float delta) {
 
 void World::render(float interp) const {
     if (!std::isnan(interp)) {
-        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *rt2, Mesh::Material::Opaque::YES));
+        glimpseMesh->setMaterial(mat2);
         graphics->setRenderTarget(*rt);
         render(nanf(""));
-        glimpseMesh->setMaterial(Mesh::Material(resources->getGlimpseShader(), *rt, Mesh::Material::Opaque::YES));
+        glimpseMesh->setMaterial(mat);
         graphics->setRenderTarget(*rt2);
         render(nanf(""));
         graphics->resetRenderTarget();
@@ -276,16 +286,15 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "inst");
-        for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
-            instances[i]->render();
-        }
+        applyToActiveRooms([=](RoomInstance& r) { r.render(interp); });
     }
 
-    resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(glimpsePos) *
-        Matrix4x4f::lookAt(glimpsePos, camera->getPosition())
-    );
-
-    glimpseMesh->render();
+    { Timer _(tm, "glimpse");
+        resources->getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(GLIMPSE_POS) *
+            Matrix4x4f::lookAt(GLIMPSE_POS, camera->getPosition())
+        );
+        glimpseMesh->render();
+    }
 
     { Timer _(tm, "text");
         if (showFps) { text->render(); }
@@ -309,6 +318,8 @@ void World::tick() {
     funnyIndex = (funnyIndex + 1) % FUNNY_SIZE;
 
     color = FIRE * funnySum / FUNNY_SIZE;
+
+    applyToActiveRooms([](RoomInstance& r) { r.tick(); });
 }
 
 bool World::shouldEnd() const {

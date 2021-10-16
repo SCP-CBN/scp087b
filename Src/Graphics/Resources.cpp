@@ -66,24 +66,24 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, const Tex
 		} else {
 			Texture::CompressedFormat cfmt = std::get<Texture::CompressedFormat>(fmt);
 
-			std::vector<Texture::Mipmap> mipmaps;
+			std::vector<Texture::Mipmap> mips;
 
 			if (path.getExtension() == "dds") {
 				gli::texture glTex = gli::load_dds((char*)bytes.data(), bytes.size());
-				mipmaps.reserve(glTex.levels());
+				mips.reserve(glTex.levels());
 				for (int i = 0; i < glTex.levels(); i++) {
-					mipmaps.emplace_back(glTex.extent(i).x, glTex.extent(i).y, (byte*)glTex.data(0, 0, i), glTex.size(i));
+					mips.emplace_back(glTex.extent(i).x, glTex.extent(i).y, (byte*)glTex.data(0, 0, i), glTex.size(i));
 				}
-				tex = Texture::loadCompressed(graphics, mipmaps, cfmt);
+				tex = Texture::loadCompressed(graphics, mips, cfmt);
 			} else {
 				ktxTexture* ktxTex;
 				ktxTexture_CreateFromMemory(bytes.data(), bytes.size(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &ktxTex);
-				mipmaps.resize(ktxTex->numLevels);
+				mips.resize(ktxTex->numLevels);
 				ktxTexture_IterateLevels(ktxTex, [](int miplevel, int face, int width, int height, int depth, ktx_uint64_t faceLodSize, void* pixels, void* userdata) {
 					(*((std::vector<Texture::Mipmap>*)userdata))[miplevel] = Texture::Mipmap(width, height, (byte*)pixels, faceLodSize);
 					return (KTX_error_code)0;
-				}, &mipmaps);
-				tex = Texture::loadCompressed(graphics, mipmaps, cfmt);
+				}, &mips);
+				tex = Texture::loadCompressed(graphics, mips, cfmt);
 				ktxTexture_Destroy(ktxTex);
 			}
 		}
