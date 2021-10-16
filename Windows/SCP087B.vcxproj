@@ -163,7 +163,6 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
 "$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"
 "$(ProjectDir)..\Tools\Bverter\Windows\bin\$(Platform)\$(Configuration)\Bverter.exe"  "$(TargetDir)GFX\Rooms"</Command>
     </PostBuildEvent>
@@ -189,7 +188,6 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
 "$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"
 "$(ProjectDir)..\Tools\Bverter\Windows\bin\$(Platform)\$(Configuration)\Bverter.exe"  "$(TargetDir)GFX\Rooms"</Command>
     </PostBuildEvent>
@@ -211,7 +209,6 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
 "$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"
 "$(ProjectDir)..\Tools\Bverter\Windows\bin\$(Platform)\$(Configuration)\Bverter.exe"  "$(TargetDir)GFX\Rooms"</Command>
     </PostBuildEvent>
@@ -237,7 +234,6 @@ xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
-xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
 "$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)GFX\Shaders"
 "$(ProjectDir)..\Tools\Bverter\Windows\bin\$(Platform)\$(Configuration)\Bverter.exe"  "$(TargetDir)GFX\Rooms"</Command>
     </PostBuildEvent>
