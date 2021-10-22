@@ -1,16 +1,20 @@
 #include "PlayerController.h"
 
 #include "../Graphics/Camera.h"
+#include "./ConfigParser.h"
+#include<iostream>
 
 using namespace PGE;
 
 PlayerController::PlayerController(InputManager& inputManager, Camera& camera, CollisionMeshCollection& cmc, float playerHeight) 
 	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight /2 - 5.f, 0) {
-	forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
-	right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
-	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
-	back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
-	n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
+	ConfigParser keyControl = ConfigParser();
+
+	forward = std::make_unique<KeyboardInput>(keyControl.getKey(ConfigParser::ActionKey::FORWARD));
+	right = std::make_unique<KeyboardInput>(keyControl.getKey(ConfigParser::ActionKey::RIGHT));
+	left = std::make_unique<KeyboardInput>(keyControl.getKey(ConfigParser::ActionKey::LEFT));
+	back = std::make_unique<KeyboardInput>(keyControl.getKey(ConfigParser::ActionKey::BACK));
+	n = std::make_unique<KeyboardInput>(keyControl.getKey(ConfigParser::ActionKey::NOCLIP));
 
 	inputManager.trackInput(forward.get());
 	inputManager.trackInput(right.get());

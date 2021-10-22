@@ -68,6 +68,9 @@
     <ClCompile Include="..\Src\Entities\Glimpse.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Player\ConfigParser.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -179,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\Entities\Glimpse.h">
       <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Player\ConfigParser.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
