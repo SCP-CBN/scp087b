@@ -18,7 +18,7 @@ Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
 	textShader->getVertexShaderConstant("projectionMatrix").setValue(Matrix4x4f::constructOrthographicMat(100.f, 100.f, 0.1f, 1.f));
 
 	cam.addShader(*roomShader);
-	cam.addShader(*glimpseShader);
+	//cam.addShader(*glimpseShader);
 }
 
 Resources::Handle<Texture> Resources::getTexture(const FilePath& path, const Texture::AnyFormat& fmt, bool mipmaps) {

@@ -63,12 +63,25 @@ static void updateIndex(int newIndex) {
     idText->setPosition(Vector2f(-50.f + idText->getWidth(), -50.f));
 }
 
+static Material* mat;
+static Texture* rt;
+static Texture* rt2;
+static Mesh* glimpseMesh;
+
+static Shader* targetShader;
+static Material* targetMat;
+static Material* targetMat2;
+static Mesh* targetMesh;
+static Mesh* targetMesh2;
+
 static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
     for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
         func(*instances[i]);
     }
 }
 //
+
+constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
 
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
@@ -78,11 +91,9 @@ World::World(TimeMaster& tm) : tm(tm),
 
     TimeMaster ctor;
     { Timer _(ctor, "all");
-        constexpr int WIDTH = 999; constexpr int HEIGHT = 666;
-
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::Vulkan);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::OpenGL);
             graphics->setVsync(false);
         }
 
@@ -92,6 +103,11 @@ World::World(TimeMaster& tm) : tm(tm),
         { Timer _(ctor, "rooms");
             rooms.load(*resources);
         }
+
+        rt = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
+        rt2 = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
+
+        mat = Material::create(*graphics, resources->getGlimpseShader(), Material::Opaque::YES);
 
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
@@ -142,8 +158,32 @@ World::World(TimeMaster& tm) : tm(tm),
             updateIndex(0);
         }
 
-        glimpse = new Glimpse(*resources);
-        glimpse->setPosition(GLIMPSE_POS);
+        StructuredData data1(resources->getGlimpseShader().getVertexLayout(), 4);
+        data1.setValue(0, "position", Vector3f(-1, -1, 1)); data1.setValue(1, "position", Vector3f(-1, 1, 1));
+        data1.setValue(2, "position", Vector3f(1, -1, 1)); data1.setValue(3, "position", Vector3f(1, 1, 1));
+
+        glimpseMesh = Mesh::create(*graphics);
+        glimpseMesh->setGeometry(data1.copy(), Mesh::PrimitiveType::TRIANGLE, { 2, 1, 0, 1, 2, 3 });
+        glimpseMesh->setMaterial(mat);
+
+        targetShader = Shader::load(*graphics, Directories::SHADERS + "Target");
+        targetMat = Material::create(*graphics, *targetShader, *rt, Material::Opaque::YES);
+        targetMat2 = Material::create(*graphics, *targetShader, *rt2, Material::Opaque::YES);
+        camera->addShader(*targetShader);
+
+        StructuredData data(targetShader->getVertexLayout(), 4);
+        data.setValue(0, "position", Vector3f(-50, -50, 0)); data.setValue(1, "position", Vector3f(50, -50, 0));
+        data.setValue(2, "position", Vector3f(-50, 50, 0)); data.setValue(3, "position", Vector3f(50, 50, 0));
+        data.setValue(0, "uv", Vector2f(0.f, 1.f)); data.setValue(1, "uv", Vector2f(1.f, 1.f));
+        data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
+
+        targetMesh = Mesh::create(*graphics);
+        targetMesh->setGeometry(data.copy(), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+        targetMesh->setMaterial(targetMat);
+
+        targetMesh2 = Mesh::create(*graphics);
+        targetMesh2->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+        targetMesh2->setMaterial(targetMat2);
 
         // CREATE PLAYER
         playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
@@ -154,6 +194,13 @@ World::World(TimeMaster& tm) : tm(tm),
 }
 
 World::~World() {
+    delete targetMat; delete targetMat2;
+    delete targetMesh; delete targetMesh2;
+    delete targetShader;
+    delete mat;
+    delete rt;
+    delete rt2;
+    delete glimpseMesh;
     applyToActiveRooms([](RoomInstance& r) { r.deactive(); });
     for (RoomInstance* inst : instances) {
         delete inst;
@@ -241,6 +288,17 @@ bool World::update(float delta) {
 }
 
 void World::render(float interp) const {
+    if (!std::isnan(interp)) {
+        graphics->setRenderTargets({ *rt, *rt2 });
+        graphics->setViewport(Rectanglei(0, 0, 1000, 1000));
+        graphics->setDepthTest(false);
+        graphics->clear(Colors::GREEN);
+        glimpseMesh->render();
+        graphics->resetRenderTarget();
+        graphics->setViewport(Rectanglei(0, 0, WIDTH, HEIGHT));
+        graphics->setDepthTest(true);
+    }
+
     for (unsigned i = 0; i < 12; i++) {
         if (debug[i]->isHit()) {
             resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
@@ -262,8 +320,14 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "glimpse");
-        glimpse->update(camera->getPosition());
-        glimpse->render();
+        targetShader->getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(GLIMPSE_POS) *
+            Matrix4x4f::lookAt(GLIMPSE_POS, camera->getPosition())
+        );
+        targetMesh->render();
+        targetShader->getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(GLIMPSE_POS - Vector3f(100.f, 0, 0)) *
+            Matrix4x4f::lookAt(GLIMPSE_POS - Vector3f(100.f, 0, 0), camera->getPosition())
+        );
+        targetMesh2->render();
     }
 
     { Timer _(tm, "text");
