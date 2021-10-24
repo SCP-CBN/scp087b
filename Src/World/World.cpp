@@ -4,6 +4,7 @@
 
 #include <PGE/Math/Random.h>
 #include <PGE/Math/Interpolator.h>
+#include <PGE/Graphics/Material.h>
 
 #include "../Utilities/Directories.h"
 #include "../Graphics/Rooms/RoomInstance.h"
@@ -11,7 +12,6 @@
 #include "../Graphics/Camera.h"
 #include "../Collision/Collider.h"
 #include "../Player/PlayerController.h"
-#include "../Entities/Glimpse.h"
 #include "StatWorld.h"
 
 using namespace PGE;
@@ -305,7 +305,7 @@ void World::render(float interp) const {
         }
     }
 
-    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
+    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, 1));
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);
@@ -336,8 +336,10 @@ void World::render(float interp) const {
         if (showId) { idText->render(); }
     }
 
-    { Timer _(tm, "swap");
-        graphics->swap();
+    if (!std::isnan(interp)) {
+        { Timer _(tm, "swap");
+            graphics->swap();
+        }
     }
 }
 
