@@ -21,7 +21,7 @@ class Camera {
 		float getFOV() const;
 		void setFOV(float fov);
 
-		void applyTransforms() const;
+		void applyTransforms();
 
 	private:
 		static constexpr PGE::Vector3f STANDARD_UP = PGE::Vector3f(0.f, 1.f, 0.f);
