@@ -73,7 +73,7 @@ static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
         new RoomInfo("default", 100),
-        /*new RoomInfo("room1", 50)*/
+        new RoomInfo("room1", 50)
     }) {
 
     TimeMaster ctor;
@@ -82,7 +82,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::Vulkan);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::DirectX11);
             graphics->setVsync(false);
         }
 

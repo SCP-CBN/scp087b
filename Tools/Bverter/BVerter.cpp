@@ -42,10 +42,10 @@ struct ConnectionPoint {
 
 // Fuck you assimp, once again, this time for not providing constexpr vectors!!
 static constexpr std::array seamMats {
-    ConnectionPoint{ "ceiling_mat", Vector3f(0.5f, 1.21854f, 0.f) },
-    ConnectionPoint{ "floor_mat", Vector3f(0.5f, -0.9283f, 0.f) },
-    ConnectionPoint{ "innerwall_mat", Vector3f(0.5f, -0.98424f, 0.f) },
-    ConnectionPoint{ "outerwall_mat", Vector3f(-0.5f, -0.98424f, 0.f) }
+    ConnectionPoint{ "ceiling_mat", Vector3f(0.5f, 0.95f, 0.f) },
+    ConnectionPoint{ "floor_mat", Vector3f(0.5f, -0.9f, 0.f) },
+    ConnectionPoint{ "innerwall_mat", Vector3f(0.5f, -1.f, 0.f) },
+    ConnectionPoint{ "outerwall_mat", Vector3f(-0.5f, -1.f, 0.f) }
 };
 
 static int getSeamIndex(const String& name) {
