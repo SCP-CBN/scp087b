@@ -56,7 +56,7 @@ void Camera::setFOV(float fov) {
 	invalidProj = true;
 }
 
-void Camera::applyTransforms() const {
+void Camera::applyTransforms() {
 	Matrix4x4f mat;
 
 	if (invalidProj) {
