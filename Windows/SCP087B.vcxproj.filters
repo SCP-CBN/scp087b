@@ -68,6 +68,9 @@
     <ClCompile Include="..\Src\Entities\Glimpse.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\World\Match.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -179,6 +182,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Entities\Glimpse.h">
       <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\World\Light.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\World\Match.h">
+      <Filter>World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

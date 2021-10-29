@@ -26,7 +26,6 @@ static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardI
 static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
 static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
 static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
-static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
@@ -82,7 +81,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::Vulkan);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::DirectX11);
             graphics->setVsync(false);
         }
 
@@ -114,7 +113,6 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(one.get());
             inputManager->trackInput(two.get());
             inputManager->trackInput(three.get());
-            inputManager->trackInput(flash.get());
             inputManager->trackInput(checky.get());
 
             for (int i = 0; i < 12; i++) {
@@ -148,6 +146,9 @@ World::World(TimeMaster& tm) : tm(tm),
         // CREATE PLAYER
         playerCon = new PlayerController(*inputManager, *camera, coMeCo, PLAYER_HEIGHT);
         playerCon->setPosition(PLAYER_SPAWN);
+
+        // CREATE MATCH
+        match = new Match(*resources, *playerCon, *camera);
         togglePaused();
     }
     std::cout << ctor.print() << std::endl;
@@ -171,24 +172,9 @@ World::~World() {
     delete graphics;
 }
 
-//
-bool lightOn = false;
-static Vector3f prevColor;
-static Vector3f color;
-//
-
 void World::run() {
     ticker.run();
 }
-
-//
-constexpr int FUNNY_SIZE = 32;
-static float funny[FUNNY_SIZE];
-static int funnyIndex = 0;
-static float funnySum = 0.f;
-static Random randd;
-constexpr Vector3f FIRE(0xF5 / 255.f, 0x58 / 255.f, 0x22 / 255.f);
-//
 
 bool World::update(float delta) {
     SysEvents::update();
@@ -200,8 +186,6 @@ bool World::update(float delta) {
     if (one->isHit()) { showFps = !showFps; }
     if (two->isHit()) { showPos = !showPos; }
     if (three->isHit()) { showId = !showId; }
-
-    if (flash->isHit()) { lightOn = !lightOn; }
     
     if (checky->isHit()) {
         for (const IRoomInfo* r : rooms) {
@@ -216,7 +200,7 @@ bool World::update(float delta) {
     if (!paused) {
         { Timer _(tm, "coll");
             playerCon->update(delta);
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
+            match->update(); // set torch to player POS
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 if (currIndex >= 0 && currIndex < instances.size()) {
                     instances[currIndex]->leave();
@@ -247,7 +231,9 @@ void World::render(float interp) const {
         }
     }
 
-    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
+    { Timer _(tm, "light");
+        match->render(interp);
+    }
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);
@@ -278,14 +264,7 @@ void World::render(float interp) const {
 }
 
 void World::tick() {
-    prevColor = color;
-
-    funnySum -= funny[funnyIndex];
-    funny[funnyIndex] = lightOn ? randd.nextFloat() : 0.f;
-    funnySum += funny[funnyIndex];
-    funnyIndex = (funnyIndex + 1) % FUNNY_SIZE;
-
-    color = FIRE * funnySum / FUNNY_SIZE;
+    match->tick();
 
     applyToActiveRooms([](RoomInstance& r) { r.tick(); });
 }
