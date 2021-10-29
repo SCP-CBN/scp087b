@@ -13,9 +13,11 @@ class PlayerController {
 		
 		void update(float delta);
 		void setPosition(const PGE::Vector3f& inPos);
+		bool isLightOn() { return lightOn; };
 
 	private:
 		bool noClip = true;
+		bool lightOn = false;
 		static constexpr float SPEED = 10.f;
 		static constexpr float GRAVITY = 9.8f / 60.f;
 	
@@ -33,6 +35,7 @@ class PlayerController {
 		std::unique_ptr<PGE::Input> left;
 		std::unique_ptr<PGE::Input> back;
 		std::unique_ptr<PGE::Input> n;
+		std::unique_ptr<PGE::Input> flash;
 
 		PGE::InputManager& inputManager;
 };
