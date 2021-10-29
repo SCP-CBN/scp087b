@@ -73,7 +73,8 @@ static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
 World::World(TimeMaster& tm) : tm(tm),
     rooms({
         new RoomInfo("default", 100),
-        new RoomInfo("room1", 50)
+        new RoomInfo("straight", 50),
+        new RoomInfo("unstraight", 25)
     }) {
 
     TimeMaster ctor;

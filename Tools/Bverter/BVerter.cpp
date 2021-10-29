@@ -196,15 +196,7 @@ static bool convertModel(const FilePath& file) {
     return true;
 }
 
-int main(int argc, char** argv) {
-    String file;
-    if (argc == 2) {
-        file = argv[1];
-    } else {
-        std::cout << "Model: ";
-        std::cin >> file;
-    }
-
+void process(String file) {
     using Clock = std::chrono::steady_clock;
     Clock::time_point start(Clock::now());
 
@@ -241,4 +233,29 @@ int main(int argc, char** argv) {
     }
 
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - start).count() << "ms elapsed\n";
+}
+
+int main(int argc, char** argv) {
+    String file;
+    if (argc == 2) {
+        file = argv[1];
+    } else {
+        std::cout << "Model: ";
+        std::cin >> file;
+    }
+//#define FUNNY
+#ifdef FUNNY
+    try {
+#endif
+        process(file);
+#ifdef FUNNY
+    } catch (const PGE::Exception& e) {
+        std::cout << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+    } catch (...) {
+        std::cout << "UNKNOWN EXCEPTION" << std::endl;
+    }
+#undef FUNNY
+#endif
 }
