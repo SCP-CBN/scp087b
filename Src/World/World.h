@@ -9,7 +9,7 @@
 #include "../Timing/TimeMaster.h"
 #include "../Timing/Ticker.h"
 #include "../Graphics/Rooms/RoomSet.h"
-#include "./Match.h"
+#include "../Graphics/Light/Match.h"
 
 class World {
     public:

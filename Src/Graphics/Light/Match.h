@@ -2,10 +2,10 @@
 #define B_MATCH_H_INCLUDED
 
 #include <PGE/Math/Random.h>
-#include "../Graphics/Resources.h"
-#include "../Player/PlayerController.h"
+#include "../Resources.h"
+#include "../../Player/PlayerController.h"
 #include "./Light.h"
-#include "../Graphics/Camera.h"
+#include "../Camera.h"
 
 using namespace PGE;
 
