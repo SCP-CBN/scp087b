@@ -4,6 +4,8 @@
 #include <gli/gli.hpp>
 #include <ktx.h>
 
+#include <PGE/Types/Range.h>
+
 #include "Camera.h"
 #include "../Utilities/Directories.h"
 
@@ -71,7 +73,7 @@ Resources::Handle<Texture> Resources::getTexture(const FilePath& path, const Tex
 			if (path.getExtension() == "dds") {
 				gli::texture glTex = gli::load_dds((char*)bytes.data(), bytes.size());
 				mips.reserve(glTex.levels());
-				for (int i = 0; i < glTex.levels(); i++) {
+				for (auto i : Range(glTex.levels())) {
 					mips.emplace_back(glTex.extent(i).x, glTex.extent(i).y, (byte*)glTex.data(0, 0, i), glTex.size(i));
 				}
 				tex = Texture::loadCompressed(graphics, mips, cfmt);

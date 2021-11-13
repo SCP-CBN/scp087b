@@ -1,6 +1,7 @@
 #include "Room.h"
 
 #include <PGE/Graphics/Material.h>
+#include <PGE/Types/Range.h>
 
 #include "../../Utilities/Directories.h"
 
@@ -31,21 +32,21 @@ void Room::readMesh(BinaryReader& reader, Mesh& mesh, std::vector<Vector3f>& cVe
 	StructuredData data(resources.getRoomShader().getVertexLayout(), vertCount);
 	int oldCVertSize = (int)cVertices.size();
 	cVertices.resize(cVertices.size() + vertCount);
-	for (int j = 0; j < vertCount; j++) {
-		cVertices[oldCVertSize + j] = reader.read<Vector3f>();
-		data.setValue(j, "position", cVertices[oldCVertSize + j]);
-		data.setValue(j, "normal", reader.read<Vector3f>());
-		data.setValue(j, "tangent", reader.read<Vector3f>());
-		data.setValue(j, "bitangent", reader.read<Vector3f>());
-		data.setValue(j, "uv", reader.read<Vector2f>());
+	for (auto i : Range(vertCount)) {
+		cVertices[oldCVertSize + i] = reader.read<Vector3f>();
+		data.setValue(i, "position", cVertices[oldCVertSize + i]);
+		data.setValue(i, "normal", reader.read<Vector3f>());
+		data.setValue(i, "tangent", reader.read<Vector3f>());
+		data.setValue(i, "bitangent", reader.read<Vector3f>());
+		data.setValue(i, "uv", reader.read<Vector2f>());
 	}
 
 	i32 primCount = reader.read<i32>();
 	std::vector<u32> primitives(primCount);
 	int oldCIndicesSize = (int)cIndices.size();
 	cIndices.resize(cIndices.size() + primCount);
-	for (int j = 0; j < primCount; j++) {
-		cIndices[oldCIndicesSize + j] = (primitives[j] = reader.read<i32>()) + oldCVertSize;
+	for (auto i : Range(primCount)) {
+		cIndices[oldCIndicesSize + i] = (primitives[i] = reader.read<i32>()) + oldCVertSize;
 	}
 
 	mesh.setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
@@ -67,7 +68,7 @@ Room::Room(Resources& res, const FilePath& path) : resources(res) {
 	std::vector<Vector3f> cVertices;
 	std::vector<u32> cIndices;
 
-	for (int i = 0; i < 4; i++) {
+	for (auto _ : Range(4)) {
 		byte index = reader.read<byte>();
 
 		iMeshes[index] = Mesh::create(res.getGraphics());
@@ -81,7 +82,7 @@ Room::Room(Resources& res, const FilePath& path) : resources(res) {
 	materials.reserve(materials.size() + texCount);
 	textures.reserve(textures.size() + texCount * TEXTURES_PER_MATERIAL);
 	otherMeshes.reserve(texCount * TEXTURES_PER_MATERIAL);
-	for (int i = 0; i < texCount; i++) {
+	for (auto _ : Range(texCount)) {
 		otherMeshes.push_back(Mesh::create(res.getGraphics()));
 
 		FilePath textureName = Directories::TEXTURES + reader.read<String>();
@@ -107,7 +108,7 @@ void Room::render(const Matrix4x4f& mat, const RenderInfo& info) const {
 	matrixConstant->setValue(mat);
 
 	uvRotConstant->setValue(info.rotation);
-	for (int i = 0; i < 4; i++) {
+	for (int i : Range(4)) {
 		if (i == 2) { uvRotConstant->setValue(0.f); }
 		uvOffConstant->setValue(info.offsets[i]);
 		iMeshes[i]->render();
@@ -130,10 +131,10 @@ void Room::toggleDebug() {
 	if (textures.size() / TEXTURES_PER_MATERIAL == materials.size()) {
 		materials.reserve(materials.size() + 2);
 		Shader& roomShader = resources.getRoomShader();
-		for (int i = 0; i < 2; i++) {
+		for (int i : Range(2)) {
 			ReferenceVector<Texture> currTexs; currTexs.reserve(TEXTURES_PER_MATERIAL);
 			currTexs.push_back(*debugTex);
-			for (int j = 1; j < TEXTURES_PER_MATERIAL; j++) {
+			for (int j : Range(1, TEXTURES_PER_MATERIAL)) {
 				currTexs.push_back(*textures[i * TEXTURES_PER_MATERIAL + j]);
 			}
 			materials.push_back(Material::create(resources.getGraphics(), roomShader, currTexs, Material::Opaque::YES));
@@ -142,7 +143,7 @@ void Room::toggleDebug() {
 
 	debug =! debug;
 	int start = debug ? materials.size() - 2 : 0;
-	for (int i = 0; i < iMeshes.size(); i++) {
+	for (auto i : Range(iMeshes.size())) {
 		iMeshes[i]->setMaterial(materials[start + i / 2]);
 	}
 }

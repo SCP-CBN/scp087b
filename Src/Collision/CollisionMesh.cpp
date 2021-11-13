@@ -1,5 +1,7 @@
 #include "CollisionMesh.h"
 
+#include <PGE/Types/Range.h>
+
 using namespace PGE;
 
 Collision CollisionMesh::checkCollision(const Matrix4x4f& matrix, const Line3f& line, float height, float radius) const {
@@ -9,7 +11,7 @@ Collision CollisionMesh::checkCollision(const Matrix4x4f& matrix, const Line3f& 
     lineBox.addPoint(lineBox.getMax() + Vector3f(radius, height * 0.5f, radius));
     Collision retVal;
     AABBox triBox(Vectors::ZERO3F);
-    for (size_t i = 0; i < indices.size() / 3; i++) {
+    for (auto i : Range(indices.size() / 3)) {
         Vector3f vert0 = matrix.transform(vertices[indices[i * 3 + 0]]);
         Vector3f vert1 = matrix.transform(vertices[indices[i * 3 + 1]]);
         Vector3f vert2 = matrix.transform(vertices[indices[i * 3 + 2]]);
@@ -30,10 +32,10 @@ Collision CollisionMesh::checkCollision(const Matrix4x4f& matrix, const Line3f& 
 }
 
 AABBox CollisionMesh::calculateBoundingBox(const Matrix4x4f& matrix) const {
-    AABBox ret = AABBox(matrix.transform(vertices[0]));
+    AABBox ret(matrix.transform(vertices[0]));
 
-    for (int i = 1; i < vertices.size(); i++) {
-        ret.addPoint(matrix.transform(vertices[i]));
+    for (const Vector3f& v : vertices) {
+        ret.addPoint(matrix.transform(v));
     }
 
     return ret;

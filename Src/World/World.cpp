@@ -5,6 +5,7 @@
 #include <PGE/Math/Random.h>
 #include <PGE/Math/Interpolator.h>
 #include <PGE/Graphics/Material.h>
+#include <PGE/Types/Range.h>
 
 #include "../Utilities/Directories.h"
 #include "../Graphics/Rooms/RoomInstance.h"
@@ -47,7 +48,7 @@ constexpr int ROOM_HEIGHT = 200;
 static std::vector<RoomInstance*> instances;
 static int currIndex = -999;
 static void updateIndex(int newIndex) {
-    for (int i = -1; i < 2; i++) {
+    for (int i : Range(-1, 2)) {
         int newCheckedIndex = newIndex + i;
         if (newCheckedIndex >= 0 && newCheckedIndex < instances.size() && abs(newCheckedIndex - currIndex) > 1) {
             instances[newIndex + i]->activate();
@@ -75,7 +76,7 @@ static Mesh* targetMesh;
 static Mesh* targetMesh2;
 
 static void applyToActiveRooms(const std::function<void(RoomInstance&)>& func) {
-    for (int i = std::max(0, currIndex - 1); i < std::min((int)instances.size(), currIndex + 2); i++) {
+    for (int i : Range(std::max(0, currIndex - 1), std::min((int)instances.size(), currIndex + 2))) {
         func(*instances[i]);
     }
 }
@@ -133,7 +134,7 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(flash.get());
             inputManager->trackInput(checky.get());
 
-            for (int i = 0; i < 12; i++) {
+            for (int i : Range(12)) {
                 debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
                 inputManager->trackInput(debug[i].get());
             }
@@ -146,11 +147,11 @@ World::World(TimeMaster& tm) : tm(tm),
             basePos[1] = Vector3f(800.f, 0.f, -700.f);
             Random rand(String("juan hates cheese").getHashCode());
             Room::RenderInfo rInfo;
-            for (int i = 0; i < ROOM_COUNT; i++) {
+            for (int i : Range(ROOM_COUNT)) {
                 const IRoomInfo* info = &rooms.getRandomRoom(rand);
                 rInfo.rotation = i % 2 == 0 ? 0 : Math::degToRad(180);
                 RoomInstance* newRoom = info->instantiate(coMeCo, rInfo, basePos[i % 2] - Vector3f(0.f, (float)(ROOM_HEIGHT * i), 0.f));
-                for (int j = 0; j < 4; j++) {
+                for (int j : Range(4)) {
                     rInfo.offsets[j] += (i % 2 == 0 || j >= 2 ? 1.f : -1.f) * info->getRoom().getUvOffset((Room::MeshType)j);
                 }
                 instances.push_back(newRoom);
@@ -292,14 +293,16 @@ void World::render(float interp) const {
         graphics->setRenderTargets({ *rt, *rt2 });
         graphics->setViewport(Rectanglei(0, 0, 1000, 1000));
         graphics->setDepthTest(false);
-        graphics->clear(Colors::GREEN);
+        { Timer _(tm, "clear");
+            graphics->clear(Colors::GREEN);
+        }
         glimpseMesh->render();
         graphics->resetRenderTarget();
         graphics->setViewport(Rectanglei(0, 0, WIDTH, HEIGHT));
         graphics->setDepthTest(true);
     }
 
-    for (unsigned i = 0; i < 12; i++) {
+    for (unsigned i : Range(12)) {
         if (debug[i]->isHit()) {
             resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
         }
