@@ -1,6 +1,7 @@
 #include "Collision.h"
 
 #include <PGE/Math/Plane.h>
+#include <PGE/Types/Range.h>
 
 using namespace PGE;
 
@@ -218,7 +219,7 @@ Collision Collision::triangleCollide(const Line3f& line, float height, float rad
     Line3f newLine(Vector3f(line.pointA.x, 0.f, line.pointA.z), Vector3f(line.pointB.x, 0.f, line.pointB.z));
 
     Collision retVal;
-    for (int i = 0; i < 6; i += 2) {
+    for (int i : Range(0, 6, 2)) {
         Line3f edge(edgePoints[i], edgePoints[i + 1]);
 
         Vector3f edgePoint0; Vector3f edgePoint1;
