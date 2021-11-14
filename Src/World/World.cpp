@@ -264,7 +264,7 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "glimpse");
-        glimpse->update(camera->getPosition());
+        glimpse->lerpFacing(interp);
         glimpse->render();
     }
 
@@ -289,6 +289,8 @@ void World::tick() {
 
     color = FIRE * funnySum / FUNNY_SIZE;
 
+    glimpse->setPriorTick(glimpse->getCurrTick());
+    glimpse->setCurrTick(PGE::Interpolator::lerp(camera->getPosition(), glimpse->getPriorTick(), 0.9));
     applyToActiveRooms([](RoomInstance& r) { r.tick(); });
 }
 
