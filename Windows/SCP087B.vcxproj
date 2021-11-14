@@ -27,6 +27,7 @@
     <ClCompile Include="..\Src\Collision\CollisionMeshCollection.cpp" />
     <ClCompile Include="..\Src\Entities\Glimpse.cpp" />
     <ClCompile Include="..\Src\Graphics\Camera.cpp" />
+    <ClCompile Include="..\Src\Graphics\Light\Match.cpp" />
     <ClCompile Include="..\Src\Graphics\Resources.cpp" />
     <ClCompile Include="..\Src\Graphics\Rooms\Room.cpp" />
     <ClCompile Include="..\Src\Graphics\Rooms\RoomInstance.cpp" />
@@ -53,6 +54,8 @@
     <ClInclude Include="..\Src\Entities\Glimpse.h" />
     <ClInclude Include="..\Src\Graphics\Cache.h" />
     <ClInclude Include="..\Src\Graphics\Camera.h" />
+    <ClInclude Include="..\Src\Graphics\Light\Light.h" />
+    <ClInclude Include="..\Src\Graphics\Light\Match.h" />
     <ClInclude Include="..\Src\Graphics\Resources.h" />
     <ClInclude Include="..\Src\Graphics\Rooms\Room.h" />
     <ClInclude Include="..\Src\Graphics\Rooms\RoomInfo.h" />

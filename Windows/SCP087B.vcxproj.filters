@@ -68,6 +68,9 @@
     <ClCompile Include="..\Src\Entities\Glimpse.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Graphics\Light\Match.cpp">
+      <Filter>Graphics\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="World">
@@ -102,6 +105,9 @@
     </Filter>
     <Filter Include="Entities">
       <UniqueIdentifier>{09628c4b-817b-4614-8c24-809b4100565a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Light">
+      <UniqueIdentifier>{ae292cc8-d2c3-40f4-b7e4-f42aabc973ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +185,12 @@
     </ClInclude>
     <ClInclude Include="..\Src\Entities\Glimpse.h">
       <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Light\Light.h">
+      <Filter>Graphics\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Graphics\Light\Match.h">
+      <Filter>Graphics\Light</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

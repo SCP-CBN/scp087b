@@ -9,6 +9,7 @@
 #include "../Timing/TimeMaster.h"
 #include "../Timing/Ticker.h"
 #include "../Graphics/Rooms/RoomSet.h"
+#include "../Graphics/Light/Match.h"
 
 class World {
     public:
@@ -37,6 +38,7 @@ class World {
         class Resources* resources;
         class PlayerController* playerCon;
         class Glimpse* glimpse;
+        class Match* match;
 
         bool paused = true;
 };

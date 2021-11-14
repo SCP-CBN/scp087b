@@ -11,12 +11,14 @@ PlayerController::PlayerController(InputManager& inputManager, Camera& camera, C
 	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
 	back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
 	n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
+	flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
 
 	inputManager.trackInput(forward.get());
 	inputManager.trackInput(right.get());
 	inputManager.trackInput(left.get());
 	inputManager.trackInput(back.get());
 	inputManager.trackInput(n.get());
+	inputManager.trackInput(flash.get());
 
 	collider.setCollisionMeshCollection(&cmc);
 }
@@ -40,6 +42,7 @@ void PlayerController::update(float delta) {
 	if (n->isHit()) {
 		noClip = !noClip;
 	}
+	if (flash->isHit()) { lightOn = !lightOn; }
 
 	// Stop two inputs making speed root 2.
 	addPos = addPos.normalize() * SPEED;
