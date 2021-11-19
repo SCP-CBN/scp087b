@@ -7,8 +7,8 @@ using namespace PGE;
 
 TextRenderer::TextRenderer(Resources& res, const Font& fnt)
 	: font(fnt),
-	positionConstant(res.getTextShader().getVertexShaderConstant("position")) {
-	material = Material::create(res.getGraphics(), res.getTextShader(), fnt.getTexture(), Material::Opaque::NO);
+	positionConstant(*res.getTextShader().getVertexShaderConstant("position")) {
+	material = Material::create(res.getGraphics(), res.getTextShader(), fnt.getTexture(), Opaque::NO);
 	mesh = Mesh::create(res.getGraphics());
 	mesh->setMaterial(material);
 	mesh->setUpdateStrategy(Mesh::UpdateStrategy::PER_FRAME);

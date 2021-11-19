@@ -24,12 +24,12 @@ constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
 constexpr Vector3f GLIMPSE_POS(250.f, -100.f, -50.f);
 
 static CollisionMeshCollection coMeCo;
-static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
-static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
-static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
-static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
-static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
-static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
+static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(Keycode::ESCAPE);
+static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(Keycode::NUM1);
+static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(Keycode::NUM2);
+static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(Keycode::NUM3);
+static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(Keycode::F);
+static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(Keycode::RCTRL);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -84,7 +84,7 @@ World::World(TimeMaster& tm) : tm(tm),
 
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::Vulkan);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, WindowMode::Windowed, Renderer::DirectX11);
             graphics->setVsync(false);
         }
 
@@ -120,7 +120,7 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(checky.get());
 
             for (int i : Range(12)) {
-                debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
+                debug[i] = std::make_unique<KeyboardInput>((Keycode)((int)Keycode::F1 + i));
                 inputManager->trackInput(debug[i].get());
             }
         }
@@ -218,7 +218,7 @@ bool World::update(float delta) {
     if (!paused) {
         { Timer _(tm, "coll");
             playerCon->update(delta);
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
+            resources->getRoomShader().getFragmentShaderConstant("lightPos")->setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 if (currIndex >= 0 && currIndex < instances.size()) {
                     instances[currIndex]->leave();
@@ -245,11 +245,11 @@ bool World::update(float delta) {
 void World::render(float interp) const {
     for (unsigned i : Range(12)) {
         if (debug[i]->isHit()) {
-            resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
+            resources->getRoomShader().getFragmentShaderConstant("debug")->setValue(i);
         }
     }
 
-    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, interp));
+    resources->getRoomShader().getFragmentShaderConstant("intensity")->setValue(Interpolator::lerp(prevColor, color, interp));
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);

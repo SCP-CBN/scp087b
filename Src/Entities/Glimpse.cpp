@@ -15,9 +15,9 @@ Glimpse::Glimpse(Resources& res) : resources(res) {
     data.setValue(0, "uv", Vector2f(0.f, 1.f)); data.setValue(1, "uv", Vector2f(1.f, 1.f));
     data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
     glimpseMesh = Mesh::create(graphics);
-    glimpseMesh->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+    glimpseMesh->setGeometry(std::move(data), PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
     glimpseTex = resources.getTexture(Directories::TEXTURES + "glimpse.ktx2", Texture::CompressedFormat::BC3);
-    material = Material::create(graphics, resources.getGlimpseShader(), *glimpseTex, Material::Opaque::YES);
+    material = Material::create(graphics, resources.getGlimpseShader(), *glimpseTex, Opaque::YES);
     glimpseMesh->setMaterial(material);
 }
 
@@ -36,7 +36,7 @@ void Glimpse::render() {
 }
 
 void Glimpse::update(const Vector3f& direction) {
-    resources.getGlimpseShader().getVertexShaderConstant("worldMatrix").setValue(
+    resources.getGlimpseShader().getVertexShaderConstant("worldMatrix")->setValue(
         Matrix4x4f::translate(glimpsePos) * Matrix4x4f::lookAt(glimpsePos, direction)
     );
 }

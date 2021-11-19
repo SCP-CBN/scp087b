@@ -16,8 +16,8 @@ Resources::Resources(Graphics& gfx, Camera& cam) : graphics(gfx), camera(cam) {
 	roomShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Room"));
 	glimpseShader = std::unique_ptr<Shader>(Shader::load(gfx, Directories::SHADERS + "Glimpse"));
 
-	roomShader->getFragmentShaderConstant("effectiveRangeSquared").setValue(300.f * 300.f);
-	textShader->getVertexShaderConstant("projectionMatrix").setValue(Matrix4x4f::constructOrthographicMat(100.f, 100.f, 0.1f, 1.f));
+	roomShader->getFragmentShaderConstant("effectiveRangeSquared")->setValue(300.f * 300.f);
+	textShader->getVertexShaderConstant("projectionMatrix")->setValue(Matrix4x4f::constructOrthographicMat(100.f, 100.f, 0.1f, 1.f));
 
 	cam.addShader(*roomShader);
 	cam.addShader(*glimpseShader);

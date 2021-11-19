@@ -6,11 +6,11 @@ using namespace PGE;
 
 PlayerController::PlayerController(InputManager& inputManager, Camera& camera, CollisionMeshCollection& cmc, float playerHeight) 
 	: camera(camera), inputManager(inputManager), collider(10.f, playerHeight), camOffset(0, playerHeight /2 - 5.f, 0) {
-	forward = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::W);
-	right = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::D);
-	left = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::A);
-	back = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::S);
-	n = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::N);
+	forward = std::make_unique<KeyboardInput>(Keycode::W);
+	right = std::make_unique<KeyboardInput>(Keycode::D);
+	left = std::make_unique<KeyboardInput>(Keycode::A);
+	back = std::make_unique<KeyboardInput>(Keycode::S);
+	n = std::make_unique<KeyboardInput>(Keycode::N);
 
 	inputManager.trackInput(forward.get());
 	inputManager.trackInput(right.get());
