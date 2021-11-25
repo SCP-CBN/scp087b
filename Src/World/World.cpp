@@ -304,11 +304,11 @@ void World::render(float interp) const {
 
     for (unsigned i : Range(12)) {
         if (debug[i]->isHit()) {
-            //resources->getRoomShader().getFragmentShaderConstant("debug")->setValue(i);
+            resources->getRoomShader().getFragmentShaderConstant("debug")->setValue(i);
         }
     }
 
-    //resources->getRoomShader().getFragmentShaderConstant("intensity")->setValue(Interpolator::lerp(prevColor, color, 1));
+    resources->getRoomShader().getFragmentShaderConstant("intensity")->setValue(Interpolator::lerp(prevColor, color, 1));
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);
@@ -319,7 +319,7 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "inst");
-        //applyToActiveRooms([=](RoomInstance& r) { r.render(interp); });
+        applyToActiveRooms([=](RoomInstance& r) { r.render(interp); });
     }
 
     { Timer _(tm, "glimpse");
