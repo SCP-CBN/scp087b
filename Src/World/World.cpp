@@ -23,12 +23,12 @@ constexpr Vector3f PLAYER_SPAWN(345.f, -45.f, -90.f);
 constexpr Vector3f GLIMPSE_POS(250.f, -100.f, -50.f);
 
 static CollisionMeshCollection coMeCo;
-static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::ESCAPE);
-static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM1);
-static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM2);
-static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::NUM3);
-static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::F);
-static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(KeyboardInput::Keycode::RCTRL);
+static std::unique_ptr<Input> escape = std::make_unique<KeyboardInput>(Keycode::ESCAPE);
+static std::unique_ptr<Input> one = std::make_unique<KeyboardInput>(Keycode::NUM1);
+static std::unique_ptr<Input> two = std::make_unique<KeyboardInput>(Keycode::NUM2);
+static std::unique_ptr<Input> three = std::make_unique<KeyboardInput>(Keycode::NUM3);
+static std::unique_ptr<Input> flash = std::make_unique<KeyboardInput>(Keycode::F);
+static std::unique_ptr<Input> checky = std::make_unique<KeyboardInput>(Keycode::RCTRL);
 
 static std::vector<std::unique_ptr<Input>> debug(12);
 
@@ -94,7 +94,7 @@ World::World(TimeMaster& tm) : tm(tm),
     { Timer _(ctor, "all");
         { Timer _(ctor, "gfx");
             screenMiddle = Vector2f(WIDTH, HEIGHT) / 2;
-            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, Graphics::WindowMode::Windowed, Graphics::Renderer::Vulkan);
+            graphics = Graphics::create("SCP-087-B", WIDTH, HEIGHT, WindowMode::Windowed, Renderer::Vulkan);
             graphics->setVsync(false);
         }
 
@@ -108,7 +108,7 @@ World::World(TimeMaster& tm) : tm(tm),
         rt = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
         rt2 = Texture::createRenderTarget(*graphics, 1000, 1000, Texture::Format::RGBA32);
 
-        mat = Material::create(*graphics, resources->getGlimpseShader(), Material::Opaque::YES);
+        mat = Material::create(*graphics, resources->getGlimpseShader(), Opaque::YES);
 
         font = new Font(*resources, Directories::GFX + "Vegur");
         text = new TextRenderer(*resources, *font);
@@ -135,7 +135,7 @@ World::World(TimeMaster& tm) : tm(tm),
             inputManager->trackInput(checky.get());
 
             for (int i : Range(12)) {
-                debug[i] = std::make_unique<KeyboardInput>((KeyboardInput::Keycode)((int)KeyboardInput::Keycode::F1 + i));
+                debug[i] = std::make_unique<KeyboardInput>((Keycode)((int)Keycode::F1 + i));
                 inputManager->trackInput(debug[i].get());
             }
         }
@@ -164,12 +164,12 @@ World::World(TimeMaster& tm) : tm(tm),
         data1.setValue(2, "position", Vector3f(1, -1, 1)); data1.setValue(3, "position", Vector3f(1, 1, 1));
 
         glimpseMesh = Mesh::create(*graphics);
-        glimpseMesh->setGeometry(data1.copy(), Mesh::PrimitiveType::TRIANGLE, { 2, 1, 0, 1, 2, 3 });
+        glimpseMesh->setGeometry(data1.copy(), PrimitiveType::TRIANGLE, { 2, 1, 0, 1, 2, 3 });
         glimpseMesh->setMaterial(mat);
 
         targetShader = Shader::load(*graphics, Directories::SHADERS + "Target");
-        targetMat = Material::create(*graphics, *targetShader, *rt, Material::Opaque::YES);
-        targetMat2 = Material::create(*graphics, *targetShader, *rt2, Material::Opaque::YES);
+        targetMat = Material::create(*graphics, *targetShader, *rt, Opaque::YES);
+        targetMat2 = Material::create(*graphics, *targetShader, *rt2, Opaque::YES);
         camera->addShader(*targetShader);
 
         StructuredData data(targetShader->getVertexLayout(), 4);
@@ -179,11 +179,11 @@ World::World(TimeMaster& tm) : tm(tm),
         data.setValue(2, "uv", Vector2f(0.f, 0.f)); data.setValue(3, "uv", Vector2f(1.f, 0.f));
 
         targetMesh = Mesh::create(*graphics);
-        targetMesh->setGeometry(data.copy(), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+        targetMesh->setGeometry(data.copy(), PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
         targetMesh->setMaterial(targetMat);
 
         targetMesh2 = Mesh::create(*graphics);
-        targetMesh2->setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
+        targetMesh2->setGeometry(std::move(data), PrimitiveType::TRIANGLE, { 0, 1, 2, 3, 2, 1 });
         targetMesh2->setMaterial(targetMat2);
 
         // CREATE PLAYER
@@ -264,7 +264,7 @@ bool World::update(float delta) {
     if (!paused) {
         { Timer _(tm, "coll");
             playerCon->update(delta);
-            resources->getRoomShader().getFragmentShaderConstant("lightPos").setValue(camera->getPosition()); // Set torch to player pos
+            resources->getRoomShader().getFragmentShaderConstant("lightPos")->setValue(camera->getPosition()); // Set torch to player pos
             if (int newIndex = (int)(-camera->getPosition().y / ROOM_HEIGHT); currIndex != newIndex) {
                 if (currIndex >= 0 && currIndex < instances.size()) {
                     instances[currIndex]->leave();
@@ -304,11 +304,11 @@ void World::render(float interp) const {
 
     for (unsigned i : Range(12)) {
         if (debug[i]->isHit()) {
-            resources->getRoomShader().getFragmentShaderConstant("debug").setValue(i);
+            //resources->getRoomShader().getFragmentShaderConstant("debug")->setValue(i);
         }
     }
 
-    resources->getRoomShader().getFragmentShaderConstant("intensity").setValue(Interpolator::lerp(prevColor, color, 1));
+    //resources->getRoomShader().getFragmentShaderConstant("intensity")->setValue(Interpolator::lerp(prevColor, color, 1));
 
     { Timer _(tm, "clear");
         graphics->clear(Colors::GRAY);
@@ -319,15 +319,15 @@ void World::render(float interp) const {
     }
 
     { Timer _(tm, "inst");
-        applyToActiveRooms([=](RoomInstance& r) { r.render(interp); });
+        //applyToActiveRooms([=](RoomInstance& r) { r.render(interp); });
     }
 
     { Timer _(tm, "glimpse");
-        targetShader->getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(GLIMPSE_POS) *
+        targetShader->getVertexShaderConstant("worldMatrix")->setValue(Matrix4x4f::translate(GLIMPSE_POS) *
             Matrix4x4f::lookAt(GLIMPSE_POS, camera->getPosition())
         );
         targetMesh->render();
-        targetShader->getVertexShaderConstant("worldMatrix").setValue(Matrix4x4f::translate(GLIMPSE_POS - Vector3f(100.f, 0, 0)) *
+        targetShader->getVertexShaderConstant("worldMatrix")->setValue(Matrix4x4f::translate(GLIMPSE_POS - Vector3f(100.f, 0, 0)) *
             Matrix4x4f::lookAt(GLIMPSE_POS - Vector3f(100.f, 0, 0), camera->getPosition())
         );
         targetMesh2->render();

@@ -5,7 +5,7 @@ using namespace PGE;
 #include "../Utilities/Directories.h"
 
 StatWorld::StatWorld(TimeMaster& tm) : tm(tm) {
-	graphics = Graphics::create("Stats", 420, 420, Graphics::WindowMode::Windowed, { }, 0, 30); // Magic Windows title bar height.
+	graphics = Graphics::create("Stats", 420, 420, WindowMode::Windowed, { }, 0, 30); // Magic Windows title bar height.
 	resources = new Resources(*graphics, cam);
 
 	font = new Font(*resources, Directories::GFX + "Vegur");

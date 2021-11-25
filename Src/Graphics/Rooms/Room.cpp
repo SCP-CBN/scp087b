@@ -23,7 +23,7 @@ Material* Room::readMaterial(Resources& res, const FilePath& tex) {
 	textures.push_back(res.getTexture(tex + "_d.png", Texture::Format::R8));
 	texs.push_back(*textures.back());
 
-	materials.emplace_back(Material::create(res.getGraphics(), res.getRoomShader(), texs, Material::Opaque::YES));
+	materials.emplace_back(Material::create(res.getGraphics(), res.getRoomShader(), texs, Opaque::YES));
 	return materials.back();
 }
 
@@ -49,14 +49,14 @@ void Room::readMesh(BinaryReader& reader, Mesh& mesh, std::vector<Vector3f>& cVe
 		cIndices[oldCIndicesSize + i] = (primitives[i] = reader.read<i32>()) + oldCVertSize;
 	}
 
-	mesh.setGeometry(std::move(data), Mesh::PrimitiveType::TRIANGLE, std::move(primitives));
+	mesh.setGeometry(std::move(data), PrimitiveType::TRIANGLE, std::move(primitives));
 }
 
 Room::Room(Resources& res, const FilePath& path) : resources(res) {
 	Shader& roomShader = resources.getRoomShader();
-	matrixConstant = &roomShader.getVertexShaderConstant("worldMatrix");
-	uvOffConstant = &roomShader.getVertexShaderConstant("uvOff");
-	uvRotConstant = &roomShader.getVertexShaderConstant("uvRot");
+	matrixConstant = roomShader.getVertexShaderConstant("worldMatrix");
+	uvOffConstant = roomShader.getVertexShaderConstant("uvOff");
+	uvRotConstant = roomShader.getVertexShaderConstant("uvRot");
 
 	materials.reserve(2);
 	textures.reserve(2 * TEXTURES_PER_MATERIAL);
@@ -137,7 +137,7 @@ void Room::toggleDebug() {
 			for (int j : Range(1, TEXTURES_PER_MATERIAL)) {
 				currTexs.push_back(*textures[i * TEXTURES_PER_MATERIAL + j]);
 			}
-			materials.push_back(Material::create(resources.getGraphics(), roomShader, currTexs, Material::Opaque::YES));
+			materials.push_back(Material::create(resources.getGraphics(), roomShader, currTexs, Opaque::YES));
 		}
 	}
 
